@@ -1,0 +1,791 @@
+---
+index: 4
+title: Access Control
+topics:
+  - The Four A's
+  - Access Control Models
+  - Authentication
+  - Passwords
+  - Biometrics
+draft: false
+---
+
+<section>
+  <div class="toc"></div>
+</section>
+<section>
+  <div class="toc" data-selected="0"></div>
+</section>
+<section>
+  <section>
+    <h2>The Most-Used Service</h2>
+    <ul>
+      <li>
+        Of X.800's five services, this is the one every system implements, and
+        the one most often implemented badly
+      </li>
+      <li>
+        The question is always the same shape: may
+        <span class="hl-orange">this subject</span> perform
+        <span class="hl-green">this action</span> on
+        <span class="hl-cyan">this object</span>?
+      </li>
+      <li>
+        <em>Subject</em> — a user, a process, a service. <em>Object</em> — a
+        file, a row, an endpoint
+      </li>
+    </ul>
+    <div class="box">
+      <p>
+        Everything in this lecture is one function: <code>allow(s, a, o)</code>
+      </p>
+    </div>
+  </section>
+  <section>
+    <h2>The Four A's</h2>
+    <table style="font-size: 0.85em">
+      <tr>
+        <td class="hl-orange"><strong>Authentication</strong></td>
+        <td>Are you who you claim to be?</td>
+      </tr>
+      <tr>
+        <td class="hl-green"><strong>Authorization</strong></td>
+        <td>Given that, are you allowed to do this?</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>Accounting</strong></td>
+        <td>What did you consume, and for how long?</td>
+      </tr>
+      <tr>
+        <td class="hl-violet"><strong>Auditing</strong></td>
+        <td>What did you do, recorded so it can be reviewed</td>
+      </tr>
+    </table>
+    <ul>
+      <li>
+        RADIUS and Diameter ship the first three as <em>AAA</em>; the fourth is
+        added when the record has to survive a dispute
+      </li>
+      <li>
+        Some texts split <span class="hl-yellow">identification</span> off from
+        authentication instead — claiming a name is not the same as proving it
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Identify, Then Authenticate, Then Authorize</h2>
+    <ul>
+      <li>
+        <span class="hl-orange">Identification</span> — "I am
+        <code>parham</code>". Public, and not a claim of anything
+      </li>
+      <li>
+        <span class="hl-green">Authentication</span> — evidence for that claim
+      </li>
+      <li>
+        <span class="hl-cyan">Authorization</span> — the rights that identity
+        carries
+      </li>
+    </ul>
+    <p>
+      They fail differently, and confusing them is a real bug class. An
+      authenticated user who reaches another user's records has an
+      <strong class="hl-red">authorization</strong> failure — the login worked
+      perfectly.
+    </p>
+    <p>
+      That bug has a name — <em class="hl-yellow">broken access control</em> —
+      and it has been number one in the OWASP Top Ten since 2021. Lecture 6
+      returns to it.
+    </p>
+  </section>
+  <section>
+    <h2>Audit Is Not Optional</h2>
+    <ul>
+      <li>
+        Prevention fails. The log is what turns a breach into a
+        <em class="hl-green">known</em> breach
+      </li>
+      <li>
+        Record the decision, not just the action: who, what, when, and
+        <em>allowed or denied</em>
+      </li>
+      <li>
+        Denied attempts are the interesting ones. A thousand denials from one
+        account is the alert
+      </li>
+      <li>
+        Send logs somewhere the subject cannot edit — an attacker with root
+        edits the local log first
+      </li>
+      <li>
+        <span class="hl-red">Do not log the secret.</span> Passwords, tokens and
+        card numbers in a log file are a breach waiting for a log reader
+      </li>
+    </ul>
+  </section>
+</section>
+<section>
+  <div class="toc" data-selected="1"></div>
+</section>
+<section>
+  <section>
+    <h2>The Access Matrix</h2>
+    <p>The abstract model: subjects down the side, objects across the top.</p>
+    <table style="font-size: 0.85em">
+      <tr>
+        <td></td>
+        <td class="hl-orange"><strong>grades.db</strong></td>
+        <td class="hl-orange"><strong>report.pdf</strong></td>
+        <td class="hl-orange"><strong>/etc/shadow</strong></td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>parham</strong></td>
+        <td>read, write</td>
+        <td>read</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>student</strong></td>
+        <td>—</td>
+        <td>read</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>root</strong></td>
+        <td>read, write</td>
+        <td>read, write</td>
+        <td>read, write</td>
+      </tr>
+    </table>
+    <p>
+      Nobody stores it as a matrix — it is enormous and mostly empty. You store
+      it by <em>column</em> or by <em>row</em>, and that choice has
+      consequences.
+    </p>
+  </section>
+  <section>
+    <h2>Columns or Rows</h2>
+    <ul>
+      <li>
+        <span class="hl-orange">Access control list</span> — store a column,
+        attached to the object
+      </li>
+      <ul>
+        <li>"Who may touch this file?" is instant</li>
+        <li>
+          "What may this user touch?" means walking every object in the system
+        </li>
+        <li>Unix permissions, Windows ACLs, S3 bucket policies</li>
+      </ul>
+      <li>
+        <span class="hl-green">Capability</span> — store a row, held by the
+        subject as an unforgeable ticket
+      </li>
+      <ul>
+        <li>Fast to check, easy to delegate — and hard to revoke</li>
+        <li>
+          A bearer token is a capability, which is exactly why lecture 6 worries
+          about where it is stored
+        </li>
+      </ul>
+    </ul>
+  </section>
+  <section>
+    <h2>DAC — the Owner Decides</h2>
+    <ul>
+      <li>
+        <span class="hl-orange">Discretionary</span> access control: whoever
+        owns an object sets its permissions
+      </li>
+      <li>Flexible, familiar, and the default nearly everywhere</li>
+      <li>Two weaknesses, both structural:</li>
+      <ul>
+        <li>
+          One careless owner can expose anything they own —
+          <code>chmod 777</code> is one keystroke
+        </li>
+        <li>
+          <strong class="hl-red">Rights are transitive.</strong> A program you
+          run acts with <em>your</em> rights, so any program you run can give
+          your data away
+        </li>
+      </ul>
+    </ul>
+  </section>
+  <section class="hands-on">
+    <h2>DAC on This Machine</h2>
+    <pre><code class="lang-sh">
+$ ls -l salaries.txt
+-rw-r--r--  1 parham  wheel  7 Aug 18 00:51 salaries.txt
+
+$ chmod 640 salaries.txt && ls -l salaries.txt
+-rw-r-----  1 parham  wheel  7 Aug 18 00:51 salaries.txt
+
+$ chmod u=rw,g=r,o= salaries.txt      # the same thing, spelled out
+
+$ umask
+022
+    </code></pre>
+    <p>
+      <code>umask 022</code> is why the file was world-readable when it was
+      created. The default is <em class="hl-red">permissive</em>, and defaults
+      are what most files get.
+    </p>
+  </section>
+  <section class="hands-on">
+    <h2>Two Bits Worth Knowing</h2>
+    <pre><code class="lang-sh">
+$ ls -l /usr/bin/su
+-rwsr-xr-x  1 root  wheel  121904 Jun 25 02:29 /usr/bin/su
+
+$ ls -ld /private/tmp
+drwxrwxrwt  110 root  wheel  3520 Aug 18 00:51 /private/tmp
+    </code></pre>
+    <ul>
+      <li>
+        <span class="hl-orange">s</span> — setuid. The program runs as its
+        <em>owner</em>, not as you. That is how an ordinary user changes a
+        password in a root-owned file
+      </li>
+      <li>
+        <span class="hl-cyan">t</span> — sticky. Everyone may write in
+        <code>/tmp</code>, but only the owner of a file may delete it
+      </li>
+      <li>
+        Every setuid binary is a
+        <strong class="hl-red">privilege boundary</strong>
+        — a bug in one is a local root exploit
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>MAC — the System Decides</h2>
+    <ul>
+      <li>
+        <span class="hl-orange">Mandatory</span> access control: a system-wide
+        policy overrides the owner. You cannot share what the policy forbids,
+        even if you want to
+      </li>
+      <li>
+        Every subject has a <em>clearance</em>, every object a <em>label</em>,
+        and the rules compare them
+      </li>
+      <li>
+        <span class="hl-green">Bell–LaPadula</span> protects
+        <strong>confidentiality</strong>
+      </li>
+      <ul>
+        <li><em>No read up</em> — you cannot read above your clearance</li>
+        <li><em>No write down</em> — and you cannot copy it downward either</li>
+      </ul>
+      <li>
+        <span class="hl-cyan">Biba</span> protects <strong>integrity</strong>,
+        and is exactly upside down: no read down, no write up
+      </li>
+      <li>SELinux, AppArmor, iOS and Android sandboxes are all MAC</li>
+    </ul>
+  </section>
+  <section>
+    <h2>RBAC — the Role Decides</h2>
+    <ul>
+      <li>
+        Rights attach to <span class="hl-orange">roles</span>; users are
+        assigned roles. Nobody is granted a permission directly
+      </li>
+      <li>
+        It matches how organizations actually work, which is why it won:
+        <em>teaching assistant</em> is a job, and the job has a fixed set of
+        rights
+      </li>
+      <li>
+        When someone changes job you change one assignment, not forty
+        permissions
+      </li>
+      <li>Two refinements that matter in practice:</li>
+      <ul>
+        <li>
+          <span class="hl-green">Role hierarchy</span> — professor inherits
+          everything a lecturer may do
+        </li>
+        <li>
+          <span class="hl-cyan">Separation of duty</span> — no one person may
+          hold both <em>request payment</em> and <em>approve payment</em>
+        </li>
+      </ul>
+    </ul>
+  </section>
+  <section>
+    <h2>ABAC — the Context Decides</h2>
+    <ul>
+      <li>
+        RBAC cannot express "during office hours", "from a managed device", "for
+        their own department" without inventing a role per combination —
+        <em class="hl-red">role explosion</em>
+      </li>
+      <li>
+        <span class="hl-orange">Attribute-based</span> access control evaluates
+        a rule over attributes of the subject, the object, the action and the
+        environment
+      </li>
+      <li>
+        Very expressive, and much harder to answer the auditor's question:
+        <em>"who can read this today?"</em>
+      </li>
+      <li>
+        Most real systems are RBAC with a few attributes bolted on, and that is
+        a reasonable place to land
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Choosing</h2>
+    <table style="font-size: 0.8em">
+      <tr>
+        <td class="hl-orange"><strong>DAC</strong></td>
+        <td>Owner sets it</td>
+        <td>Flexible</td>
+        <td>Leaks by accident</td>
+      </tr>
+      <tr>
+        <td class="hl-green"><strong>MAC</strong></td>
+        <td>Policy sets it</td>
+        <td>Strong, uniform</td>
+        <td>Rigid, heavy to administer</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>RBAC</strong></td>
+        <td>Role sets it</td>
+        <td>Matches the org chart</td>
+        <td>Role explosion</td>
+      </tr>
+      <tr>
+        <td class="hl-violet"><strong>ABAC</strong></td>
+        <td>Rules over attributes</td>
+        <td>Expressive, contextual</td>
+        <td>Hard to audit</td>
+      </tr>
+    </table>
+    <p>
+      Whichever you pick, the two principles from lecture 1 still decide the
+      outcome: <strong class="hl-green">least privilege</strong> and
+      <strong class="hl-green">deny by default</strong>.
+    </p>
+  </section>
+</section>
+<section>
+  <div class="toc" data-selected="2"></div>
+</section>
+<section>
+  <section>
+    <h2>Three Kinds of Evidence</h2>
+    <table style="font-size: 0.85em">
+      <tr>
+        <td class="hl-orange"><strong>Something you know</strong></td>
+        <td>Password, PIN, the answer to a question</td>
+      </tr>
+      <tr>
+        <td class="hl-green"><strong>Something you have</strong></td>
+        <td>A phone, a security key, a smart card</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>Something you are</strong></td>
+        <td>Fingerprint, face, iris, the way you type</td>
+      </tr>
+    </table>
+    <ul>
+      <li>
+        <span class="hl-violet">Multi-factor</span> means factors from
+        <strong>different rows</strong>. A password plus a security question is
+        one factor asked twice
+      </li>
+      <li>
+        MFA is the single highest-value control on this slide, because it breaks
+        the attack that scales: stolen passwords
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Something You Have</h2>
+    <ul>
+      <li>
+        <span class="hl-orange">OTP over SMS</span> — better than nothing, and
+        the weakest of these. SIM swap, SS7 interception, and the code is
+        phishable
+      </li>
+      <li>
+        <span class="hl-green">TOTP</span> — an authenticator app. A shared
+        secret plus the clock, so it works offline
+      </li>
+      <li>
+        <span class="hl-cyan">FIDO2 / WebAuthn</span> — a key pair per site,
+        held in hardware
+      </li>
+      <ul>
+        <li>
+          The one design that is <strong>phishing-resistant</strong>: the
+          browser signs over the real origin, so a look-alike domain gets a
+          signature that does not verify
+        </li>
+        <li>
+          Nothing shared, nothing to type, nothing to leak from the server
+        </li>
+      </ul>
+    </ul>
+  </section>
+  <section class="hands-on">
+    <h2>TOTP Is Twenty Lines</h2>
+    <pre><code class="lang-go">
+counter := make([]byte, 8)
+binary.BigEndian.PutUint64(counter, uint64(t/step))
+
+mac := hmac.New(sha1.New, secret)
+mac.Write(counter)
+sum := mac.Sum(nil)
+
+offset := sum[len(sum)-1] &amp; 0x0f            // dynamic truncation
+code := binary.BigEndian.Uint32(sum[offset:offset+4]) &amp; 0x7fffffff
+    </code></pre>
+    <pre><code class="lang-text">
+T=59           code=94287082
+T=1111111109   code=07081804
+T=1111111111   code=14050471
+T=1234567890   code=89005924
+T=2000000000   code=69279037
+    </code></pre>
+    <p>Those are the RFC 6238 test vectors, reproduced exactly.</p>
+  </section>
+  <section>
+    <h2>What That Code Tells You</h2>
+    <ul>
+      <li>
+        It is an <span class="hl-orange">HMAC of the current time</span>, cut
+        down to six or eight digits. No magic
+      </li>
+      <li>
+        The server needs the <strong class="hl-red">same secret</strong> — so a
+        server breach hands over everyone's second factor
+      </li>
+      <li>
+        Both sides need the same clock. That is why a drifting phone stops
+        working, and why servers accept a window of one or two steps
+      </li>
+      <li>
+        And it is <em class="hl-red">phishable</em>: a fake site asks for the
+        six digits and forwards them within thirty seconds. WebAuthn exists
+        because of this
+      </li>
+    </ul>
+  </section>
+</section>
+<section>
+  <div class="toc" data-selected="3"></div>
+</section>
+<section>
+  <section>
+    <h2>Passwords Are Still Here</h2>
+    <ul>
+      <li>
+        Cheap, universal, need no hardware, and everyone already knows how they
+        work
+      </li>
+      <li>
+        And they are <em>reused</em>, guessable, phishable, and shared over chat
+      </li>
+      <li>Two problems that need separating:</li>
+      <ul>
+        <li>
+          <span class="hl-orange">How the user chooses one</span> — a
+          human-factors problem
+        </li>
+        <li>
+          <span class="hl-green">How you store it</span> — an engineering
+          problem, and entirely your fault when it goes wrong
+        </li>
+      </ul>
+    </ul>
+  </section>
+  <section class="hands-on">
+    <h2>Never Store It Twice the Same</h2>
+    <pre><code class="lang-sh">
+$ printf 'hunter2' | shasum -a 256
+f52fbd32b2b3b86ff88ef6c490628285f482af15ddcb29541f94bcf526a3f6c7
+$ printf 'hunter2' | shasum -a 256
+f52fbd32b2b3b86ff88ef6c490628285f482af15ddcb29541f94bcf526a3f6c7
+
+$ openssl passwd -6 hunter2
+$6$MrTqQCcVCjfH/jFG$rM65BZ4dxysbt8.J82C6D8e5IW8sC.3Ufq...
+$ openssl passwd -6 hunter2
+$6$9kSX7tN9L2s6M5N.$g.pyl63tv1ad97rS8/Il3yZSEaZ34j25vs...
+    </code></pre>
+    <ul>
+      <li>
+        Unsalted: the same digest, on every machine, forever. Precompute it once
+        and it is broken everywhere — a
+        <span class="hl-red">rainbow table</span>
+      </li>
+      <li>
+        Salted: a random value per password, stored beside it. Two identical
+        passwords now look nothing alike, and every attack must be redone
+        <em class="hl-green">per user</em>
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Salt Is Not Enough</h2>
+    <p>
+      A salt stops precomputation. It does nothing about
+      <em>speed</em> — and speed is what an offline attacker has.
+    </p>
+    <pre><code class="lang-text">
+sha256(password)                      0.000 ms/hash    3,682,588 guesses/sec
+pbkdf2-hmac-sha256, 600k iter        57.918 ms/hash           17 guesses/sec
+scrypt, N=2^17 r=8 p=1              198.368 ms/hash            5 guesses/sec
+    </code></pre>
+    <ul>
+      <li>
+        On one laptop core. A password hashed with SHA-256 falls
+        <strong class="hl-red">200,000 times faster</strong> than the same
+        password behind scrypt
+      </li>
+      <li>
+        A password hash is supposed to be <em class="hl-green">slow</em>. It is
+        the only place in this course where slow is the requirement
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>What To Actually Use</h2>
+    <ul>
+      <li>
+        <span class="hl-green">Argon2id</span> — the current recommendation.
+        Tunable in time, memory and parallelism
+      </li>
+      <li>
+        <span class="hl-cyan">scrypt</span> ·
+        <span class="hl-cyan">bcrypt</span>
+        — both fine, both still widely deployed
+      </li>
+      <li>
+        <span class="hl-yellow">PBKDF2</span> — acceptable, and often the only
+        option in a certified environment
+      </li>
+      <li>
+        <strong class="hl-red">Never</strong> a bare MD5, SHA-1 or SHA-256
+      </li>
+      <li>
+        Memory-hard is the point of the modern ones: GPUs have thousands of
+        cores and not much memory per core, so requiring memory takes the
+        attacker's advantage away
+      </li>
+      <li>
+        Tune the cost so verification takes a few hundred milliseconds
+        <em>on your hardware</em>, and revisit it as hardware improves
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Attacks on Passwords</h2>
+    <table style="font-size: 0.8em">
+      <tr>
+        <td class="hl-orange"><strong>Online guessing</strong></td>
+        <td>Against your login form. Rate limit, lock out, add delay</td>
+      </tr>
+      <tr>
+        <td class="hl-red"><strong>Offline cracking</strong></td>
+        <td>Against a stolen database. Only the KDF slows it down</td>
+      </tr>
+      <tr>
+        <td class="hl-yellow"><strong>Credential stuffing</strong></td>
+        <td>
+          Reusing another site's breach. Nothing you do to your own hashing
+          helps
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-violet"><strong>Password spraying</strong></td>
+        <td>
+          One common password against every account, to stay under the lockout
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>Phishing</strong></td>
+        <td>The user types it in for you. Beats every storage decision</td>
+      </tr>
+    </table>
+    <p>
+      Note that only two of the five are affected by how you hash. The other
+      three need <strong class="hl-green">MFA</strong>.
+    </p>
+  </section>
+  <section>
+    <h2>The Rules Changed</h2>
+    <p>NIST SP 800-63B says most of the old advice was counterproductive:</p>
+    <ul>
+      <li>
+        <span class="hl-red">No forced periodic rotation</span> — it produces
+        <code>Summer2026!</code> then <code>Autumn2026!</code>. Rotate on
+        evidence of compromise
+      </li>
+      <li>
+        <span class="hl-red">No composition rules</span> — demanding a symbol
+        and a digit adds almost no entropy and a great deal of annoyance
+      </li>
+      <li>
+        <span class="hl-green">Length over complexity</span> — allow long
+        passphrases, and allow every character including spaces
+      </li>
+      <li>
+        <span class="hl-green">Check against known-breached lists</span> — this
+        is the change that actually removes weak passwords
+      </li>
+      <li>
+        <span class="hl-cyan">Allow paste</span>, so password managers work.
+        Blocking it drives people to worse passwords
+      </li>
+    </ul>
+  </section>
+</section>
+<section>
+  <div class="toc" data-selected="4"></div>
+</section>
+<section>
+  <section>
+    <h2>Something You Are</h2>
+    <ul>
+      <li>
+        Fingerprint · face · iris · retina · voice · hand geometry · gait ·
+        keystroke dynamics
+      </li>
+      <li>
+        Two phases: <span class="hl-orange">enrollment</span> builds a
+        <em>template</em>, then each use compares a fresh sample against it
+      </li>
+      <li>
+        The comparison is <strong class="hl-red">never exact</strong>. Your
+        finger is never presented twice the same way, so the system computes a
+        similarity score and compares it to a threshold
+      </li>
+      <li>That threshold is the whole design</li>
+    </ul>
+  </section>
+  <section>
+    <h2>FAR, FRR and the Threshold</h2>
+    <ul>
+      <li>
+        <span class="hl-red">FAR</span> — false acceptance rate. An impostor is
+        let in
+      </li>
+      <li>
+        <span class="hl-yellow">FRR</span> — false rejection rate. The right
+        person is turned away
+      </li>
+      <li>
+        One knob moves both, in opposite directions. Tighten the threshold and
+        FAR falls while FRR rises
+      </li>
+      <li>
+        <span class="hl-cyan">EER</span> — the crossover, where the two are
+        equal. A single number for comparing systems, and rarely the setting you
+        want
+      </li>
+      <li>
+        Pick by consequence: a phone unlock tolerates FAR to keep FRR low; a
+        vault does the opposite
+      </li>
+      <li>
+        A high FRR has a security cost too — it is what makes staff prop the
+        door open
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>The Two Facts People Forget</h2>
+    <div class="box">
+      <p>A biometric is a username, not a password.</p>
+    </div>
+    <ul>
+      <li>
+        <span class="hl-orange">It is not secret.</span> You leave fingerprints
+        on every glass and your face is on every camera
+      </li>
+      <li>
+        <span class="hl-red">It cannot be revoked.</span> A leaked password is
+        changed in a minute. A leaked fingerprint template is leaked for life,
+        and you have ten
+      </li>
+      <li>
+        So: excellent as a <em class="hl-green">convenient local factor</em>
+        beside a device you hold; poor as a remote credential on its own
+      </li>
+      <li>
+        This is exactly how phones use it — the fingerprint unlocks a key held
+        in secure hardware; it is never sent anywhere
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Attacking and Defending It</h2>
+    <ul>
+      <li>
+        <span class="hl-red">Presentation attack</span> — a lifted print in
+        gelatin, a printed photograph, a recorded voice
+      </li>
+      <ul>
+        <li>
+          Answer: <span class="hl-green">liveness detection</span> — pulse,
+          depth, involuntary movement
+        </li>
+      </ul>
+      <li>
+        <span class="hl-red">Template theft</span> — the stored template is the
+        irrevocable part
+      </li>
+      <ul>
+        <li>
+          Answer: never store raw biometrics; keep the template in secure
+          hardware, on the user's own device
+        </li>
+      </ul>
+      <li>
+        <span class="hl-orange">Bias</span> — error rates differ measurably
+        across demographic groups. A single published accuracy figure hides that
+      </li>
+      <li>
+        And a legal dimension the other factors do not have: biometric data is
+        special-category personal data nearly everywhere
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Putting It Together</h2>
+    <ul>
+      <li>
+        Authenticate with <span class="hl-green">MFA</span>, preferring
+        phishing-resistant factors
+      </li>
+      <li>
+        Authorize with <span class="hl-cyan">roles</span>, default deny, least
+        privilege
+      </li>
+      <li>
+        Store passwords with a <span class="hl-orange">slow, salted KDF</span>,
+        and check them against breach lists
+      </li>
+      <li>
+        Use biometrics <em>locally</em>, to unlock a key — never as the
+        credential on the wire
+      </li>
+      <li>
+        Log every decision, including the denials, somewhere the subject cannot
+        reach
+      </li>
+    </ul>
+    <div class="box">
+      <p>
+        Next: the same questions, one layer down — where the subject is a
+        process and the object is the file system.
+      </p>
+    </div>
+  </section>
+</section>
