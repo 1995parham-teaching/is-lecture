@@ -1,0 +1,27 @@
+---
+- title: "Computer Security: Principles and Practice - Fourth Edition"
+  image: img/computer-security.jpg
+  authors:
+    - William Stallings
+    - Lawrie Brown
+
+- title: "Cryptography and Network Security: Principles and Practice - Seventh Edition"
+  image: img/cryptography-network-security.jpg
+  authors:
+    - William Stallings
+
+- title: "Security Engineering: A Guide to Building Dependable Distributed Systems - Third Edition"
+  link: https://www.cl.cam.ac.uk/~rja14/book.html
+  image: img/security-engineering.jpg
+  authors:
+    - Ross Anderson
+
+- title: "Introduction to Information Security: A Strategic-Based Approach"
+  image: img/introduction-to-information-security.jpg
+  authors:
+    - Timothy Shimeall
+    - Jonathan Spring
+
+- title: OWASP Top Ten and the OWASP Cheat Sheet Series
+  link: https://owasp.org/www-project-top-ten/
+  image: img/owasp.jpg

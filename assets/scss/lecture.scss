@@ -1,0 +1,180 @@
+$highlights: (
+  "orange": #ff9100,
+  "green": #76ff03,
+  "cyan": #00e5ff,
+  // lightened from #ff0000, which only reached 4.18:1 on the league
+  // background and is hard to read from the back of a lecture hall
+  "red": #ff5252,
+  "material": #ff80ab,
+  "violet": #ee82ee,
+  "yellow": #ffcc00,
+  "pink": #ffb6c1,
+);
+
+:root {
+  --r-main-font-size: 24px;
+}
+
+@each $name, $color in $highlights {
+  .hl-#{$name} {
+    color: $color;
+  }
+}
+
+.stackoverflow {
+  color: #f48024;
+}
+
+section > h2:first-child {
+  // lightened from #ff033e (4.25:1) to clear 4.5:1 on the league background
+  color: #ff4569 !important;
+}
+
+section > p {
+  text-align: justify;
+}
+
+table.cell td {
+  border: 5px solid #ccff00 !important;
+}
+
+.slide-background-content {
+  height: 100%;
+}
+
+.box {
+  border-radius: 5px;
+  background-color: #919096;
+  box-shadow: 5px 5px 5px 0;
+  margin-top: 20px !important;
+  margin-bottom: 20px !important;
+}
+
+.box header {
+  background-color: #656469;
+  border-radius: 5px 5px 0 0;
+  color: #dd8f33;
+}
+
+.box p {
+  font-style: italic;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+// the marker goes on the slide itself, not on a trailing <ul> — otherwise a
+// hands-on slide that ends with a code block silently loses it. :not(:has())
+// keeps it off vertical-stack wrappers, which are not slides of their own.
+section.hands-on:not(:has(> section))::after {
+  // painted as a background rather than `content: url(…)`. A url() makes the
+  // pseudo-element *replaced*, and a replaced box stays inline-level even with
+  // display:block — width and height still apply, which is why it looked the
+  // right size, but `margin: auto` resolves to 0 on an inline box so it never
+  // centred. With content:"" this is an ordinary block box and auto works.
+  content: "";
+  display: block;
+  width: 130px;
+  height: 130px;
+  margin: 0.6em auto 0;
+  background: url("../img/hands-on.webp") no-repeat center / contain;
+}
+
+// the toc is a plain <ul> built by assets/js/toc.ts. Numbering it reads as a
+// table of contents rather than a bullet list, and ::marker inherits the li's
+// colour, so the selected entry's numeral gets highlighted for free.
+// `.reveal .toc ul` outranks league's `.reveal ul { list-style-type: disc }`.
+.reveal .toc ul {
+  list-style-type: upper-roman;
+  // markers sit outside the box, and "VIII" needs more room than a disc —
+  // league only leaves 1em
+  margin-left: 2.5em;
+}
+
+// a small standing mark in the bottom-left corner of every slide
+.deck-logo {
+  position: fixed;
+  bottom: 12px;
+  left: 14px;
+  width: 110px;
+  opacity: 0.5;
+  // never let it eat a click meant for the slide behind it
+  pointer-events: none;
+  z-index: 10;
+}
+
+// the pdf export paginates the deck, and a fixed element either sticks to one
+// page or repeats at odd offsets. The title card carries the branding there.
+@media print {
+  .deck-logo {
+    display: none;
+  }
+}
+
+// the generated opening card. Everything on it comes from front matter, so a
+// new lecture gets one for free and they cannot drift apart.
+.title-slide {
+  // `section > p` above justifies paragraphs, which on a one-line paragraph
+  // renders as left-aligned. Override it for the card.
+  p {
+    text-align: center;
+  }
+
+  // league sets --r-heading1-size to 3.77em, so anything much under that reads
+  // as small next to the rest of the deck. The title stays the largest thing
+  // on the card; the numeral is close behind but held back by colour.
+  .course {
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    font-size: 0.46em;
+    color: #8d97a8;
+    margin: 0 0 0.8em;
+  }
+
+  .lecture-no {
+    font-family: var(--r-heading-font);
+    font-size: 3.8em;
+    line-height: 0.85;
+    color: #ff9100;
+    margin: 0;
+  }
+
+  h1 {
+    // 3.2em keeps the longest title, "Cross-Origin Resource Sharing", on one
+    // line in League Gothic at 960px; balance tidies it up if one ever wraps
+    font-size: 3.2em;
+    margin: 0.06em 0 0;
+    text-wrap: balance;
+  }
+
+  // a short accent rule, the only ornament on the slide
+  .rule {
+    width: 3em;
+    height: 4px;
+    background: #00e5ff;
+    margin: 0.5em auto 0;
+    border-radius: 2px;
+  }
+
+  .topics {
+    font-size: 0.62em;
+    line-height: 1.6;
+    color: #b6bfcd;
+    // a percentage of the slide, not of this element's own small em, which
+    // would have boxed the longest topic list into five lines
+    max-width: 78%;
+    margin: 0.9em auto 0;
+    text-align: center;
+  }
+
+  .colophon {
+    font-size: 0.44em;
+    line-height: 1.7;
+    letter-spacing: 0.05em;
+    color: #7a8494;
+    margin-top: 1.6em;
+
+    a {
+      color: #ff9100;
+    }
+  }
+}

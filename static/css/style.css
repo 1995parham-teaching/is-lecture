@@ -1,0 +1,119 @@
+body {
+  min-height: 100vh;
+
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-image: url("../img/bg.jpg");
+  background-attachment: fixed;
+
+  padding-top: 100px;
+}
+
+.container {
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 45px 45px;
+
+  border-radius: 18px;
+}
+
+/* the background photo stays, so the panel only darkens on top of it */
+[data-bs-theme="dark"] .container {
+  background-color: rgba(24, 26, 27, 0.92);
+}
+
+.header {
+  text-align: center;
+}
+
+.theme-toggle {
+  margin-top: 10px;
+}
+
+.theme-toggle .theme-toggle-light,
+[data-bs-theme="dark"] .theme-toggle .theme-toggle-dark {
+  display: none;
+}
+
+[data-bs-theme="dark"] .theme-toggle .theme-toggle-light {
+  display: inline;
+}
+
+.news-status {
+  cursor: default;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  display: inline-block;
+  padding: 5px;
+  margin-left: 10px;
+  border: 1px solid orange;
+  border-radius: 5px;
+  color: orange;
+}
+
+.email-container {
+  color: #555;
+  text-align: left;
+  border-radius: 4px;
+  border: 1px solid #888;
+  padding: 10px;
+  margin-bottom: 5px;
+}
+
+[data-bs-theme="dark"] .email-container {
+  color: #bbb;
+}
+
+/*
+ * the reference cards used two fixed 25% columns, which stayed a quarter
+ * of the viewport wide on a phone; auto-fit lets them reflow instead
+ */
+.reference {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: 20px;
+  align-items: center;
+  justify-items: center;
+  margin-top: 50px;
+}
+
+.reference .image {
+  display: flex;
+  justify-content: center;
+}
+
+.reference .image img {
+  max-width: 100%;
+  max-height: 300px;
+}
+
+.reference .text {
+  justify-self: start;
+}
+
+@media (max-width: 768px) {
+  body {
+    padding-top: 30px;
+  }
+
+  .container {
+    padding: 20px;
+    border-radius: 12px;
+  }
+
+  .reference {
+    grid-template-columns: minmax(0, 1fr);
+    margin-top: 30px;
+  }
+
+  .reference .text {
+    justify-self: center;
+    text-align: center;
+  }
+
+  .reference .text ul {
+    display: inline-block;
+    text-align: left;
+  }
+}

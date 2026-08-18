@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+  <head>
+    {{ partial "meta.html" (dict
+      "title" .Title
+      "description" (printf "%s — Introduction to Information Security course slides, %s." .Title .Site.Params.semester)
+      "page" .)
+    }}
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>{{ .Title }}</title>
+    {{/* every asset below is fingerprinted. github pages serves them with
+      `cache-control: max-age=600` from a stable path, so without a content hash a
+      browser can hold a stale toc.js next to fresh html — and since the page
+      carries the `data-selected` indices while the script carries the titles
+      array, the two disagreeing silently breaks the toc highlighting.
+    */}}
+    {{ $style := readFile "node_modules/reveal.js/dist/reveal.css" | resources.FromString "reveal.css" | minify | fingerprint }}
+    <link rel="stylesheet" href="{{ $style.Permalink }}" />
+    {{ $style := readFile "node_modules/reveal.js/dist/theme/league.css" | resources.FromString "league.css" | toCSS | minify | fingerprint }}
+    <link rel="stylesheet" href="{{ $style.Permalink }}" />
+    {{ $style := readFile "node_modules/reveal.js/dist/plugin/highlight/monokai.css" | resources.FromString "monokai.css" | toCSS | minify | fingerprint }}
+    <link rel="stylesheet" href="{{ $style.Permalink }}" />
+    {{ $style := resources.Get "scss/lecture.scss" | toCSS | minify | fingerprint }}
+    <link rel="stylesheet" href="{{ $style.Permalink }}" />
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section
+          class="title-slide"
+          data-background-gradient="radial-gradient(circle at 30% 20%, #3d4450, #1b1f26 70%)"
+        >
+          <p class="course">Information Security</p>
+          {{ with .Params.index }}
+            <p class="lecture-no">{{ printf "%02d" . }}</p>
+          {{ end }}
+          <h1>{{ .Title }}</h1>
+          <div class="rule"></div>
+          {{ with .Params.topics }}
+            <p class="topics">{{ delimit . " · " }}</p>
+          {{ end }}
+          <p class="colophon">
+            {{ .Site.Params.semester }} ·
+            {{ .Site.Params.university }}
+            <br />
+            <a href="https://1995parham.me">{{ .Site.Params.instructor }}</a>
+          </p>
+        </section>
+        {{ .Content }}
+      </div>
+    </div>
+    {{ $js := resources.Get "js/index.js" | js.Build (dict "minify" hugo.IsProduction) | fingerprint }}
+    <script src="{{ $js.RelPermalink }}" defer></script>
+    {{ $js := resources.Get "js/toc.ts" | resources.ExecuteAsTemplate (path.Join .File.Dir  "toc.ts")
+      .Params | js.Build (dict "minify" hugo.IsProduction) | fingerprint
+    }}
+    <script src="{{ $js.RelPermalink }}" defer></script>
+    <!-- a small standing mark, bottom-left. reveal keeps its controls and the
+    slide number bottom-right, so that corner is free. decorative — the title
+    card already names the instructor — hence the empty alt. -->
+    <img
+      class="deck-logo"
+      src="{{ "img/1995parham-logo-dark.png" | relURL }}"
+      alt=""
+    />
+    <!-- logos and advertising -->
+    <a href="https://github.com/1995parham-teaching/is-lecture" target="_blank">
+      <img
+        style="position: absolute; top: 0; right: 0; border: 0;"
+        src="{{ "img/forkme_right_orange.png" | relURL }}"
+        alt="Fork me on GitHub"
+      />
+    </a>
+  </body>
+</html>
