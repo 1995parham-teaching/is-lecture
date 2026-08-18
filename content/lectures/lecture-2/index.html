@@ -1,0 +1,812 @@
+---
+index: 2
+title: Security Architecture
+topics:
+  - X.800
+  - Enterprise Architecture
+  - Security Policy
+  - Risk Management
+  - Incidents & Continuity
+draft: false
+---
+
+<section>
+  <div class="toc"></div>
+</section>
+<section>
+  <div class="toc" data-selected="0"></div>
+</section>
+<section>
+  <section>
+    <h2>Why a Standard Vocabulary?</h2>
+    <ul>
+      <li>
+        Lecture 1 gave us words. Two engineers can still mean different things
+        by <em>"the channel is authenticated"</em>
+      </li>
+      <li>
+        <span class="hl-orange">ITU-T X.800</span> — the Security Architecture
+        for OSI, published 1991, identical in substance to
+        <span class="hl-cyan">ISO 7498-2</span>
+      </li>
+      <li>
+        Old, and still the backbone of how requirements get written down: a
+        requirement names a <strong>service</strong>, a design names a
+        <strong>mechanism</strong>
+      </li>
+    </ul>
+    <div class="box">
+      <p>
+        The value is not the document. It is that everybody uses the same six
+        nouns.
+      </p>
+    </div>
+  </section>
+  <section>
+    <h2>Three Definitions</h2>
+    <table>
+      <tr>
+        <td class="hl-red"><strong>Security attack</strong></td>
+        <td>Any action that compromises the security of information</td>
+      </tr>
+      <tr>
+        <td class="hl-green"><strong>Security mechanism</strong></td>
+        <td>A process designed to detect, prevent or recover from an attack</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>Security service</strong></td>
+        <td>
+          A capability that counters attacks, built from one or more mechanisms
+        </td>
+      </tr>
+    </table>
+    <ul>
+      <li>
+        A <em>service</em> is <strong>what</strong> you promise; a
+        <em>mechanism</em> is <strong>how</strong> you deliver it
+      </li>
+      <li>
+        "Confidentiality" is a service. "AES-256-GCM" is a mechanism. Never
+        write the second where the first belongs
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>The Five Service Categories</h2>
+    <table style="font-size: 0.82em">
+      <tr>
+        <td class="hl-orange"><strong>Authentication</strong></td>
+        <td>
+          The communicating party is who it claims — peer entity, and data
+          origin
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-yellow"><strong>Access control</strong></td>
+        <td>Prevent unauthorized use of a resource — lecture 4</td>
+      </tr>
+      <tr>
+        <td class="hl-green"><strong>Data confidentiality</strong></td>
+        <td>Protect from disclosure — including the traffic-flow variety</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>Data integrity</strong></td>
+        <td>The data is as sent, with or without recovery</td>
+      </tr>
+      <tr>
+        <td class="hl-violet"><strong>Non-repudiation</strong></td>
+        <td>Of origin, or of delivery — neither side can deny it happened</td>
+      </tr>
+    </table>
+    <p>
+      <span class="hl-red">Availability</span> is treated as a property of the
+      system in X.800 rather than a service of its own — the one place the
+      standard shows its age.
+    </p>
+  </section>
+  <section>
+    <h2>Specific Mechanisms</h2>
+    <p>Eight, each sitting at a particular protocol layer:</p>
+    <ul style="font-size: 0.9em">
+      <li>
+        <span class="hl-orange">Encipherment</span> — the maths of lecture 3
+      </li>
+      <li>
+        <span class="hl-orange">Digital signature</span> — unforgeable, and
+        verifiable by anyone
+      </li>
+      <li><span class="hl-green">Access control</span> — enforcing rights</li>
+      <li>
+        <span class="hl-green">Data integrity</span> — detecting modification
+      </li>
+      <li>
+        <span class="hl-cyan">Authentication exchange</span> — a handshake that
+        proves identity
+      </li>
+      <li>
+        <span class="hl-cyan">Traffic padding</span> — filler, so the volume
+        says nothing
+      </li>
+      <li>
+        <span class="hl-violet">Routing control</span> — choose a path you trust
+      </li>
+      <li>
+        <span class="hl-violet">Notarization</span> — a third party vouches for
+        the exchange
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Pervasive Mechanisms</h2>
+    <p>
+      Five more that belong to no layer, because they apply to the whole system:
+    </p>
+    <ul>
+      <li>
+        <span class="hl-orange">Trusted functionality</span> — the part that is
+        correct by assumption, so keep it small
+      </li>
+      <li>
+        <span class="hl-green">Security labels</span> — the resource carries its
+        own sensitivity
+      </li>
+      <li>
+        <span class="hl-cyan">Event detection</span> — noticing that something
+        security-relevant happened
+      </li>
+      <li>
+        <span class="hl-cyan">Security audit trail</span> — the record you read
+        afterwards
+      </li>
+      <li>
+        <span class="hl-violet">Security recovery</span> — what the system does
+        in response
+      </li>
+    </ul>
+    <p>
+      The last three are lecture 1's <em>detect · respond · recover</em>, thirty
+      years earlier.
+    </p>
+  </section>
+  <section>
+    <h2>Services Are Built From Mechanisms</h2>
+    <table style="font-size: 0.78em">
+      <tr>
+        <td></td>
+        <td class="hl-orange">Encipher</td>
+        <td class="hl-orange">Signature</td>
+        <td class="hl-orange">Integrity</td>
+        <td class="hl-orange">Auth. exch.</td>
+        <td class="hl-orange">Notary</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan">Peer authentication</td>
+        <td>✔</td>
+        <td>✔</td>
+        <td></td>
+        <td>✔</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td class="hl-cyan">Data origin auth.</td>
+        <td>✔</td>
+        <td>✔</td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td class="hl-cyan">Confidentiality</td>
+        <td>✔</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td class="hl-cyan">Data integrity</td>
+        <td>✔</td>
+        <td>✔</td>
+        <td>✔</td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td class="hl-cyan">Non-repudiation</td>
+        <td></td>
+        <td>✔</td>
+        <td>✔</td>
+        <td></td>
+        <td>✔</td>
+      </tr>
+    </table>
+    <p>
+      Read the bottom row: non-repudiation is the one service encipherment
+      cannot provide. Only a signature binds a message to a
+      <em class="hl-green">single</em> party.
+    </p>
+  </section>
+</section>
+<section>
+  <div class="toc" data-selected="1"></div>
+</section>
+<section>
+  <section>
+    <h2>From Vocabulary to Architecture</h2>
+    <ul>
+      <li>
+        X.800 tells you what to call things. An
+        <span class="hl-orange">enterprise security architecture</span> says
+        where they go in <em>your</em> organization
+      </li>
+      <li>It answers, on one page each:</li>
+      <ul>
+        <li>What are the assets, and who owns each one?</li>
+        <li>What are the zones, and what crosses between them?</li>
+        <li>Which control enforces which requirement, and who operates it?</li>
+      </ul>
+      <li>
+        Without it you get <em class="hl-red">point solutions</em>: nine
+        products, six of them overlapping, and one gap nobody owns
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Layers of an Architecture</h2>
+    <p>
+      SABSA's six views — each one asks the same questions of a new audience:
+    </p>
+    <table style="font-size: 0.8em">
+      <tr>
+        <td class="hl-orange"><strong>Contextual</strong></td>
+        <td>The business. What are we in the business of losing?</td>
+      </tr>
+      <tr>
+        <td class="hl-yellow"><strong>Conceptual</strong></td>
+        <td>The architect. Domains, trust, principles</td>
+      </tr>
+      <tr>
+        <td class="hl-green"><strong>Logical</strong></td>
+        <td>The designer. Services, policies, information flows</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>Physical</strong></td>
+        <td>The builder. Mechanisms, protocols, data structures</td>
+      </tr>
+      <tr>
+        <td class="hl-violet"><strong>Component</strong></td>
+        <td>The tradesman. Products, versions, standards</td>
+      </tr>
+      <tr>
+        <td class="hl-red"><strong>Operational</strong></td>
+        <td>The manager. Who runs it, and how it is measured</td>
+      </tr>
+    </table>
+    <p>Requirements flow down. Assurance flows back up.</p>
+  </section>
+  <section>
+    <h2>Zones and Boundaries</h2>
+    <ul>
+      <li>
+        A <span class="hl-orange">zone</span> is a set of assets with the same
+        trust level and the same policy
+      </li>
+      <li>
+        The interesting security is never inside a zone. It is at the
+        <strong class="hl-red">boundary</strong>
+      </li>
+      <ul>
+        <li>Every boundary needs one place traffic must pass through</li>
+        <li>Every boundary is where you authenticate, filter and log</li>
+      </ul>
+      <li>
+        Draw them once and the firewall rules, the network design and the audit
+        scope all fall out of the same picture — lecture 7 builds this properly
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>You Cannot Protect What You Cannot List</h2>
+    <ul>
+      <li>
+        <span class="hl-orange">Asset inventory</span> is unglamorous and it is
+        the control that fails first
+      </li>
+      <li>
+        Every breach report has the same sentence in it somewhere:
+        <em class="hl-red">"the server was not in the inventory"</em>
+      </li>
+      <li>Each asset needs an owner, a classification, and a location</li>
+      <ul>
+        <li>
+          <span class="hl-cyan">Classification</span> — public · internal ·
+          confidential · restricted
+        </li>
+        <li>
+          The label decides which controls apply, so it must be a short list
+        </li>
+      </ul>
+      <li>
+        CIS Control 1 and 2 are inventory of hardware and software. They are
+        first on purpose
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>The Standards You Will Meet</h2>
+    <table style="font-size: 0.82em">
+      <tr>
+        <td class="hl-orange"><strong>ISO/IEC 27001</strong></td>
+        <td>
+          The requirements for an ISMS. What you get
+          <em>certified</em> against
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-orange"><strong>ISO/IEC 27002</strong></td>
+        <td>The control catalogue — guidance, not requirements</td>
+      </tr>
+      <tr>
+        <td class="hl-green"><strong>NIST CSF</strong></td>
+        <td>Govern · Identify · Protect · Detect · Respond · Recover</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>NIST SP 800-53</strong></td>
+        <td>A very large control catalogue, US federal in origin</td>
+      </tr>
+      <tr>
+        <td class="hl-violet"><strong>CIS Controls</strong></td>
+        <td>18 controls in priority order. The best place to start</td>
+      </tr>
+      <tr>
+        <td class="hl-yellow"><strong>PCI DSS</strong></td>
+        <td>Card data. Not optional if you touch it</td>
+      </tr>
+    </table>
+    <p>
+      They overlap heavily. Pick one as the spine and map the others onto it.
+    </p>
+  </section>
+</section>
+<section>
+  <div class="toc" data-selected="2"></div>
+</section>
+<section>
+  <section>
+    <h2>Four Documents, Often Confused</h2>
+    <table style="font-size: 0.85em">
+      <tr>
+        <td class="hl-orange"><strong>Policy</strong></td>
+        <td>What must be true, and who says so. Short. Signed by management</td>
+      </tr>
+      <tr>
+        <td class="hl-green"><strong>Standard</strong></td>
+        <td>The specific, mandatory way — "TLS 1.2 or above"</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>Procedure</strong></td>
+        <td>The steps, in order, for a human to follow</td>
+      </tr>
+      <tr>
+        <td class="hl-violet"><strong>Guideline</strong></td>
+        <td>Advice. The only one that is optional</td>
+      </tr>
+    </table>
+    <ul>
+      <li>
+        A policy that names a product is really a standard, and it will be
+        obsolete before the next review
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>What a Policy Has to Contain</h2>
+    <ul>
+      <li><span class="hl-orange">Scope</span> — who and what it binds</li>
+      <li>
+        <span class="hl-orange">Statement</span> — the requirement, in the
+        imperative
+      </li>
+      <li>
+        <span class="hl-green">Roles</span> — who owns it, who enforces it, who
+        may grant an exception
+      </li>
+      <li>
+        <span class="hl-cyan">Consequences</span> — what happens when it is
+        broken
+      </li>
+      <li>
+        <span class="hl-violet">Review date</span> — a policy with no review
+        date is a historical document
+      </li>
+    </ul>
+    <div class="box">
+      <p>
+        If nothing in the organization would change when the policy is
+        withdrawn, it was never a policy.
+      </p>
+    </div>
+  </section>
+  <section>
+    <h2>The ISMS Loop</h2>
+    <ul>
+      <li>
+        An <span class="hl-orange">Information Security Management System</span>
+        is the machinery that keeps policy connected to reality
+      </li>
+      <li>Plan · Do · Check · Act, forever</li>
+      <ul>
+        <li>
+          <span class="hl-green">Plan</span> — assess risk, choose controls
+        </li>
+        <li><span class="hl-green">Do</span> — implement and operate them</li>
+        <li>
+          <span class="hl-cyan">Check</span> — measure, audit, review incidents
+        </li>
+        <li><span class="hl-cyan">Act</span> — fix what the check found</li>
+      </ul>
+      <li>
+        ISO 27001 certifies the <em>loop</em>, not the controls. An organization
+        can be certified and still be badly defended
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Why Policies Fail</h2>
+    <ul>
+      <li>
+        <span class="hl-red">Nobody read it.</span> Forty pages, once, at
+        onboarding
+      </li>
+      <li>
+        <span class="hl-red">It forbids the job.</span> If the rule blocks the
+        work, the work wins — every time
+      </li>
+      <li>
+        <span class="hl-red">No exception process.</span> Without a legitimate
+        way to say "not here", people take the illegitimate one
+      </li>
+      <li>
+        <span class="hl-red">Never measured.</span> An unaudited policy
+        describes intentions, not systems
+      </li>
+    </ul>
+    <p>
+      The best policy is the one that is enforced by a
+      <strong class="hl-green">mechanism</strong>, so following it is the path
+      of least resistance.
+    </p>
+  </section>
+</section>
+<section>
+  <div class="toc" data-selected="3"></div>
+</section>
+<section>
+  <section>
+    <h2>You Cannot Fix Everything</h2>
+    <ul>
+      <li>
+        Budgets are finite and vulnerabilities are not. Risk management is the
+        discipline of
+        <strong class="hl-orange">deciding what not to fix</strong>
+      </li>
+      <li>
+        <span class="hl-green">Risk = likelihood × impact</span>, on the asset,
+        given the threat and the vulnerability
+      </li>
+      <li>The loop, from ISO 27005 and NIST SP 800-30:</li>
+      <ol>
+        <li>Identify — assets, threats, vulnerabilities</li>
+        <li>Analyse — how likely, how bad</li>
+        <li>Evaluate — compare against the appetite</li>
+        <li>Treat — do something about it</li>
+        <li>Monitor — because all four inputs move</li>
+      </ol>
+    </ul>
+  </section>
+  <section>
+    <h2>Qualitative or Quantitative?</h2>
+    <ul>
+      <li>
+        <span class="hl-orange">Qualitative</span> — high / medium / low on a
+        5×5 matrix
+      </li>
+      <ul>
+        <li>Fast, needs no data, and everyone can join in</li>
+        <li>
+          <em class="hl-red">"High" is not a number</em> — you cannot add two of
+          them, or compare across teams
+        </li>
+      </ul>
+      <li><span class="hl-cyan">Quantitative</span> — money per year</li>
+      <ul>
+        <li>Comparable, and speaks the language of the budget holder</li>
+        <li>Needs frequency data that most organizations simply do not have</li>
+      </ul>
+      <li>
+        In practice: qualitative to triage, quantitative for the few decisions
+        big enough to deserve it
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Putting a Number On It</h2>
+    <ul>
+      <li>
+        <span class="hl-orange">SLE</span> — single loss expectancy = asset
+        value × exposure factor
+      </li>
+      <li>
+        <span class="hl-green">ARO</span> — annualized rate of occurrence, how
+        many times a year
+      </li>
+      <li>
+        <span class="hl-cyan">ALE</span> — annualized loss expectancy = SLE ×
+        ARO
+      </li>
+    </ul>
+    <p>
+      The control is worth buying when it costs less than the ALE it removes.
+      That is the entire argument, and it can be written down.
+    </p>
+  </section>
+  <section class="hands-on">
+    <h2>The Control That Does Not Pay</h2>
+    <pre><code class="lang-python">
+asset_value  = 400_000      # the customer database, if it leaks
+exposure     = 0.35         # fraction of that value one breach destroys
+frequency    = 0.40         # breaches per year, from history
+
+sle = asset_value * exposure
+ale = sle * frequency
+    </code></pre>
+    <pre><code class="lang-text">
+SLE = 400,000 x 0.35      =      140,000
+ALE = 140,000 x 0.4       =       56,000 per year
+    </code></pre>
+  </section>
+  <section>
+    <h2>So Do We Buy It?</h2>
+    <pre><code class="lang-text">
+ALE after control              =       14,000 per year
+value of the control          =       42,000 per year
+cost of the control           =       60,000 per year
+net                           =      -18,000 per year
+    </code></pre>
+    <ul>
+      <li>
+        A control that works exactly as advertised, and it still
+        <strong class="hl-red">loses money</strong>
+      </li>
+      <li>
+        Now the argument is about the inputs — is the database really worth
+        400,000? — which is the argument worth having
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Four Things To Do With a Risk</h2>
+    <table style="font-size: 0.85em">
+      <tr>
+        <td class="hl-green"><strong>Avoid</strong></td>
+        <td>Stop doing the activity. Do not collect the data at all</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>Reduce</strong></td>
+        <td>Apply a control. The one everyone thinks of first</td>
+      </tr>
+      <tr>
+        <td class="hl-orange"><strong>Transfer</strong></td>
+        <td>Insurance, or a contract. Moves the cost, never the duty</td>
+      </tr>
+      <tr>
+        <td class="hl-violet"><strong>Accept</strong></td>
+        <td>Decide it is tolerable — in writing, with a named owner</td>
+      </tr>
+    </table>
+    <ul>
+      <li>
+        What is left after treatment is
+        <span class="hl-yellow">residual risk</span>, and someone senior has to
+        sign for it
+      </li>
+      <li>
+        <em class="hl-red">Ignoring</em> a risk is not accepting it. Accepting
+        it has a signature on it
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>What the Numbers Cannot Do</h2>
+    <ul>
+      <li>
+        Frequency for a rare, deliberate event is
+        <strong class="hl-red">not</strong> a frequency you can measure. An
+        adversary is not weather
+      </li>
+      <li>
+        Reputational and human impact resist pricing, and get left out of the
+        model precisely because they resist pricing
+      </li>
+      <li>
+        The model is a way to make assumptions
+        <span class="hl-green">explicit and arguable</span> — not an oracle
+      </li>
+    </ul>
+    <div class="box">
+      <p>All models are wrong, but some are useful. — George Box</p>
+    </div>
+  </section>
+</section>
+<section>
+  <div class="toc" data-selected="4"></div>
+</section>
+<section>
+  <section>
+    <h2>When It Happens Anyway</h2>
+    <ul>
+      <li>
+        <span class="hl-orange">Event</span> — anything observable ·
+        <span class="hl-yellow">Alert</span> — an event worth a look ·
+        <span class="hl-red">Incident</span> — an event that actually harmed the
+        properties
+      </li>
+      <li>
+        The four phases of NIST SP 800-61, and note that the middle one is a
+        loop
+      </li>
+      <ol>
+        <li><span class="hl-green">Preparation</span></li>
+        <li><span class="hl-cyan">Detection and analysis</span></li>
+        <li>
+          <span class="hl-orange">Containment, eradication and recovery</span>
+        </li>
+        <li><span class="hl-violet">Post-incident activity</span></li>
+      </ol>
+      <li>
+        Phase 1 is the only one you can do <em>today</em>, and it decides how
+        the other three go
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Preparation Is the Whole Game</h2>
+    <ul>
+      <li>
+        A named team, reachable <em>out of hours</em> and <em>out of band</em> —
+        if the corporate mail is compromised, do not run the response on
+        corporate mail
+      </li>
+      <li>
+        <span class="hl-green">Logs that already exist</span>, centralized, with
+        a retention long enough to cover the gap between breach and discovery
+      </li>
+      <li>
+        Decisions made in advance: who may disconnect production, who talks to
+        the press, when law enforcement is called
+      </li>
+      <li>
+        Rehearsed. A tabletop exercise finds the missing phone number before the
+        night you need it
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Containment Is a Trade-Off</h2>
+    <ul>
+      <li>
+        Pull the plug and you stop the damage —
+        <em class="hl-red">and destroy the evidence</em>, and tell the attacker
+        they are seen
+      </li>
+      <li>
+        Watch and learn and you keep the evidence — and the damage keeps running
+      </li>
+      <li>
+        <span class="hl-orange">Short-term</span> containment stops the
+        bleeding; <span class="hl-cyan">long-term</span> containment is the
+        clean rebuild
+      </li>
+      <li>
+        Eradication means the <strong>cause</strong> is gone, not the symptom.
+        Restoring a backup onto the same unpatched host is not eradication
+      </li>
+      <li>Preserve volatile evidence first: memory, then disk, then logs</li>
+    </ul>
+  </section>
+  <section>
+    <h2>Afterwards</h2>
+    <ul>
+      <li>
+        A post-incident review within two weeks, while people still remember
+      </li>
+      <li>
+        <span class="hl-green">Blameless.</span> The question is what let a
+        mistake become an incident, not who made it
+      </li>
+      <ul>
+        <li>
+          Blame produces silence, and silence is how the next one goes
+          undetected
+        </li>
+      </ul>
+      <li>Output is a small number of dated actions with owners</li>
+      <li>
+        Feed it back into the risk register — an incident is
+        <em class="hl-cyan">measured</em> frequency data, the thing the model
+        was missing
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Business Continuity</h2>
+    <ul>
+      <li>
+        Incident response saves the system. Business continuity keeps the
+        <strong class="hl-orange">organization running</strong> while the system
+        is gone
+      </li>
+      <li>
+        It starts with a <span class="hl-green">Business Impact Analysis</span>:
+        which processes matter, and how long can each be down
+      </li>
+      <li>Two numbers per process, and they are not the same number</li>
+      <ul>
+        <li>
+          <span class="hl-cyan">RTO</span> — recovery time objective: how long
+          until it is back
+        </li>
+        <li>
+          <span class="hl-violet">RPO</span> — recovery point objective: how
+          much data you can afford to lose
+        </li>
+      </ul>
+      <li>
+        An RPO of one hour means backups every hour. The number
+        <em>is</em> the requirement
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Backups, Honestly</h2>
+    <ul>
+      <li>
+        <span class="hl-orange">3-2-1</span> — three copies, on two kinds of
+        media, one of them off-site
+      </li>
+      <li>
+        At least one copy <strong class="hl-green">offline or immutable</strong>
+        — ransomware looks for the backup server first, and it is usually
+        reachable with the same credentials
+      </li>
+      <li>
+        <em class="hl-red">An untested backup is not a backup.</em> Restore one
+        on a schedule, and time it — that measured time is your real RTO
+      </li>
+      <li>
+        Encrypt them. A backup tape is a copy of everything, in a box, in a van
+      </li>
+    </ul>
+  </section>
+</section>
+<section>
+  <h2>Where This Leaves Us</h2>
+  <ul>
+    <li>
+      We can now name a requirement as a <span class="hl-orange">service</span>,
+      write it as <span class="hl-green">policy</span>, justify it with
+      <span class="hl-cyan">risk</span>, and plan for the day it fails
+    </li>
+    <li>
+      Every one of those services eventually rests on the same small set of
+      <strong class="hl-violet">mechanisms</strong> — and most of those are
+      cryptography
+    </li>
+  </ul>
+  <div class="box">
+    <p>
+      Next: the toolbox. What encryption, hashing and signatures actually
+      guarantee — and what they do not.
+    </p>
+  </div>
+</section>
