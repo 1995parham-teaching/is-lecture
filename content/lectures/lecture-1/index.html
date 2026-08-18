@@ -1,0 +1,706 @@
+---
+index: 1
+title: Introduction
+topics:
+  - Instructor
+  - Course Overview
+  - Security Properties
+  - Threats & Attacks
+  - Defence in Depth
+  - Course Policies
+draft: false
+---
+
+<section>
+  <div class="toc"></div>
+</section>
+<section>
+  <div class="toc" data-selected="0"></div>
+</section>
+<section>
+  <section>
+    <h2>Parham Alvani</h2>
+    <p style="text-align: center">
+      <a href="https://1995parham.github.io/">1995parham.github.io</a>
+    </p>
+    <p style="text-align: center">
+      <span class="hl-orange">9 years</span> building backend systems
+      <br />
+      <span class="hl-green">4 of them</span> on platform and infrastructure
+    </p>
+    <img
+      src="img/1995parham-logo-dark.png"
+      alt="Parham Alvani’s logo"
+      width="600"
+    />
+  </section>
+  <section>
+    <h2>How to Reach Me</h2>
+    <h3>
+      <span class="hl-green">parham</span>
+      <span class="hl-orange">[dot]</span>
+      <span class="hl-green">alvani</span>
+      <span class="hl-orange">[at]</span>
+      <span class="hl-cyan">gmail</span>
+      <span class="hl-orange">[dot]</span>
+      <span class="hl-cyan">com</span>
+    </h3>
+    <ul>
+      <li>
+        Start the subject with <span class="hl-orange">[IS]</span>, then say
+        what it is about
+      </li>
+      <li>
+        Include your <span class="hl-green">student ID</span> — it is how
+        anything about grades gets looked up
+      </li>
+      <li>
+        One question per email. Long threads get lost; short ones get answered
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h3>No instant messaging</h3>
+    <h2><span class="hl-orange">Email</span> is awesome</h2>
+    <ul>
+      <li>
+        <span class="hl-green">Searchable</span> — you can find what I said
+        three months ago
+      </li>
+      <li>
+        <span class="hl-cyan">Asynchronous</span> — neither of us owes the other
+        an answer at 2am
+      </li>
+      <li>
+        <span class="hl-yellow">On the record</span> — “but you said the
+        deadline moved” becomes checkable
+      </li>
+    </ul>
+  </section>
+</section>
+<section>
+  <div class="toc" data-selected="1"></div>
+</section>
+<section>
+  <h2>This Course</h2>
+  <ul>
+    <li>
+      Security is not a feature you add. It is a
+      <span class="hl-orange">property of the whole system</span>, and it is
+      only as good as its worst part
+    </li>
+    <li>Four questions we keep coming back to</li>
+    <ul>
+      <li>What are we protecting, and from whom?</li>
+      <li>What could go wrong, and how badly?</li>
+      <li>What does the defence cost — in money, and in usability?</li>
+      <li>How do we know it is working?</li>
+    </ul>
+    <li>
+      Engineer's approach: understand the mechanism, then decide where to spend
+    </li>
+  </ul>
+</section>
+<section>
+  <h2>What This Course Is Not</h2>
+  <ul>
+    <li>
+      <strong class="hl-red">Not</strong> a list of tools to run against
+      machines you do not own
+    </li>
+    <ul>
+      <li>
+        Every attack here is taught so you can <em>defend</em> against it — you
+        cannot defend what you do not understand
+      </li>
+    </ul>
+    <li>
+      <strong class="hl-red">Not</strong> a cryptography course. We use
+      cryptography as a <span class="hl-green">toolbox</span>; we do not prove
+      it secure
+    </li>
+    <ul>
+      <li>
+        The rule for this course:
+        <em class="hl-cyan">never invent your own</em>
+      </li>
+    </ul>
+    <li>
+      <strong class="hl-red">Not</strong> a product catalogue. Vendors and
+      version numbers change; the failure modes do not
+    </li>
+  </ul>
+</section>
+<section>
+  <h2>Prerequisites</h2>
+  <ul>
+    <li>
+      <span class="hl-orange">Computer networks</span> — you should be able to
+      read an IP header and explain what a port is
+    </li>
+    <li>
+      <span class="hl-orange">Operating systems</span> — processes, users, file
+      permissions, the kernel/user split
+    </li>
+    <li>
+      <span class="hl-orange">Programming</span> — enough to read C, Go and a
+      little Python. You will not be asked to write much
+    </li>
+    <li>Everything else is introduced here, including all the cryptography</li>
+  </ul>
+</section>
+<section>
+  <div class="toc" data-selected="2"></div>
+</section>
+<section>
+  <section>
+    <h2>What Are We Protecting?</h2>
+    <p>
+      Before any mechanism, name the property. Almost every requirement in this
+      course is one of three.
+    </p>
+    <table>
+      <tr>
+        <td class="hl-orange"><strong>Confidentiality</strong></td>
+        <td>Only those authorized can <em>read</em> it</td>
+      </tr>
+      <tr>
+        <td class="hl-green"><strong>Integrity</strong></td>
+        <td>Only those authorized can <em>change</em> it — and you can tell</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>Availability</strong></td>
+        <td>
+          Those authorized can actually <em>use</em> it, when they need to
+        </td>
+      </tr>
+    </table>
+    <p>
+      The <strong>CIA triad</strong>. Every control we meet serves one of them.
+    </p>
+  </section>
+  <section>
+    <h2>The Same System, Three Failures</h2>
+    <p>A university grade database:</p>
+    <ul>
+      <li>
+        <span class="hl-orange">Confidentiality</span> — a student reads
+        everyone else's grades
+      </li>
+      <li>
+        <span class="hl-green">Integrity</span> — a student changes their own
+        grade from 12 to 20
+      </li>
+      <li>
+        <span class="hl-cyan">Availability</span> — nobody can submit grades on
+        the day of the deadline
+      </li>
+    </ul>
+    <p>
+      Which is worst? <em>It depends on the system</em> — and deciding that is
+      called <strong class="hl-yellow">risk management</strong> (lecture 2).
+    </p>
+  </section>
+  <section>
+    <h2>Three Is Not Always Enough</h2>
+    <ul>
+      <li>
+        <span class="hl-orange">Authenticity</span> — this really did come from
+        who it claims to
+      </li>
+      <li>
+        <span class="hl-green">Non-repudiation</span> — and the sender cannot
+        later deny it
+      </li>
+      <ul>
+        <li>Needs a <em>digital signature</em>, not just a MAC (lecture 3)</li>
+      </ul>
+      <li>
+        <span class="hl-cyan">Accountability</span> — every action traces back
+        to a responsible identity
+      </li>
+      <li>
+        <span class="hl-violet">Privacy</span> — the subject keeps control over
+        data about them, which is not the same as confidentiality
+      </li>
+    </ul>
+    <p>
+      FIPS 199 defines confidentiality, integrity and availability; authenticity
+      and accountability are added by NIST SP 800-33.
+    </p>
+  </section>
+  <section class="hands-on">
+    <h2>Integrity, in One Command</h2>
+    <pre><code class="lang-sh">
+$ cat order.txt
+transfer 100 USD to alice
+
+$ shasum -a 256 order.txt
+918e1e440fd83a713e79f2bcfcdecedb1145a7e94dba18ae71c9a9f886a7bb26  order.txt
+
+$ sed -i '' s/100/900/ order.txt      # change one character
+
+$ shasum -a 256 order.txt
+73d418b01e29a3ec522895c90d805794864d516a5603644e426adbd21a3111d9  order.txt
+    </code></pre>
+    <p>
+      One digit moved, and <strong class="hl-green">every</strong> digit of the
+      digest moved with it. That is what "you can tell" means.
+    </p>
+  </section>
+  <section>
+    <h2>But Who Guards the Digest?</h2>
+    <ul>
+      <li>
+        An attacker who can rewrite the file can rewrite the digest next to it
+      </li>
+      <li>
+        A hash gives integrity against <em class="hl-orange">accident</em>; it
+        takes a key to get integrity against an
+        <strong class="hl-red">adversary</strong>
+      </li>
+      <li>
+        This pattern repeats all term: a mechanism only moves the problem, and
+        the question is <em>where it moved to</em>
+      </li>
+    </ul>
+    <div class="box">
+      <p>Security is not a product, but a process. — Bruce Schneier, 2000</p>
+    </div>
+  </section>
+</section>
+<section>
+  <div class="toc" data-selected="3"></div>
+</section>
+<section>
+  <section>
+    <h2>Say It Precisely</h2>
+    <p>These four words are used interchangeably in the press. Not here.</p>
+    <table style="font-size: 0.85em">
+      <tr>
+        <td class="hl-orange"><strong>Asset</strong></td>
+        <td>Something with value: data, a service, a reputation</td>
+      </tr>
+      <tr>
+        <td class="hl-yellow"><strong>Vulnerability</strong></td>
+        <td>A weakness in the asset or its controls</td>
+      </tr>
+      <tr>
+        <td class="hl-red"><strong>Threat</strong></td>
+        <td>A potential cause of harm — needs an actor and a motive</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>Attack</strong></td>
+        <td>A threat that someone actually carried out</td>
+      </tr>
+      <tr>
+        <td class="hl-green"><strong>Risk</strong></td>
+        <td>How likely, and how bad — the number we manage</td>
+      </tr>
+    </table>
+    <p>
+      A vulnerability with no threat is a curiosity. A threat with no
+      vulnerability is noise.
+    </p>
+  </section>
+  <section>
+    <h2>Passive and Active</h2>
+    <p>The oldest useful split, and it is the one X.800 uses:</p>
+    <ul>
+      <li>
+        <span class="hl-orange">Passive</span> — the attacker only
+        <em>observes</em>. Nothing changes, so there is nothing to notice
+      </li>
+      <ul>
+        <li>Release of message contents · traffic analysis</li>
+        <li>
+          You cannot detect it; you
+          <strong class="hl-green">prevent</strong> it, with encryption
+        </li>
+      </ul>
+      <li>
+        <span class="hl-red">Active</span> — the attacker <em>modifies</em> the
+        stream or fakes one
+      </li>
+      <ul>
+        <li>Masquerade · replay · modification · denial of service</li>
+        <li>
+          You cannot prevent all of it; you
+          <strong class="hl-green">detect</strong> it and recover
+        </li>
+      </ul>
+    </ul>
+  </section>
+  <section>
+    <h2>Traffic Analysis Is Not Nothing</h2>
+    <ul>
+      <li>
+        Encryption hides <em>what</em> was said. It does not hide
+        <strong class="hl-orange">that</strong> it was said
+      </li>
+      <li>
+        Who talked to whom, when, how often, how much — the
+        <span class="hl-cyan">metadata</span>
+      </li>
+      <li>
+        A phone that contacts an oncology clinic weekly has leaked something,
+        and every byte was encrypted
+      </li>
+      <li>
+        Countermeasures are expensive: traffic padding, cover traffic, mixing.
+        This is why they are rare
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Who Is the Attacker?</h2>
+    <p>
+      "A hacker" is not a threat model. The defence depends entirely on the
+      budget on the other side.
+    </p>
+    <table style="font-size: 0.8em">
+      <tr>
+        <td class="hl-green"><strong>Opportunist</strong></td>
+        <td>Automated scanning. Takes whatever is unpatched and reachable</td>
+      </tr>
+      <tr>
+        <td class="hl-yellow"><strong>Insider</strong></td>
+        <td>Already authenticated, already inside. Hardest to stop</td>
+      </tr>
+      <tr>
+        <td class="hl-orange"><strong>Organized crime</strong></td>
+        <td>Ransomware, fraud. Follows the money and is patient</td>
+      </tr>
+      <tr>
+        <td class="hl-red"><strong>State actor</strong></td>
+        <td>Buys zero-days, targets supply chains, will not give up</td>
+      </tr>
+    </table>
+    <p>
+      Defending against all four to the same standard is how budgets are wasted.
+    </p>
+  </section>
+  <section>
+    <h2>Attack Surface</h2>
+    <ul>
+      <li>
+        Every place untrusted input can reach your system: open ports, HTTP
+        parameters, file uploads, USB slots, help desk staff
+      </li>
+      <li>
+        The first and cheapest defence is always to
+        <strong class="hl-green">make it smaller</strong>
+      </li>
+      <ul>
+        <li>Turn the service off · close the port · remove the feature</li>
+        <li>Code that is not there has no vulnerabilities</li>
+      </ul>
+      <li>
+        <span class="hl-orange">Attack tree</span>: put the goal at the root,
+        the ways to reach it beneath, and keep asking "how?" until the leaves
+        are things a person could actually do
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>STRIDE</h2>
+    <p>A checklist for "what could go wrong here", one letter per property:</p>
+    <table style="font-size: 0.8em">
+      <tr>
+        <td class="hl-orange"><strong>S</strong>poofing</td>
+        <td>pretending to be someone</td>
+        <td>→ authenticity</td>
+      </tr>
+      <tr>
+        <td class="hl-orange"><strong>T</strong>ampering</td>
+        <td>changing data</td>
+        <td>→ integrity</td>
+      </tr>
+      <tr>
+        <td class="hl-green"><strong>R</strong>epudiation</td>
+        <td>denying you did it</td>
+        <td>→ non-repudiation</td>
+      </tr>
+      <tr>
+        <td class="hl-green"><strong>I</strong>nformation disclosure</td>
+        <td>reading what you should not</td>
+        <td>→ confidentiality</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>D</strong>enial of service</td>
+        <td>taking it away</td>
+        <td>→ availability</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>E</strong>levation of privilege</td>
+        <td>becoming admin</td>
+        <td>→ authorization</td>
+      </tr>
+    </table>
+    <p>Walk a data-flow diagram and ask all six at every boundary.</p>
+  </section>
+</section>
+<section>
+  <div class="toc" data-selected="4"></div>
+</section>
+<section>
+  <section>
+    <h2>No Single Wall</h2>
+    <ul>
+      <li>
+        Every control fails eventually — it is misconfigured, out of date, or
+        simply bypassed
+      </li>
+      <li>
+        <span class="hl-orange">Defence in depth</span>: arrange controls so
+        that no single failure is fatal
+      </li>
+      <li>
+        The castle analogy is popular and slightly wrong: a moat only helps if
+        the attacker comes by the gate. Most arrive by email
+      </li>
+    </ul>
+    <div class="box">
+      <p>
+        Assume the outer layer is already broken. What does the next one do?
+      </p>
+    </div>
+  </section>
+  <section>
+    <h2>The Layers</h2>
+    <table style="font-size: 0.8em">
+      <tr>
+        <td class="hl-violet"><strong>Physical</strong></td>
+        <td>Locks, racks, guards. Console access beats every other control</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>Network</strong></td>
+        <td>Zoning, firewalls, VPN, segmentation — lecture 7</td>
+      </tr>
+      <tr>
+        <td class="hl-green"><strong>Host</strong></td>
+        <td>Hardening, patching, anti-malware, host IDS — lecture 5</td>
+      </tr>
+      <tr>
+        <td class="hl-yellow"><strong>Application</strong></td>
+        <td>Input handling, authentication, session management — lecture 6</td>
+      </tr>
+      <tr>
+        <td class="hl-orange"><strong>Data</strong></td>
+        <td>Encryption at rest and in transit, key management — lecture 3</td>
+      </tr>
+      <tr>
+        <td class="hl-red"><strong>People</strong></td>
+        <td>Training, policy, process. The layer that is always attacked</td>
+      </tr>
+    </table>
+  </section>
+  <section>
+    <h2>Four Kinds of Mechanism</h2>
+    <p>
+      Whatever the layer, a control does one of four jobs. A programme with only
+      the first is not a programme.
+    </p>
+    <ul>
+      <li>
+        <span class="hl-green">Prevent</span> — stop it happening. Access
+        control, encryption, input validation
+      </li>
+      <li>
+        <span class="hl-yellow">Detect</span> — notice that it happened. Logs,
+        IDS, file-integrity monitoring
+      </li>
+      <li>
+        <span class="hl-orange">Respond</span> — contain it. Isolate the host,
+        revoke the key, block the address
+      </li>
+      <li>
+        <span class="hl-cyan">Recover</span> — get back to normal. Backups,
+        failover, the rebuild you have actually rehearsed
+      </li>
+    </ul>
+    <p>
+      Prevention is preferred, detection is mandatory, recovery is survival.
+    </p>
+  </section>
+  <section>
+    <h2>Principles Worth Memorizing</h2>
+    <ul>
+      <li>
+        <span class="hl-green">Least privilege</span> — every subject gets the
+        rights it needs, and no more
+      </li>
+      <li>
+        <span class="hl-green">Fail safe defaults</span> — deny unless
+        explicitly allowed
+      </li>
+      <li>
+        <span class="hl-cyan">Economy of mechanism</span> — a simple design is
+        one you can actually check
+      </li>
+      <li>
+        <span class="hl-cyan">Complete mediation</span> — check every access,
+        not just the first
+      </li>
+      <li>
+        <span class="hl-orange">Open design</span> — security must not depend on
+        the design being secret
+      </li>
+      <li>
+        <span class="hl-orange">Separation of privilege</span> — two keys are
+        better than one
+      </li>
+      <li>
+        <span class="hl-yellow">Least common mechanism</span> ·
+        <span class="hl-yellow">psychological acceptability</span>
+      </li>
+    </ul>
+    <p>Saltzer and Schroeder, 1975. They have not needed revising.</p>
+  </section>
+  <section>
+    <h2>The Awkward Truths</h2>
+    <ul>
+      <li>
+        <strong class="hl-red">The attacker only has to be right once.</strong>
+        You have to be right every time — but you also get to watch, and they do
+        not
+      </li>
+      <li>
+        <span class="hl-orange">Security is a trade-off.</span> A control that
+        makes the job impossible will be worked around, and then you have
+        neither security nor the control
+      </li>
+      <li>
+        <span class="hl-cyan">Complexity is the enemy.</span> Every feature,
+        dependency and integration is more surface
+      </li>
+      <li>
+        <span class="hl-green">There is no perfect.</span> The goal is to make
+        the attack cost more than the asset is worth
+      </li>
+    </ul>
+  </section>
+</section>
+<section>
+  <div class="toc" data-selected="5"></div>
+</section>
+<section>
+  <h2>Syllabus</h2>
+  <ol style="font-size: 0.85em">
+    <li><strong>Introduction</strong> — concepts, threats, attacks, layers</li>
+    <li>
+      <strong>Security Architecture</strong> — X.800, policy, risk, incidents
+    </li>
+    <li>
+      <strong>Cryptography</strong> — symmetric, public key, signatures, PKI
+    </li>
+    <li>
+      <strong>Access Control</strong> — AAAA, DAC/MAC/RBAC, authentication,
+      biometrics
+    </li>
+    <li>
+      <strong>System &amp; Software Security</strong> — file systems, malware,
+      host defences, virtualization
+    </li>
+    <li>
+      <strong>Web Security</strong> — server side, client side, sessions, TLS
+    </li>
+    <li>
+      <strong>Network &amp; Transport Security</strong> — zoning, edge, VPN,
+      VLAN
+    </li>
+  </ol>
+  <p>
+    Lectures 1–2 build the vocabulary, 3–4 the tools, 5–7 spend them on real
+    systems.
+  </p>
+</section>
+<section>
+  <h2>Grading</h2>
+  <table>
+    <tr>
+      <td class="hl-orange"><strong>35%</strong></td>
+      <td>Midterm exam</td>
+    </tr>
+    <tr>
+      <td class="hl-orange"><strong>35%</strong></td>
+      <td>Final exam</td>
+    </tr>
+    <tr>
+      <td class="hl-green"><strong>30%</strong></td>
+      <td>Homework and hands-on assignments</td>
+    </tr>
+  </table>
+  <ul>
+    <li>
+      A <span class="hl-yellow">40% minimum</span> on each exam, independent of
+      the total
+    </li>
+    <li>The hands-on work is where the material actually lands. Do it</li>
+  </ul>
+</section>
+<section>
+  <h2>The Lab Rule</h2>
+  <div class="box">
+    <p>
+      Only ever attack a system you own, or one whose owner has given you
+      written permission.
+    </p>
+  </div>
+  <ul>
+    <li>
+      Every exercise in this course runs against
+      <span class="hl-green">your own machine</span> or a target we provide
+    </li>
+    <li>
+      Scanning, probing or exploiting university, ISP or third-party systems is
+      not coursework — it is a
+      <strong class="hl-red">criminal offence</strong>, and it will be treated
+      as one
+    </li>
+    <li>
+      Unsure whether something is in bounds?
+      <em class="hl-cyan">Ask before you run it</em>, not after
+    </li>
+  </ul>
+</section>
+<section>
+  <h2>Academic Honesty</h2>
+  <ul>
+    <li>
+      Discuss ideas freely. <strong class="hl-orange">Write your own</strong>
+      answers and your own code
+    </li>
+    <li>
+      Cite what you used — a source, a tool, a model. Citing costs nothing;
+      hiding it costs the assignment
+    </li>
+    <li>
+      Copied work scores zero for
+      <em class="hl-red">everyone involved</em>, including whoever shared it
+    </li>
+  </ul>
+  <p>
+    The subject of this course is trust. It would be strange to start by
+    breaking it.
+  </p>
+</section>
+<section>
+  <h2>Next: Security Architecture</h2>
+  <ul>
+    <li>
+      We now have the vocabulary. Lecture 2 turns it into a
+      <span class="hl-orange">standard</span> one — X.800 — so that "we need
+      integrity here" names a specific service and a specific mechanism
+    </li>
+    <li>
+      Then: how an organization writes that down as
+      <span class="hl-green">policy</span>, decides where to spend using
+      <span class="hl-cyan">risk management</span>, and what it does on the day
+      it goes wrong
+    </li>
+  </ul>
+  <div class="box">
+    <p>Name the property. Name the threat. Then pick the mechanism.</p>
+  </div>
+</section>
