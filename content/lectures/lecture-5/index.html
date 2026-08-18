@@ -1,0 +1,657 @@
+---
+index: 5
+title: System & Software Security
+topics:
+  - Operating System Security
+  - File System Security
+  - Malware
+  - Software Security
+  - Host Defences
+  - Virtualization
+draft: false
+---
+
+<section>
+  <div class="toc"></div>
+</section>
+<section>
+  <div class="toc" data-selected="0"></div>
+</section>
+<section>
+  <section>
+    <h2>One Machine, Many Tenants</h2>
+    <ul>
+      <li>
+        An operating system exists to let mutually distrusting programs share
+        one machine. That is a <em class="hl-orange">security</em> job before it
+        is a convenience
+      </li>
+      <li>
+        Everything rests on a hardware boundary the software cannot talk its way
+        past: <span class="hl-green">user mode</span> and
+        <span class="hl-red">kernel mode</span>
+      </li>
+      <li>
+        A user-mode program cannot touch another process's memory, a device, or
+        the page tables. It can only <strong>ask</strong>, through a system call
+      </li>
+      <li>
+        The system-call boundary is therefore the most attacked interface on the
+        machine
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Trusted Computing Base</h2>
+    <ul>
+      <li>
+        The <span class="hl-orange">TCB</span> is everything that has to be
+        correct for the security policy to hold
+      </li>
+      <li>Kernel, drivers, firmware, the bootloader, every setuid binary</li>
+      <li>
+        A bug <em>inside</em> the TCB defeats the policy. A bug outside it does
+        not — that is the entire reason for drawing the line
+      </li>
+      <li>
+        So: <strong class="hl-green">keep it small</strong>. A driver from an
+        unknown vendor is in your TCB with full kernel rights
+      </li>
+    </ul>
+    <div class="box">
+      <p>
+        Lecture 2 called this "trusted functionality" and told you to keep it
+        small. This is what it looks like in practice.
+      </p>
+    </div>
+  </section>
+  <section>
+    <h2>The Reference Monitor</h2>
+    <ul>
+      <li>The idealised access-control enforcer. Three requirements:</li>
+      <ul>
+        <li>
+          <span class="hl-orange">Complete mediation</span> — every access goes
+          through it, with no side door
+        </li>
+        <li>
+          <span class="hl-green">Tamper-proof</span> — nothing it governs can
+          modify it
+        </li>
+        <li>
+          <span class="hl-cyan">Verifiable</span> — small enough that it can be
+          analysed
+        </li>
+      </ul>
+      <li>
+        Real kernels approximate all three and achieve none exactly, which is
+        why the rest of this lecture exists
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Hardening</h2>
+    <ul>
+      <li>
+        <span class="hl-green">Patch.</span> The overwhelming majority of
+        compromises use a vulnerability that had a fix available
+      </li>
+      <li>
+        <span class="hl-green">Remove.</span> Uninstall what is not used;
+        disable the services that start by default
+      </li>
+      <li>
+        <span class="hl-cyan">Separate.</span> One service per account, none of
+        them root
+      </li>
+      <li>
+        <span class="hl-cyan">Default deny</span> on the host firewall, inbound
+        and outbound
+      </li>
+      <li>
+        <span class="hl-orange">Measure.</span> A benchmark you can re-run — the
+        CIS Benchmarks exist for exactly this
+      </li>
+    </ul>
+    <p>Unglamorous, and it beats every product you could buy instead.</p>
+  </section>
+</section>
+<section>
+  <div class="toc" data-selected="1"></div>
+</section>
+<section>
+  <section>
+    <h2>The File System Is the Database</h2>
+    <ul>
+      <li>
+        Configuration, credentials, keys, logs and the data itself all live in
+        one namespace governed by one mechanism
+      </li>
+      <li>Lecture 4 gave the model. Here it is the operational detail:</li>
+      <ul>
+        <li>
+          Sensitive files should be <code>0600</code>, owned by the service
+          account
+        </li>
+        <li>
+          Directories need <code>x</code> to traverse — a permissive parent
+          undoes a strict child
+        </li>
+        <li>
+          Audit setuid binaries. Each one is a place a local user becomes
+          another user
+        </li>
+      </ul>
+      <li>
+        The mistakes that recur: a world-readable key, a backup written with the
+        wrong <code>umask</code>, a config committed to git
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Encryption at Rest</h2>
+    <ul>
+      <li>
+        <span class="hl-orange">Full-disk encryption</span> — FileVault, LUKS,
+        BitLocker. Protects against the <strong>stolen laptop</strong> and the
+        discarded disk
+      </li>
+      <li>
+        Be precise about what it does not do: once the machine is
+        <em>running and unlocked</em>, every file is readable by anyone who is
+        on it. It defends a powered-off device
+      </li>
+      <li>
+        <span class="hl-green">File- or field-level encryption</span> narrows
+        the window further, at the cost of key management in the application
+      </li>
+      <li>
+        The key has to live somewhere: a TPM or secure enclave, released to the
+        boot process — not a passphrase in a script beside the disk
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Knowing When It Changed</h2>
+    <ul>
+      <li>
+        <span class="hl-orange">File integrity monitoring</span>: hash the files
+        that should never change, and compare on a schedule
+      </li>
+      <li>Binaries, configuration, cron jobs, startup scripts, the web root</li>
+      <li>
+        The baseline has to be stored where the attacker cannot reach it, or
+        they will update it along with the file — the lecture 1 problem again
+      </li>
+      <li>
+        Tripwire and AIDE do this. So does a package manager verifying its own
+        database, which most systems already have
+      </li>
+    </ul>
+  </section>
+</section>
+<section>
+  <div class="toc" data-selected="2"></div>
+</section>
+<section>
+  <section>
+    <h2>Malware, Sorted</h2>
+    <p>Sort by <em>how it spreads</em>, not by what it does:</p>
+    <table style="font-size: 0.8em">
+      <tr>
+        <td class="hl-orange"><strong>Virus</strong></td>
+        <td>Attaches to a host file. Needs a user to run it</td>
+      </tr>
+      <tr>
+        <td class="hl-red"><strong>Worm</strong></td>
+        <td>Self-propagating over the network. Needs nobody</td>
+      </tr>
+      <tr>
+        <td class="hl-yellow"><strong>Trojan</strong></td>
+        <td>Useful-looking, and the user installs it deliberately</td>
+      </tr>
+      <tr>
+        <td class="hl-violet"><strong>Rootkit</strong></td>
+        <td>Hides the others, usually by lying to the kernel</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>Bot</strong></td>
+        <td>Waits for orders from a command-and-control server</td>
+      </tr>
+    </table>
+    <p>
+      Then, separately, the <span class="hl-green">payload</span>: ransomware,
+      spyware, a miner, a wiper, a keylogger. Any spreader can carry any
+      payload.
+    </p>
+  </section>
+  <section>
+    <h2>Why the Worm Is Different</h2>
+    <ul>
+      <li>
+        Everything else moves at human speed. A worm moves at
+        <strong class="hl-red">network speed</strong>
+      </li>
+      <li>
+        <span class="hl-orange">Morris, 1988</span> — a few thousand hosts, and
+        it took down a noticeable fraction of the internet that existed
+      </li>
+      <li>
+        <span class="hl-orange">Slammer, 2003</span> — a single UDP packet, no
+        disk footprint, doubling every 8.5 seconds
+      </li>
+      <li>
+        <span class="hl-orange">WannaCry, 2017</span> — ransomware payload on a
+        worm spreader, using a leaked SMB exploit.
+        <em class="hl-yellow">A patch had been available for two months</em>
+      </li>
+      <li>
+        The defence is not detection. It is
+        <span class="hl-green">patching</span> and
+        <span class="hl-green">segmentation</span> — nothing human is fast
+        enough to respond
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Ransomware, Because It Is What You Will Meet</h2>
+    <ul>
+      <li>Encrypt the victim's files, sell the key. Purely a business model</li>
+      <li>
+        It is <em>good</em> cryptography used against you — asymmetric, so the
+        key you need was never on your machine
+      </li>
+      <li>
+        The modern version is <span class="hl-red">double extortion</span>: the
+        data is exfiltrated first, so paying nothing means publication and
+        paying anyway means trusting a criminal
+      </li>
+      <li>
+        The attack targets your
+        <strong class="hl-orange">backups first</strong>, because it knows that
+        is the defence
+      </li>
+      <li>
+        Which makes the lecture 2 rule the technical control that matters here:
+        one copy <em class="hl-green">offline or immutable</em>
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Detecting It</h2>
+    <ul>
+      <li>
+        <span class="hl-orange">Signature</span> — match known bytes. Exact, and
+        useless against anything new
+      </li>
+      <ul>
+        <li>
+          Defeated by <em>polymorphic</em> malware, which re-encrypts itself per
+          copy, and <em>metamorphic</em>, which rewrites its own instructions
+        </li>
+      </ul>
+      <li>
+        <span class="hl-green">Heuristic</span> — suspicious structure. Catches
+        variants, and raises false alarms
+      </li>
+      <li>
+        <span class="hl-cyan">Behavioural</span> — watch what it does when it
+        runs. Enumerating and encrypting every document is hard to disguise,
+        because it is the goal
+      </li>
+      <li>
+        <span class="hl-violet">Sandbox</span> — run it somewhere disposable
+        first. Malware checks whether it is in one, so this is an arms race
+      </li>
+    </ul>
+  </section>
+</section>
+<section>
+  <div class="toc" data-selected="3"></div>
+</section>
+<section>
+  <section>
+    <h2>The Oldest Bug</h2>
+    <ul>
+      <li>
+        C will happily write past the end of an array. Nothing checks, because
+        checking costs a cycle
+      </li>
+      <li>
+        The bytes past the end are not empty. They are
+        <strong class="hl-red">the next thing in memory</strong>
+      </li>
+      <li>
+        So the attacker's input stops being data and starts being
+        <em class="hl-orange">state</em> — which is lecture 6's rule, one layer
+        down
+      </li>
+    </ul>
+    <pre><code class="lang-c">
+struct session {
+  char name[16];
+  int  is_admin;      /* the next field in memory */
+};
+    </code></pre>
+  </section>
+  <section class="hands-on">
+    <h2>Sixteen Bytes Is Sixteen Bytes</h2>
+    <pre><code class="lang-c">
+struct session s;
+s.is_admin = 0;
+strcpy(s.name, argv[1]);            /* no bound check */
+printf("name=%-24s is_admin=%d\n", s.name, s.is_admin);
+    </code></pre>
+    <pre><code class="lang-text">
+$ ./login parham
+name=parham                   is_admin=0
+
+$ ./login AAAAAAAAAAAAAAAAAAAA
+name=AAAAAAAAAAAAAAAAAAAA     is_admin=1094795585
+    </code></pre>
+    <p>
+      1094795585 is <code class="hl-orange">0x41414141</code> — four of the
+      letter <code>A</code>. The name overflowed straight into the flag.
+    </p>
+  </section>
+  <section>
+    <h2>And With a Little Aim</h2>
+    <pre><code class="lang-text">
+$ ./login "AAAAAAAAAAAAAAAA$(printf '\x01')"
+name=AAAAAAAAAAAAAAAA        is_admin=1
+    </code></pre>
+    <ul>
+      <li>
+        Sixteen bytes of filler and one chosen byte. The program is now
+        <strong class="hl-red">an administrator</strong>
+      </li>
+      <li>
+        Nothing was hacked. <code>strcpy</code> did exactly what it is
+        documented to do
+      </li>
+      <li>
+        On the stack the interesting neighbour is not a flag but the
+        <span class="hl-orange">return address</span> — overwrite that and you
+        choose where the function returns to
+      </li>
+    </ul>
+  </section>
+  <section class="hands-on">
+    <h2>The Same Source, Compiled Defensively</h2>
+    <pre><code class="lang-sh">
+$ cc -O0 -o login-hardened login.c        # the defaults
+$ ./login-hardened AAAAAAAAAAAAAAAAAAAA
+exit=133          # SIGTRAP — __strcpy_chk knew the buffer was 16 bytes
+
+$ cc -O0 -fstack-protector-all -o login-canary login.c
+$ ./login-canary AAAA…40 bytes
+exit=134          # SIGABRT — the canary was overwritten
+    </code></pre>
+    <ul>
+      <li>Not one line of the program changed. The compiler did the work</li>
+      <li>
+        Both mitigations turn a silent privilege escalation into a
+        <em class="hl-green">crash</em> — which is a denial of service, and an
+        enormous improvement
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Layers of Mitigation</h2>
+    <table style="font-size: 0.8em">
+      <tr>
+        <td class="hl-green"><strong>Stack canary</strong></td>
+        <td>A random value before the return address, checked on return</td>
+      </tr>
+      <tr>
+        <td class="hl-green"><strong>NX / DEP</strong></td>
+        <td>Writable memory is not executable, so injected bytes cannot run</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>ASLR</strong></td>
+        <td>Randomize the layout, so the attacker cannot name an address</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>FORTIFY_SOURCE</strong></td>
+        <td>The compiler knows the buffer size and checks at run time</td>
+      </tr>
+      <tr>
+        <td class="hl-violet"><strong>CFI</strong></td>
+        <td>Indirect calls must land on a legitimate target</td>
+      </tr>
+    </table>
+    <ul>
+      <li>
+        Each raises the cost; none is a fix. NX produced
+        <em class="hl-orange">return-oriented programming</em>, which builds the
+        payload out of code already in the binary
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>The Actual Fix</h2>
+    <ul>
+      <li>
+        <span class="hl-green">Use a memory-safe language</span> where you can.
+        Go, Rust, Java, Python — the bug class simply does not exist
+      </li>
+      <li>
+        Microsoft and Google have both reported that around
+        <strong class="hl-orange">70%</strong> of their severe vulnerabilities
+        were memory-safety issues. Independently, in different codebases
+      </li>
+      <li>
+        Where C is required: bounded functions, sanitizers in CI
+        (<code>-fsanitize=address,undefined</code>), fuzzing, and review of
+        every allocation
+      </li>
+      <li>
+        And the same discipline as everywhere else —
+        <em class="hl-cyan">validate at the boundary</em>, and never trust a
+        length that came with the data
+      </li>
+    </ul>
+  </section>
+</section>
+<section>
+  <div class="toc" data-selected="4"></div>
+</section>
+<section>
+  <section>
+    <h2>The Host Firewall</h2>
+    <ul>
+      <li>
+        The network firewall of lecture 7 protects a zone. This one protects
+        <em>the machine</em>, and it is the one that still works when the
+        attacker is already inside the zone
+      </li>
+      <li>
+        Inbound: default deny, then allow the ports this host actually serves
+      </li>
+      <li>
+        <span class="hl-orange">Outbound matters more than people expect.</span>
+        Malware has to reach its command-and-control server; a compromised
+        database server has no business opening connections to the internet
+      </li>
+      <li>
+        <code>pf</code>, <code>nftables</code>, Windows Defender Firewall — the
+        rules differ, the discipline does not
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Host-Based Intrusion Detection</h2>
+    <ul>
+      <li>
+        A <span class="hl-orange">HIDS</span> sees what the network cannot:
+        which process, which user, which file, which syscall — and it sees it
+        after decryption
+      </li>
+      <li>
+        A <span class="hl-cyan">NIDS</span> sees the whole segment from one
+        place, and is invisible to the host it is watching
+      </li>
+      <li>They are complements, not alternatives</li>
+      <li>Two detection strategies, with opposite failure modes:</li>
+      <ul>
+        <li>
+          <span class="hl-green">Misuse</span> — match known-bad. Precise; blind
+          to the new
+        </li>
+        <li>
+          <span class="hl-violet">Anomaly</span> — model normal, alert on
+          deviation. Can catch the new; buries you in false alarms
+        </li>
+      </ul>
+    </ul>
+  </section>
+  <section class="hands-on">
+    <h2>Why "99% Accurate" Is Not Good News</h2>
+    <pre><code class="lang-text">
+events/day               1,000,000
+  of them, attacks             100
+detection rate               99.0%
+false-alarm rate              0.1%
+
+true  alarms/day                99
+false alarms/day             1,000
+total alarms/day             1,099
+
+P(attack | alarm)            9.01%
+    </code></pre>
+    <p>
+      A detector that misses almost nothing, and
+      <strong class="hl-red">nine out of ten alarms are wrong</strong>.
+    </p>
+  </section>
+  <section>
+    <h2>The Base-Rate Fallacy</h2>
+    <ul>
+      <li>
+        When the thing you are looking for is <em>rare</em>, the false-alarm
+        rate dominates — however good the detector is
+      </li>
+      <li>
+        This is why analysts stop reading alerts, and why the alert that
+        mattered was in the queue all along
+      </li>
+      <li>What actually helps:</li>
+      <ul>
+        <li>
+          <span class="hl-green">Raise the base rate</span> — watch a narrower,
+          higher-value population rather than everything
+        </li>
+        <li>
+          <span class="hl-cyan">Correlate</span> — require two weak signals, so
+          the false-positive rates multiply
+        </li>
+        <li>
+          <span class="hl-orange">Drive the false-alarm rate down</span>, even
+          at the cost of detection. 0.01% would change the table above tenfold
+        </li>
+      </ul>
+    </ul>
+  </section>
+</section>
+<section>
+  <div class="toc" data-selected="5"></div>
+</section>
+<section>
+  <section>
+    <h2>Isolation You Can Buy</h2>
+    <ul>
+      <li>
+        A <span class="hl-orange">hypervisor</span> runs several operating
+        systems on one machine, each believing it has the hardware
+      </li>
+      <ul>
+        <li>
+          <span class="hl-green">Type 1</span> — on the bare metal. ESXi,
+          Hyper-V, KVM. Small TCB, and what clouds run
+        </li>
+        <li>
+          <span class="hl-cyan">Type 2</span> — on top of a host OS. VirtualBox,
+          VMware Workstation. The whole host OS joins your TCB
+        </li>
+      </ul>
+      <li>
+        For security the appeal is simple: a compromised VM is a compromised
+        <em>VM</em>. The blast radius has a wall around it
+      </li>
+      <li>
+        And snapshots make analysis cheap — run the malware, look, roll back
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>The Wall Has Doors</h2>
+    <ul>
+      <li>
+        <span class="hl-red">VM escape</span> — a bug in the hypervisor, usually
+        in an emulated device, that gets code onto the host. Rare, and total
+      </li>
+      <li>
+        <span class="hl-orange">Side channels</span> — shared caches and shared
+        branch predictors leak between tenants. Spectre and Meltdown were about
+        exactly this
+      </li>
+      <li>
+        <span class="hl-yellow">Sprawl</span> — a VM that is off is not being
+        patched, and it comes back months out of date
+      </li>
+      <li>
+        <span class="hl-violet">The management plane</span> is the real target.
+        Whoever holds the hypervisor console holds every guest, and the console
+        is protected by a password
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Containers Are Not Small VMs</h2>
+    <ul>
+      <li>
+        A container is <strong class="hl-orange">one kernel</strong>,
+        partitioned by namespaces and cgroups. There is no second operating
+        system
+      </li>
+      <li>
+        So a kernel vulnerability is shared by every container on the host,
+        while a VM would still have a hypervisor between them
+      </li>
+      <li>
+        Weaker isolation, far lower cost. Both are correct answers to different
+        questions
+      </li>
+      <li>
+        If you run them: non-root user, read-only root filesystem, dropped
+        capabilities, a seccomp profile, and
+        <strong class="hl-red">never</strong> <code>--privileged</code>
+      </li>
+      <li>
+        Where the boundary must be strong, put a real one back: Firecracker,
+        Kata, gVisor
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Where This Leaves Us</h2>
+    <ul>
+      <li>
+        The host is defended by the boring things:
+        <span class="hl-green">patch, minimise, separate, log</span>
+      </li>
+      <li>
+        The bug classes that survive are the ones where
+        <em class="hl-orange">data crossed into control</em> — a buffer into a
+        flag, a file into a privilege
+      </li>
+      <li>Isolation limits the damage; it never prevents the bug</li>
+    </ul>
+    <div class="box">
+      <p>
+        Next: the same failure, on the most exposed application anyone runs —
+        the one that takes input from every stranger on the internet.
+      </p>
+    </div>
+  </section>
+</section>
