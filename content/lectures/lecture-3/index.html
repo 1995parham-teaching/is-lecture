@@ -1,0 +1,966 @@
+---
+index: 3
+title: Cryptography
+topics:
+  - Foundations
+  - Symmetric Encryption
+  - Hashes & MACs
+  - Public-Key Cryptography
+  - Signatures & PKI
+draft: false
+---
+
+<section>
+  <div class="toc"></div>
+</section>
+<section>
+  <div class="toc" data-selected="0"></div>
+</section>
+<section>
+  <section>
+    <h2>The Toolbox</h2>
+    <ul>
+      <li>
+        Cryptography turns a
+        <span class="hl-orange">security problem</span> into a
+        <span class="hl-green">key management problem</span>
+      </li>
+      <li>
+        That is a real win — key management is a problem we know how to work on
+      </li>
+      <li>It is not a solution to anything by itself:</li>
+      <ul>
+        <li>It cannot fix a program that trusts the wrong input</li>
+        <li>It cannot tell you <em>who</em> the key belongs to</li>
+        <li>
+          It cannot help once the attacker is on the machine holding the key
+        </li>
+      </ul>
+    </ul>
+    <div class="box">
+      <p>
+        Encryption is not magic dust. It moves the secret, and you have to know
+        where to.
+      </p>
+    </div>
+  </section>
+  <section>
+    <h2>Words We Need</h2>
+    <table style="font-size: 0.85em">
+      <tr>
+        <td class="hl-orange"><strong>Plaintext</strong></td>
+        <td>The message, readable</td>
+      </tr>
+      <tr>
+        <td class="hl-orange"><strong>Ciphertext</strong></td>
+        <td>The message, after encryption</td>
+      </tr>
+      <tr>
+        <td class="hl-green"><strong>Cipher</strong></td>
+        <td>The algorithm. Public, published, studied for years</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>Key</strong></td>
+        <td>The secret. The <em>only</em> secret</td>
+      </tr>
+      <tr>
+        <td class="hl-violet"><strong>Cryptanalysis</strong></td>
+        <td>Breaking it without being given the key</td>
+      </tr>
+    </table>
+    <p>
+      Encryption gives <strong>confidentiality</strong>. Note what is missing
+      from that sentence — everything else in this lecture is about the missing
+      part.
+    </p>
+  </section>
+  <section>
+    <h2>Kerckhoffs's Principle</h2>
+    <div class="box">
+      <p>
+        The system must remain secure even if everything about it, except the
+        key, is public knowledge.
+      </p>
+    </div>
+    <ul>
+      <li>
+        Auguste Kerckhoffs, 1883. Older than the computer, and never wrong yet
+      </li>
+      <li>
+        A key can be <span class="hl-green">changed</span> when it leaks. An
+        algorithm cannot
+      </li>
+      <li>
+        Algorithms leak anyway — they are in the binary you shipped, and someone
+        will disassemble it
+      </li>
+      <li>
+        <span class="hl-red">Security through obscurity</span> is the name for
+        breaking this rule. It buys time, and it is never the plan
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>How the Old Ciphers Died</h2>
+    <ul>
+      <li>
+        <span class="hl-orange">Caesar</span> — shift each letter by <em>k</em>.
+        25 keys. Try all of them by hand
+      </li>
+      <li>
+        <span class="hl-orange">Substitution</span> — an arbitrary permutation
+        of the alphabet. 26! ≈ 2<sup>88</sup> keys, and still trivially broken
+      </li>
+      <ul>
+        <li>
+          Because the key space is not the point:
+          <strong class="hl-red">structure survives</strong>. `E` is still the
+          most common letter, whatever you call it
+        </li>
+      </ul>
+      <li>
+        <span class="hl-cyan">Vigenère</span> — a repeating key, which hides the
+        frequencies until you find the period
+      </li>
+    </ul>
+    <p>
+      The lesson lasts: a big key space is
+      <em class="hl-green">necessary</em> and nowhere near <em>sufficient</em>.
+    </p>
+  </section>
+  <section>
+    <h2>How Big Is Big Enough?</h2>
+    <p>Assume a machine testing 10<sup>12</sup> keys per second:</p>
+    <table style="font-size: 0.85em">
+      <tr>
+        <td class="hl-red">
+          <strong>2<sup>40</sup></strong>
+        </td>
+        <td>about a second</td>
+      </tr>
+      <tr>
+        <td class="hl-red">
+          <strong>2<sup>56</sup></strong> (DES)
+        </td>
+        <td>about 20 hours</td>
+      </tr>
+      <tr>
+        <td class="hl-yellow">
+          <strong>2<sup>80</sup></strong>
+        </td>
+        <td>about 38 years</td>
+      </tr>
+      <tr>
+        <td class="hl-green">
+          <strong>2<sup>128</sup></strong> (AES-128)
+        </td>
+        <td>far longer than the universe has existed</td>
+      </tr>
+    </table>
+    <ul>
+      <li>Beyond 128 bits, brute force stops being the thing to worry about</li>
+      <li>
+        Every real break is a flaw in the design, the implementation, or the key
+        handling — <em class="hl-cyan">never the key length</em>
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>The One Unbreakable Cipher</h2>
+    <ul>
+      <li>
+        <span class="hl-orange">One-time pad</span>: XOR the message with a
+        truly random key <strong>as long as the message</strong>
+      </li>
+      <li>
+        Shannon proved it: with a random key used once, the ciphertext reveals
+        <em class="hl-green">nothing</em>. Perfect secrecy, not "hard to break"
+      </li>
+      <li>And it is useless in practice, for three reasons:</li>
+      <ul>
+        <li>The key is as big as the data, and must be shared in advance</li>
+        <li>It must be truly random</li>
+        <li>
+          <strong class="hl-red">Used twice, it collapses</strong> — XOR two
+          ciphertexts and the key cancels out
+        </li>
+      </ul>
+      <li>
+        Every stream cipher is an attempt to fake this, and the "never twice"
+        rule follows it all the way
+      </li>
+    </ul>
+  </section>
+</section>
+<section>
+  <div class="toc" data-selected="1"></div>
+</section>
+<section>
+  <section>
+    <h2>Symmetric Encryption</h2>
+    <ul>
+      <li>
+        One key, shared. The same key encrypts and decrypts —
+        <em class="hl-orange">conventional</em> cryptography, and the only kind
+        there was until 1976
+      </li>
+      <li>Fast: gigabytes per second on a laptop, with hardware support</li>
+      <li>
+        Its whole difficulty is in one question:
+        <strong class="hl-red">how did both sides get the key?</strong>
+      </li>
+      <li>
+        <span class="hl-cyan">n</span> people who all want to talk pairwise need
+        <span class="hl-cyan">n(n−1)/2</span> keys. For 1,000 people that is
+        499,500
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Block and Stream</h2>
+    <ul>
+      <li>
+        <span class="hl-orange">Block cipher</span> — encrypts a fixed-size
+        block, e.g. 128 bits at a time
+      </li>
+      <ul>
+        <li>
+          AES. Needs a <em>mode</em> to handle anything longer than one block
+        </li>
+      </ul>
+      <li>
+        <span class="hl-green">Stream cipher</span> — generates a keystream and
+        XORs it with the data
+      </li>
+      <ul>
+        <li>ChaCha20. Naturally handles any length, byte by byte</li>
+      </ul>
+      <li>
+        In modern practice the line is blurred: AES in counter mode
+        <em class="hl-cyan">is</em> a stream cipher built from a block cipher
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>A Short History of the Standard</h2>
+    <table style="font-size: 0.85em">
+      <tr>
+        <td class="hl-red"><strong>DES</strong></td>
+        <td>
+          1977, 56-bit key. Broken by dedicated hardware in 1998, in days.
+          <em>Dead</em>
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-yellow"><strong>3DES</strong></td>
+        <td>
+          DES three times, ~112-bit strength. Slow, 64-bit blocks.
+          <em>Disallowed by NIST</em>
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-green"><strong>AES</strong></td>
+        <td>
+          2001, Rijndael, FIPS 197. 128-bit blocks, 128/192/256-bit keys.
+          <em>The answer</em>
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>ChaCha20</strong></td>
+        <td>The alternative, and faster where there is no AES hardware</td>
+      </tr>
+    </table>
+    <p>
+      AES was chosen through a
+      <strong class="hl-orange">public competition</strong>
+      with published analysis — Kerckhoffs's principle applied to the selection
+      process itself.
+    </p>
+  </section>
+  <section>
+    <h2>A Cipher Is Not Enough</h2>
+    <ul>
+      <li>
+        AES encrypts <strong>16 bytes</strong>. Your message is not 16 bytes
+      </li>
+      <li>
+        The <span class="hl-orange">mode of operation</span> says how to chain
+        the blocks — and it is where the security is actually won or lost
+      </li>
+      <li>
+        The obvious mode is to encrypt each block independently. That is called
+        <span class="hl-red">ECB</span>, and it is the most instructive mistake
+        in cryptography
+      </li>
+    </ul>
+    <p>Let us encrypt a picture with it.</p>
+  </section>
+  <section>
+    <h2>Before</h2>
+    <img
+      src="img/ecb-plain.png"
+      alt="The plaintext image: the word SECURITY in a cyan frame"
+      width="640"
+    />
+    <p>The raw pixels of this image, AES-128, one key, ECB mode.</p>
+  </section>
+  <section>
+    <h2>After — This Is the Ciphertext</h2>
+    <img
+      src="img/ecb-encrypted.png"
+      alt="The same image after ECB encryption: the text is still legible"
+      width="640"
+    />
+    <p>
+      Every block is <em>correctly</em> encrypted with a strong cipher.
+      Identical plaintext blocks produce identical ciphertext blocks, so
+      <strong class="hl-red">the pattern survives</strong>.
+    </p>
+  </section>
+  <section>
+    <h2>The Same Image, CBC Mode</h2>
+    <img
+      src="img/cbc-encrypted.jpg"
+      alt="The same image after CBC encryption: uniform noise"
+      width="640"
+    />
+    <p>
+      Same cipher, same key, same data. The only change is that each block is
+      XORed with the previous ciphertext first.
+    </p>
+  </section>
+  <section>
+    <h2>Modes Worth Knowing</h2>
+    <table style="font-size: 0.82em">
+      <tr>
+        <td class="hl-red"><strong>ECB</strong></td>
+        <td>Each block alone. Never use it. Ever</td>
+      </tr>
+      <tr>
+        <td class="hl-yellow"><strong>CBC</strong></td>
+        <td>
+          XOR with the previous ciphertext. Needs a random IV; needs padding;
+          padding is attackable
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-green"><strong>CTR</strong></td>
+        <td>
+          Encrypt a counter, XOR with data. No padding, parallel, seekable
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>GCM</strong></td>
+        <td>CTR plus authentication. <em>This is the default answer</em></td>
+      </tr>
+    </table>
+    <ul>
+      <li>
+        CBC needs an <span class="hl-orange">IV</span> and CTR/GCM need a
+        <span class="hl-orange">nonce</span>: not secret, but never repeated
+        under the same key
+      </li>
+      <li>
+        <strong class="hl-red"
+          >Reuse a CTR/GCM nonce and you have reused a one-time pad.</strong
+        >
+        Two messages, one keystream, both readable
+      </li>
+    </ul>
+  </section>
+</section>
+<section>
+  <div class="toc" data-selected="2"></div>
+</section>
+<section>
+  <section>
+    <h2>Hash Functions</h2>
+    <ul>
+      <li>
+        Any input, fixed-size output. No key.
+        <em class="hl-orange">Not encryption</em> — there is nothing to reverse,
+        because information was thrown away
+      </li>
+      <li>Three properties, in increasing order of difficulty to achieve:</li>
+      <ul>
+        <li>
+          <span class="hl-green">Preimage</span> — given <em>h</em>, you cannot
+          find any <em>m</em> with hash <em>h</em>
+        </li>
+        <li>
+          <span class="hl-cyan">Second preimage</span> — given <em>m</em>, you
+          cannot find a different <em>m′</em> with the same hash
+        </li>
+        <li>
+          <span class="hl-violet">Collision</span> — you cannot find
+          <em>any</em> pair that collides
+        </li>
+      </ul>
+      <li>
+        Collisions are the easiest to attack — the birthday bound puts an
+        <em>n</em>-bit hash at only <em>n</em>/2 bits of collision resistance
+      </li>
+    </ul>
+  </section>
+  <section class="hands-on">
+    <h2>The Avalanche</h2>
+    <pre><code class="lang-sh">
+$ printf 'security' | shasum -a 256
+5d2d3ceb7abe552344276d47d36a8175b7aeb250a9bf0bf00e850cd23ecf2e43
+
+$ printf 'securitz' | shasum -a 256
+fa18fd7fe735f03b5dcce3556a08491555cee1fe4b0a86c509aa693a4eb707dc
+    </code></pre>
+    <ul>
+      <li>
+        One letter changed by one position. About half the output bits flipped
+      </li>
+      <li>
+        This is required, not incidental: any visible relationship between
+        similar inputs would be a foothold
+      </li>
+    </ul>
+  </section>
+  <section class="hands-on">
+    <h2>A Collision You Can Download</h2>
+    <pre><code class="lang-sh">
+$ shasum -a 1 s1.pdf s2.pdf
+38762cf7f55934b34d179ae6a4c80cadccbb7f0a  s1.pdf
+38762cf7f55934b34d179ae6a4c80cadccbb7f0a  s2.pdf
+
+$ shasum -a 256 s1.pdf s2.pdf
+2bb787a73e37352f92383abe7e2902936d1059ad9f1ba6daaa9c1e58ee6970d0  s1.pdf
+d4488775d29bdef7993367d541064dbdda50d383f89f0aa13a6ff2e0894ba5ff  s2.pdf
+
+$ cmp s1.pdf s2.pdf
+s1.pdf s2.pdf differ: char 193, line 8
+    </code></pre>
+    <p>
+      Two <em>different</em> PDFs, one SHA-1. Produced by CWI and Google in 2017
+      and published at <code>shattered.io</code>.
+    </p>
+  </section>
+  <section>
+    <h2>Which Hash?</h2>
+    <table style="font-size: 0.85em">
+      <tr>
+        <td class="hl-red"><strong>MD5</strong></td>
+        <td>Collisions since 2004, in seconds. <em>Dead</em></td>
+      </tr>
+      <tr>
+        <td class="hl-red"><strong>SHA-1</strong></td>
+        <td>Collision demonstrated 2017, chosen-prefix 2020. <em>Dead</em></td>
+      </tr>
+      <tr>
+        <td class="hl-green"><strong>SHA-256 / SHA-512</strong></td>
+        <td>The SHA-2 family. Fine, and everywhere</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>SHA-3</strong></td>
+        <td>
+          Different construction, kept as insurance against a break in SHA-2
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-violet"><strong>BLAKE2 / BLAKE3</strong></td>
+        <td>Fast, modern, well regarded</td>
+      </tr>
+    </table>
+    <p>
+      "Dead" still means dead where a
+      <strong class="hl-orange">deliberate</strong> collision matters —
+      certificates, signatures, code updates.
+    </p>
+  </section>
+  <section>
+    <h2>From Hash to MAC</h2>
+    <ul>
+      <li>
+        Lecture 1 left this open: a bare hash protects against
+        <em>accident</em>, because anyone who rewrites the data rewrites the
+        digest
+      </li>
+      <li>
+        Add a key. A <span class="hl-orange">Message Authentication Code</span>
+        can only be produced — and checked — by someone holding it
+      </li>
+      <li>
+        <span class="hl-green">HMAC</span> is the right construction, and the
+        nesting is not decoration
+      </li>
+    </ul>
+    <pre><code class="lang-text">
+HMAC(K, m) = H( (K ⊕ opad) ‖ H( (K ⊕ ipad) ‖ m ) )
+    </code></pre>
+    <p>
+      Naively hashing <em>key ‖ message</em> is broken against SHA-2 by
+      <strong class="hl-red">length extension</strong>: an attacker who never
+      learns the key can still append to your message and produce a valid tag.
+    </p>
+  </section>
+  <section>
+    <h2>Encryption Alone Is Not Integrity</h2>
+    <ul>
+      <li>
+        A ciphertext you cannot read is still a ciphertext you can
+        <strong class="hl-red">change</strong>
+      </li>
+      <li>
+        In CTR mode, flipping bit <em>i</em> of the ciphertext flips bit
+        <em>i</em> of the plaintext. Exactly, predictably
+      </li>
+      <li>
+        So <code>pay 100 to alice</code> becomes something else of your
+        choosing, without the key
+      </li>
+      <li>
+        The answer is <span class="hl-green">authenticated encryption</span>:
+        confidentiality and integrity from one primitive, with one key
+      </li>
+      <ul>
+        <li>AES-GCM · ChaCha20-Poly1305 · AES-CCM</li>
+        <li>
+          If you must combine them by hand, it is
+          <em class="hl-cyan">encrypt-then-MAC</em>. The other orders have
+          published attacks
+        </li>
+      </ul>
+    </ul>
+  </section>
+  <section class="hands-on">
+    <h2>AES-GCM, and One Flipped Bit</h2>
+    <pre><code class="lang-go">
+ct := gcm.Seal(nil, nonce, plaintext, nil)
+
+out, err := gcm.Open(nil, nonce, ct, nil)
+fmt.Printf("open as sent:   %q err=%v\n", out, err)
+
+ct[3] ^= 0x01 // flip a single bit of the ciphertext
+out, err = gcm.Open(nil, nonce, ct, nil)
+fmt.Printf("open one bit flipped: %q err=%v\n", out, err)
+    </code></pre>
+    <pre><code class="lang-text">
+plaintext  16 bytes  pay 100 to alice
+ciphertext 32 bytes  e7cced5c...45ca5a1a
+           the last 16 bytes are the authentication tag
+
+open as sent:   "pay 100 to alice" err=&lt;nil&gt;
+open one bit flipped: "" err=cipher: message authentication failed
+    </code></pre>
+  </section>
+  <section>
+    <h2>Read the Output Again</h2>
+    <ul>
+      <li>
+        16 bytes in, <span class="hl-orange">32 bytes out</span> — the extra 16
+        are the authentication tag. Integrity costs space
+      </li>
+      <li>
+        The tampered open returned <strong class="hl-green">""</strong>, not
+        garbage. It refused to produce a plaintext at all
+      </li>
+      <li>
+        That is the contract worth insisting on:
+        <em class="hl-cyan">no output before the tag verifies</em>. An API that
+        hands you unverified plaintext is an API that will be misused
+      </li>
+    </ul>
+  </section>
+</section>
+<section>
+  <div class="toc" data-selected="3"></div>
+</section>
+<section>
+  <section>
+    <h2>The Problem Symmetric Crypto Cannot Solve</h2>
+    <ul>
+      <li>
+        To send you an encrypted message I need a shared key. To share a key
+        securely I need&hellip; an encrypted channel
+      </li>
+      <li>
+        For centuries the answer was couriers and codebooks. It does not scale
+        to a web with billions of pairs of strangers
+      </li>
+      <li>
+        <span class="hl-orange">1976</span>, Diffie and Hellman: what if
+        encryption and decryption used
+        <strong class="hl-green">different keys</strong>, and only one of them
+        had to be secret?
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Two Keys, Two Directions</h2>
+    <ul>
+      <li>
+        Everyone has a <span class="hl-green">public key</span> (published) and
+        a <span class="hl-red">private key</span> (never shared)
+      </li>
+      <li>What you get depends on which key you use</li>
+    </ul>
+    <table style="font-size: 0.85em">
+      <tr>
+        <td class="hl-cyan"><strong>Encrypt with the public key</strong></td>
+        <td>
+          only the holder of the private key can read it →
+          <em>confidentiality</em>
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-orange"><strong>Sign with the private key</strong></td>
+        <td>
+          anyone can verify who it came from →
+          <em>authentication, non-repudiation</em>
+        </td>
+      </tr>
+    </table>
+    <p>
+      Same mathematics, opposite direction, completely different service.
+      Confusing the two is the classic exam mistake.
+    </p>
+  </section>
+  <section>
+    <h2>Where the Hardness Comes From</h2>
+    <table style="font-size: 0.85em">
+      <tr>
+        <td class="hl-orange"><strong>RSA</strong></td>
+        <td>Factoring a large integer is hard. Encrypts, and signs</td>
+      </tr>
+      <tr>
+        <td class="hl-green"><strong>Diffie–Hellman</strong></td>
+        <td>
+          Discrete logarithms are hard. Agrees on a shared key — does not
+          encrypt
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>Elliptic curve</strong></td>
+        <td>The same problems over a curve, where they are harder per bit</td>
+      </tr>
+    </table>
+    <ul>
+      <li>
+        None is <em>proven</em> hard. They are unbroken after decades of public
+        effort, which is the strongest claim cryptography makes
+      </li>
+      <li>
+        A large quantum computer would break all three. Post-quantum standards
+        (ML-KEM, ML-DSA) were published by NIST in 2024
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Key Sizes Are Not Comparable</h2>
+    <table style="font-size: 0.85em">
+      <tr>
+        <td class="hl-orange"><strong>Security level</strong></td>
+        <td class="hl-orange"><strong>Symmetric</strong></td>
+        <td class="hl-orange"><strong>RSA / DH</strong></td>
+        <td class="hl-orange"><strong>Elliptic curve</strong></td>
+      </tr>
+      <tr>
+        <td>112 bits</td>
+        <td>3DES</td>
+        <td>2048</td>
+        <td>224</td>
+      </tr>
+      <tr>
+        <td class="hl-green">128 bits</td>
+        <td class="hl-green">AES-128</td>
+        <td class="hl-green">3072</td>
+        <td class="hl-green">256</td>
+      </tr>
+      <tr>
+        <td>192 bits</td>
+        <td>AES-192</td>
+        <td>7680</td>
+        <td>384</td>
+      </tr>
+      <tr>
+        <td>256 bits</td>
+        <td>AES-256</td>
+        <td>15360</td>
+        <td>512</td>
+      </tr>
+    </table>
+    <p>
+      NIST SP 800-57. A 256-bit ECC key and a 3072-bit RSA key are
+      <em class="hl-cyan">the same strength</em> — which is why everything new
+      uses curves.
+    </p>
+  </section>
+  <section>
+    <h2>Nobody Encrypts Data With RSA</h2>
+    <ul>
+      <li>
+        Public-key operations are
+        <strong class="hl-red">thousands of times slower</strong> than AES, and
+        RSA cannot encrypt more than its key size anyway
+      </li>
+      <li>
+        <span class="hl-green">Hybrid encryption</span> is what actually runs:
+      </li>
+      <ol>
+        <li>Generate a random symmetric key for this message</li>
+        <li>Encrypt the data with AES-GCM under that key — fast</li>
+        <li>
+          Encrypt <em>the key</em> with the recipient's public key — small
+        </li>
+      </ol>
+      <li>
+        TLS, PGP, Signal, encrypted disks: all the same shape. Public key to
+        move a key, symmetric key to move the data
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Forward Secrecy</h2>
+    <ul>
+      <li>
+        If the session key is encrypted to a long-lived public key, then whoever
+        recorded the traffic today can decrypt
+        <strong class="hl-red">all of it</strong> the day that private key leaks
+      </li>
+      <li>
+        Instead, agree a fresh key per session with
+        <span class="hl-green">ephemeral Diffie–Hellman</span>, and use the
+        long-term key only to <em>sign</em> the exchange
+      </li>
+      <li>
+        Now the private key proves identity but decrypts nothing. Yesterday's
+        recording stays unreadable
+      </li>
+      <li>
+        This is why TLS 1.3 removed static-RSA key exchange entirely: it made
+        forward secrecy non-optional
+      </li>
+    </ul>
+  </section>
+</section>
+<section>
+  <div class="toc" data-selected="4"></div>
+</section>
+<section>
+  <section>
+    <h2>Digital Signatures</h2>
+    <ul>
+      <li>Hash the message, then transform the hash with the private key</li>
+      <li>
+        Hashing first is not an optimization — it is what lets a fixed-size
+        operation sign a message of any length
+      </li>
+      <li>
+        Anyone with the public key can verify. Nobody else can produce one
+      </li>
+      <li>
+        Algorithms: RSA-PSS · ECDSA · <span class="hl-green">Ed25519</span>
+      </li>
+    </ul>
+    <p>
+      A signature over a broken hash is a broken signature — which is precisely
+      why SHA-1 mattered.
+    </p>
+  </section>
+  <section class="hands-on">
+    <h2>Sign, Verify, Tamper</h2>
+    <pre><code class="lang-sh">
+$ openssl genpkey -algorithm ed25519 -out priv.pem
+$ openssl pkey -in priv.pem -pubout -out pub.pem
+$ openssl pkeyutl -sign -inkey priv.pem -rawin -in msg.txt -out msg.sig
+sig bytes: 64
+
+$ openssl pkeyutl -verify -pubin -inkey pub.pem -rawin \
+      -in msg.txt -sigfile msg.sig
+Signature Verified Successfully
+
+$ openssl pkeyutl -verify -pubin -inkey pub.pem -rawin \
+      -in msg2.txt -sigfile msg.sig      # one character added
+Signature Verification Failure
+    </code></pre>
+    <p>64 bytes, for a message of any size.</p>
+  </section>
+  <section>
+    <h2>MAC or Signature?</h2>
+    <table style="font-size: 0.85em">
+      <tr>
+        <td></td>
+        <td class="hl-orange"><strong>MAC</strong></td>
+        <td class="hl-green"><strong>Signature</strong></td>
+      </tr>
+      <tr>
+        <td>Keys</td>
+        <td>one, shared</td>
+        <td>a key pair</td>
+      </tr>
+      <tr>
+        <td>Who can verify</td>
+        <td>anyone who can also forge</td>
+        <td>everyone, and only the owner can sign</td>
+      </tr>
+      <tr>
+        <td>Non-repudiation</td>
+        <td class="hl-red">no</td>
+        <td class="hl-green">yes</td>
+      </tr>
+      <tr>
+        <td>Speed</td>
+        <td>very fast</td>
+        <td>much slower</td>
+      </tr>
+    </table>
+    <p>
+      Both give integrity and origin. Only the signature settles an argument —
+      with a MAC, either party could have produced the tag, so neither can prove
+      the other did.
+    </p>
+  </section>
+  <section>
+    <h2>Whose Public Key Is It?</h2>
+    <ul>
+      <li>
+        Everything above assumed you have
+        <strong class="hl-orange">the right public key</strong>
+      </li>
+      <li>
+        If an attacker can hand you <em>their</em> public key while claiming to
+        be the bank, every signature verifies perfectly — for the wrong party
+      </li>
+      <li>
+        Cryptography cannot answer this. It is a
+        <span class="hl-red">trust</span> question, and it needs an outside
+        answer
+      </li>
+    </ul>
+    <div class="box">
+      <p>
+        Public-key cryptography does not remove the need to distribute something
+        securely. It reduces it to distributing something
+        <em>public</em>.
+      </p>
+    </div>
+  </section>
+  <section>
+    <h2>Certificates</h2>
+    <ul>
+      <li>
+        A <span class="hl-green">certificate</span> is a signed statement:
+        <em>"this public key belongs to this name"</em>
+      </li>
+      <li>Signed by a <span class="hl-orange">Certificate Authority</span></li>
+      <li>An X.509 certificate carries, at minimum:</li>
+      <ul>
+        <li>Subject — the name it is about</li>
+        <li>The subject's public key</li>
+        <li>Issuer, validity dates, allowed uses</li>
+        <li>The CA's signature over all of it</li>
+      </ul>
+      <li>
+        Your trust in a website is a chain: leaf → intermediate →
+        <span class="hl-cyan">root</span>, and the root is
+        <strong>preinstalled</strong> in your OS or browser
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>The Chain Has Consequences</h2>
+    <ul>
+      <li>
+        Your browser trusts a few hundred roots. Any one of them can issue a
+        certificate for <strong class="hl-red">any</strong> name
+      </li>
+      <li>
+        <span class="hl-orange">DigiNotar, 2011</span> — a compromised CA issued
+        a valid certificate for <code>*.google.com</code>, used to intercept
+        Iranian users. The CA was distrusted and went bankrupt
+      </li>
+      <li>The patches are structural, not cryptographic:</li>
+      <ul>
+        <li>
+          <span class="hl-green">Certificate Transparency</span> — every issued
+          certificate is logged publicly, so misissuance is visible
+        </li>
+        <li>
+          <span class="hl-cyan">CAA records</span> — the domain owner names
+          which CAs may issue for it
+        </li>
+      </ul>
+    </ul>
+  </section>
+  <section>
+    <h2>Revocation Is the Hard Part</h2>
+    <ul>
+      <li>
+        A private key leaks on Tuesday. The certificate is valid until next year
+      </li>
+      <li>
+        <span class="hl-orange">CRL</span> — a list of revoked serial numbers.
+        Large, and stale between fetches
+      </li>
+      <li>
+        <span class="hl-cyan">OCSP</span> — ask the CA about one certificate.
+        Adds a round trip, leaks your browsing to the CA, and clients
+        <strong class="hl-red">fail open</strong> when it times out
+      </li>
+      <li>A check that is skipped whenever it fails is not a check</li>
+      <li>
+        The direction that actually worked:
+        <span class="hl-green">short-lived certificates</span>. Ninety days,
+        then forty-seven — expiry does the job revocation could not
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Keys Have a Life Cycle</h2>
+    <ul>
+      <li>
+        Generate — from a real CSPRNG.
+        <em class="hl-red"
+          >Weak randomness has broken more keys than cryptanalysis</em
+        >
+      </li>
+      <li>
+        Store — in an HSM, a KMS or the platform keystore. Not in the
+        repository, not in an environment variable if you can help it
+      </li>
+      <li>Distribute — the problem certificates exist to solve</li>
+      <li>
+        Rotate — on a schedule, so that rotating is a rehearsed operation and
+        not an emergency
+      </li>
+      <li>
+        Destroy — and remember the backups, the snapshots and the old images
+      </li>
+    </ul>
+    <p>
+      One key, one purpose. A key that both signs and encrypts turns any flaw in
+      either into a flaw in both.
+    </p>
+  </section>
+  <section>
+    <h2>Rules That Will Serve You</h2>
+    <ul>
+      <li>
+        <strong class="hl-red">Do not implement it.</strong> Use a reviewed
+        library, at the highest level it offers
+      </li>
+      <li>
+        <span class="hl-green">Authenticated encryption by default</span> —
+        AES-GCM or ChaCha20-Poly1305
+      </li>
+      <li><span class="hl-cyan">Never reuse a nonce</span> under one key</li>
+      <li>
+        <span class="hl-orange">Randomness from the OS</span> —
+        <code>crypto/rand</code>, not <code>math/rand</code>
+      </li>
+      <li>
+        <span class="hl-violet">Compare secrets in constant time</span> — an
+        early-exit comparison leaks the answer through timing
+      </li>
+      <li>Keep the key and the data apart, and know where each one lives</li>
+    </ul>
+    <div class="box">
+      <p>The cipher is almost never what fails. The way it was used is.</p>
+    </div>
+  </section>
+</section>
