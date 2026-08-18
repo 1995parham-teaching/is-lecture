@@ -1,0 +1,674 @@
+---
+index: 7
+title: Network & Transport Security
+topics:
+  - Network Threats
+  - Security Zoning
+  - Edge Security
+  - Secure Access & VPN
+  - VLAN & Segmentation
+draft: false
+---
+
+<section>
+  <div class="toc"></div>
+</section>
+<section>
+  <div class="toc" data-selected="0"></div>
+</section>
+<section>
+  <section>
+    <h2>The Network Was Built on Trust</h2>
+    <ul>
+      <li>
+        TCP/IP was designed for a small research network where every operator
+        knew every other operator. Authentication was not an omission — it was
+        <em class="hl-orange">out of scope</em>
+      </li>
+      <li>Consequences we still live with:</li>
+      <ul>
+        <li>A source IP address is a <strong class="hl-red">claim</strong></li>
+        <li>An ARP reply is believed by whoever hears it</li>
+        <li>A DNS answer is accepted if it arrives first</li>
+        <li>A BGP announcement is accepted because a peer said so</li>
+      </ul>
+      <li>
+        Everything in this lecture is a patch over that original assumption
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Passive: Listening</h2>
+    <ul>
+      <li>
+        <span class="hl-orange">Sniffing</span> — read traffic you can reach.
+        Trivial on shared media and on any network you have a port on
+      </li>
+      <li>
+        Switches made it harder by accident, not by design: a switch forwards by
+        MAC address, so you only see your own traffic
+      </li>
+      <ul>
+        <li>
+          Until <span class="hl-red">MAC flooding</span> overflows the switch's
+          address table and it fails open, broadcasting everything
+        </li>
+      </ul>
+      <li>
+        The defence is not "stop them listening" — it is
+        <strong class="hl-green">encryption</strong>, so that listening gains
+        nothing. Lecture 1's rule for passive attacks: prevent, do not detect
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Active: Lying</h2>
+    <ul>
+      <li>
+        <span class="hl-orange">ARP spoofing</span> — announce that
+        <em>your</em> MAC address owns the gateway's IP. Every host on the
+        segment believes you, and now you are the gateway
+      </li>
+      <ul>
+        <li>ARP has no authentication at all. There is nothing to break</li>
+      </ul>
+      <li>
+        <span class="hl-orange">DNS spoofing</span> — answer the query before
+        the real server does, or poison a resolver's cache so it lies to
+        everyone behind it
+      </li>
+      <li>
+        <span class="hl-orange">IP spoofing</span> — forge the source address.
+        Easy for UDP; harder for TCP, which needs the sequence number
+      </li>
+      <li>
+        All three build the same thing: a
+        <strong class="hl-red">machine in the middle</strong>
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>What the Middle Buys</h2>
+    <ul>
+      <li>Read everything · change everything · impersonate either side</li>
+      <li>
+        Against plaintext this is total. Against TLS it is much less — the
+        attacker can drop traffic, but cannot produce a certificate for the name
+      </li>
+      <li>
+        Which is why the attack shifted to
+        <span class="hl-orange">stripping</span>: keep the victim on
+        <code>http://</code> and there is no certificate to forge
+      </li>
+      <li>
+        And why <span class="hl-green">HSTS</span> from lecture 6 matters here —
+        the browser refuses to be downgraded, so there is nothing to strip
+      </li>
+      <li>
+        Layer 2 answers exist too:
+        <span class="hl-cyan">dynamic ARP inspection</span> and
+        <span class="hl-cyan">DHCP snooping</span> on the switch, which drop the
+        forged replies before anyone hears them
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Denial of Service</h2>
+    <table style="font-size: 0.82em">
+      <tr>
+        <td class="hl-red"><strong>Volumetric</strong></td>
+        <td>Fill the pipe. Measured in bits per second</td>
+      </tr>
+      <tr>
+        <td class="hl-orange"><strong>Protocol</strong></td>
+        <td>
+          Exhaust a state table — SYN flood. Measured in packets per second
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-yellow"><strong>Application</strong></td>
+        <td>
+          Ask for the expensive thing. A few requests per second can be enough
+        </td>
+      </tr>
+    </table>
+    <ul>
+      <li>
+        <span class="hl-cyan">Amplification</span> is what makes the first one
+        cheap: send a small query with a forged source, and the server sends a
+        large answer to the victim
+      </li>
+      <li>
+        UDP services with no handshake are the reflectors — DNS, NTP, memcached.
+        US-CERT TA14-013A tabulates the factors, and they run from tens to tens
+        of thousands
+      </li>
+      <li>
+        You cannot absorb a volumetric attack on your own link. That defence is
+        bought upstream
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Reconnaissance</h2>
+    <ul>
+      <li>Before any of the above: what is here, and what is listening?</li>
+      <li>
+        Host discovery, then port scanning, then banner grabbing to name the
+        version, then a lookup of what that version is vulnerable to
+      </li>
+      <li>
+        On the public internet this is <em>continuous</em> and automated. A new
+        address receives its first scan within minutes
+      </li>
+      <li>
+        Which reframes the defence: you cannot avoid being found, so
+        <strong class="hl-green">reduce what is findable</strong> — the attack
+        surface argument from lecture 1, applied to open ports
+      </li>
+    </ul>
+  </section>
+</section>
+<section>
+  <div class="toc" data-selected="1"></div>
+</section>
+<section>
+  <section>
+    <h2>Zoning</h2>
+    <ul>
+      <li>
+        A <span class="hl-orange">security zone</span> is a group of systems
+        with the same trust level and the same policy
+      </li>
+      <li>
+        Grouping by trust rather than by geography or department is the whole
+        idea — a laptop in the building is not more trusted than one outside it
+      </li>
+      <li>
+        Traffic <em>within</em> a zone flows freely. Traffic
+        <em>between</em> zones is controlled, inspected and logged
+      </li>
+      <li>
+        This is lecture 2's boundary drawing, made concrete in addresses and
+        interfaces
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>The Classic Layout</h2>
+    <table style="font-size: 0.8em">
+      <tr>
+        <td class="hl-red"><strong>Untrusted</strong></td>
+        <td>The internet. Assume hostile</td>
+      </tr>
+      <tr>
+        <td class="hl-orange"><strong>DMZ</strong></td>
+        <td>
+          Public-facing services. Reachable from outside, and trusted by nobody
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-green"><strong>Internal</strong></td>
+        <td>Workstations and internal applications</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>Restricted</strong></td>
+        <td>Databases, domain controllers, key material</td>
+      </tr>
+      <tr>
+        <td class="hl-violet"><strong>Management</strong></td>
+        <td>
+          Switch and hypervisor consoles, out-of-band cards. The keys to
+          everything
+        </td>
+      </tr>
+    </table>
+    <p>
+      The rule that gives the DMZ its value:
+      <strong class="hl-red"
+        >a DMZ host must not be able to initiate a connection inward.</strong
+      >
+      Compromising the web server then buys the attacker one machine.
+    </p>
+  </section>
+  <section>
+    <h2>North-South and East-West</h2>
+    <ul>
+      <li>
+        <span class="hl-orange">North-south</span> — traffic crossing the
+        perimeter. Historically where every control was placed
+      </li>
+      <li>
+        <span class="hl-cyan">East-west</span> — traffic between internal hosts.
+        Historically unfiltered, unlogged, and far larger in volume
+      </li>
+      <li>
+        Which is exactly the path an intruder uses.
+        <em class="hl-red">Lateral movement</em> is the phase between the first
+        compromised laptop and the domain controller
+      </li>
+      <li>
+        A flat internal network means one phished user is equivalent to all of
+        them
+      </li>
+      <li>
+        <span class="hl-green">Microsegmentation</span> pushes policy down to
+        the individual workload, so east-west traffic gets the same treatment
+        north-south always had
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Zero Trust</h2>
+    <div class="box">
+      <p>Never trust, always verify. Location is not a credential.</p>
+    </div>
+    <ul>
+      <li>
+        The perimeter model assumes inside is safe. Remote work, cloud services
+        and phones on the corporate wifi ended that assumption
+      </li>
+      <li>Zero trust replaces it with per-request decisions:</li>
+      <ul>
+        <li>
+          Authenticate the <em>user</em> and the <em>device</em>, every time
+        </li>
+        <li>Authorize the specific resource, not the network</li>
+        <li>Assume breach — design as though the attacker is already inside</li>
+      </ul>
+      <li>
+        NIST SP 800-207 is the reference. It is a
+        <strong class="hl-orange">direction</strong>, not a product, whatever
+        the vendor says
+      </li>
+    </ul>
+  </section>
+</section>
+<section>
+  <div class="toc" data-selected="2"></div>
+</section>
+<section>
+  <section>
+    <h2>What a Firewall Is</h2>
+    <ul>
+      <li>
+        A <span class="hl-orange">choke point</span> between two zones where a
+        policy is enforced and traffic is logged
+      </li>
+      <li>
+        The value comes from being <strong>the only way through</strong>. A
+        firewall with a route around it is decoration
+      </li>
+      <li>
+        And from <span class="hl-green">default deny</span>: permit what is
+        needed, drop the rest. The opposite ordering is a list of things you
+        happened to think of
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Three Generations</h2>
+    <table style="font-size: 0.8em">
+      <tr>
+        <td class="hl-yellow"><strong>Packet filter</strong></td>
+        <td>
+          Each packet judged alone, by address and port. Fast, and cannot tell a
+          reply from an unsolicited packet
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-green"><strong>Stateful</strong></td>
+        <td>
+          Tracks connections, so replies are allowed and unsolicited packets are
+          not. The baseline everywhere
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>Application layer</strong></td>
+        <td>
+          Understands the protocol. A proxy terminates the connection and makes
+          its own
+        </td>
+      </tr>
+    </table>
+    <ul>
+      <li>
+        <span class="hl-violet">Next-generation</span> adds identity and
+        application awareness, so a rule can say "the finance group may reach
+        the ERP" rather than naming subnets
+      </li>
+      <li>
+        A <span class="hl-orange">WAF</span> is an application-layer firewall
+        for HTTP. It buys time to patch; it does not fix the code from lecture 6
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Rules, and How They Go Wrong</h2>
+    <ul>
+      <li>
+        Rules are evaluated <strong class="hl-orange">in order</strong>, first
+        match wins. A broad rule near the top silently shadows everything below
+        it
+      </li>
+      <li>
+        The final rule is <code class="hl-green">deny all</code>, and it should
+        log
+      </li>
+      <li>
+        <span class="hl-red">Rule rot</span> is the real failure: an "temporary"
+        any-any rule from a migration three years ago that nobody dares remove
+      </li>
+      <li>
+        Review the rule base on a schedule, with an owner and a justification
+        per rule
+      </li>
+      <li>
+        <span class="hl-cyan">NAT is not a firewall.</span> It hides addresses
+        as a side effect of running out of them, and it is not a policy
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Egress Filtering</h2>
+    <ul>
+      <li>
+        Almost everyone filters inbound. Far fewer filter
+        <strong class="hl-orange">outbound</strong>, and that is where the
+        detection value is
+      </li>
+      <li>
+        Malware has to call home; stolen data has to leave. Both are outbound
+        connections from a host that has no business making them
+      </li>
+      <li>
+        A database server that suddenly opens an HTTPS connection to an unknown
+        address is a <em class="hl-green">high-quality signal</em> — rare enough
+        to beat the base-rate problem from lecture 5
+      </li>
+      <li>
+        Force outbound traffic through a proxy that authenticates and logs, and
+        deny direct routes
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Where Detection Sits</h2>
+    <ul>
+      <li>
+        <span class="hl-orange">IDS</span> observes a copy of the traffic and
+        alerts. It cannot be a bottleneck and cannot stop anything
+      </li>
+      <li>
+        <span class="hl-green">IPS</span> sits inline and can drop. Which means
+        a false positive is now an outage, and the device is a single point of
+        failure
+      </li>
+      <li>
+        Placement decides what you see: outside the firewall shows you the
+        internet's noise, inside shows you what got through.
+        <em class="hl-cyan">Inside is the useful one</em>
+      </li>
+      <li>
+        And the modern limitation: most traffic is encrypted. Either you
+        terminate TLS at a proxy — with all the trust and privacy questions that
+        raises — or you inspect metadata and move detection to the host
+      </li>
+    </ul>
+  </section>
+</section>
+<section>
+  <div class="toc" data-selected="3"></div>
+</section>
+<section>
+  <section>
+    <h2>Controlling Who Gets On</h2>
+    <ul>
+      <li>
+        A network port in a meeting room is a connection to the internal zone,
+        offered to anyone who sits down
+      </li>
+      <li>
+        <span class="hl-orange">802.1X</span> authenticates the
+        <em>device or user</em> before the port carries any traffic
+      </li>
+      <ul>
+        <li>
+          Supplicant (the client) → authenticator (the switch or access point) →
+          authentication server (RADIUS)
+        </li>
+        <li>
+          Until it succeeds, the port passes nothing but the authentication
+          exchange itself
+        </li>
+      </ul>
+      <li>
+        <span class="hl-green">NAC</span> adds a posture check — patched,
+        encrypted, running the agent — and can drop a failing device into a
+        remediation VLAN
+      </li>
+      <li>
+        <span class="hl-cyan">Port security</span> on the switch limits how many
+        MAC addresses a port may learn, which is the cheap answer to MAC
+        flooding
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>VPN</h2>
+    <ul>
+      <li>
+        A cryptographically protected tunnel across a network you do not
+        control. It buys back
+        <span class="hl-orange">confidentiality</span>,
+        <span class="hl-green">integrity</span> and
+        <span class="hl-cyan">peer authentication</span> — the X.800 services,
+        applied to a whole link
+      </li>
+      <li>Two shapes, for two problems:</li>
+      <ul>
+        <li>
+          <span class="hl-violet">Site-to-site</span> — two offices joined
+          through routers. Users never know it is there
+        </li>
+        <li>
+          <span class="hl-violet">Remote access</span> — one device joining from
+          anywhere
+        </li>
+      </ul>
+      <li>
+        What it is <strong class="hl-red">not</strong>: a defence against
+        anything on either end. A compromised laptop on a VPN is a compromised
+        laptop inside your network
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>IPsec</h2>
+    <ul>
+      <li>Security at the IP layer, so every protocol above it is covered</li>
+      <li>Two protocols, and only one is used:</li>
+      <ul>
+        <li>
+          <span class="hl-yellow">AH</span> — integrity and authentication, no
+          encryption. Rarely deployed
+        </li>
+        <li>
+          <span class="hl-green">ESP</span> — encryption plus integrity. This is
+          the one
+        </li>
+      </ul>
+      <li>Two modes, and the difference is what gets hidden:</li>
+      <ul>
+        <li>
+          <span class="hl-cyan">Transport</span> — protects the payload, leaves
+          the original header. Host to host
+        </li>
+        <li>
+          <span class="hl-cyan">Tunnel</span> — wraps the entire packet in a new
+          one, so the inner addresses are hidden too. Gateway to gateway
+        </li>
+      </ul>
+      <li>
+        <span class="hl-orange">IKEv2</span> does the authentication and key
+        agreement, and rekeys on a timer
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>The Other Options</h2>
+    <table style="font-size: 0.82em">
+      <tr>
+        <td class="hl-orange"><strong>IPsec</strong></td>
+        <td>Standard, interoperable, complex. The default for site-to-site</td>
+      </tr>
+      <tr>
+        <td class="hl-green"><strong>TLS VPN</strong></td>
+        <td>
+          Runs over 443, so it crosses restrictive networks. OpenVPN and most
+          vendor clients
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>WireGuard</strong></td>
+        <td>
+          A few thousand lines, one fixed cipher suite, in the kernel. Small
+          enough to audit
+        </td>
+      </tr>
+    </table>
+    <ul>
+      <li>
+        WireGuard's design choice is worth naming: it is
+        <strong>not negotiable</strong>. No cipher negotiation means no
+        downgrade attack and no misconfiguration
+      </li>
+      <li>
+        <span class="hl-red">Split tunnelling</span> — only some traffic goes
+        through the VPN. Saves bandwidth, and bridges the internet to your
+        internal network through the client
+      </li>
+    </ul>
+  </section>
+</section>
+<section>
+  <div class="toc" data-selected="4"></div>
+</section>
+<section>
+  <section>
+    <h2>VLAN</h2>
+    <ul>
+      <li>
+        One physical switch, several independent broadcast domains. Ports are
+        assigned to a VLAN, and traffic between VLANs must pass a router
+      </li>
+      <li>
+        Which makes that router the <span class="hl-green">choke point</span> —
+        VLANs are how zoning gets implemented without buying a switch per zone
+      </li>
+      <li>
+        <span class="hl-orange">802.1Q</span> adds a 4-byte tag carrying a
+        12-bit VLAN ID — so 4094 usable VLANs
+      </li>
+      <li>
+        Two kinds of port, and the distinction causes most VLAN incidents:
+      </li>
+      <ul>
+        <li>
+          <span class="hl-cyan">Access port</span> — one VLAN, untagged. Where a
+          host plugs in
+        </li>
+        <li>
+          <span class="hl-cyan">Trunk port</span> — many VLANs, tagged. Between
+          switches
+        </li>
+      </ul>
+    </ul>
+  </section>
+  <section>
+    <h2>VLAN Hopping</h2>
+    <ul>
+      <li>
+        <span class="hl-red">Switch spoofing</span> — the attacker's host
+        pretends to be a switch and negotiates a trunk, receiving every VLAN
+      </li>
+      <ul>
+        <li>
+          Fix: disable automatic trunk negotiation, and set every user-facing
+          port to access mode explicitly
+        </li>
+      </ul>
+      <li>
+        <span class="hl-red">Double tagging</span> — send a frame with two tags.
+        The first switch strips the outer one and forwards it; the second reads
+        the inner tag and delivers it to a VLAN the attacker cannot reach
+      </li>
+      <ul>
+        <li>
+          It works because the <em class="hl-orange">native VLAN</em> is carried
+          untagged. Fix: make the native VLAN an unused one, and tag it
+        </li>
+      </ul>
+      <li>
+        Note the direction — double tagging is one-way. Enough to attack, not to
+        converse
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>What a VLAN Is Not</h2>
+    <div class="box">
+      <p>
+        A VLAN is segmentation. It is not encryption, and it is not a firewall.
+      </p>
+    </div>
+    <ul>
+      <li>
+        Traffic inside a VLAN is plaintext, and anyone on that VLAN can hear the
+        broadcast domain
+      </li>
+      <li>
+        The separation is enforced by <em>switch configuration</em> — so it is
+        exactly as strong as the switch's management access
+      </li>
+      <li>
+        Which is why the management zone exists: whoever reaches the switch
+        console owns every VLAN on it
+      </li>
+      <li>
+        <span class="hl-green">Private VLANs</span> go further, isolating ports
+        even within one VLAN — useful in a DMZ, where two web servers have no
+        reason to talk to each other at all
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Putting the Course Together</h2>
+    <ul>
+      <li>
+        <span class="hl-orange">Lecture 1</span> named the properties.
+        <span class="hl-orange">Lecture 2</span> turned them into services,
+        policy and risk
+      </li>
+      <li>
+        <span class="hl-green">Lecture 3</span> built the toolbox;
+        <span class="hl-green">lecture 4</span> decided who may do what
+      </li>
+      <li>
+        <span class="hl-cyan">Lectures 5 to 7</span> spent it — on the host, the
+        application and the network
+      </li>
+      <li>
+        The same few ideas kept reappearing: least privilege, default deny,
+        defence in depth, and
+        <em class="hl-violet">data must never become code</em>
+      </li>
+    </ul>
+    <div class="box">
+      <p>
+        Name the property. Name the threat. Then pick the mechanism — and know
+        what it does not do.
+      </p>
+    </div>
+  </section>
+</section>
