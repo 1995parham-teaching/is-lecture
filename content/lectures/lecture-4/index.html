@@ -170,25 +170,27 @@ draft: false
       <li>
         <span class="hl-orange">Access control list</span> — store a column,
         attached to the object
+
+        <ul>
+          <li>"Who may touch this file?" is instant</li>
+          <li>
+            "What may this user touch?" means walking every object in the system
+          </li>
+          <li>Unix permissions, Windows ACLs, S3 bucket policies</li>
+        </ul>
       </li>
-      <ul>
-        <li>"Who may touch this file?" is instant</li>
-        <li>
-          "What may this user touch?" means walking every object in the system
-        </li>
-        <li>Unix permissions, Windows ACLs, S3 bucket policies</li>
-      </ul>
       <li>
         <span class="hl-green">Capability</span> — store a row, held by the
         subject as an unforgeable ticket
+
+        <ul>
+          <li>Fast to check, easy to delegate — and hard to revoke</li>
+          <li>
+            A bearer token is a capability, which is exactly why lecture 6
+            worries about where it is stored
+          </li>
+        </ul>
       </li>
-      <ul>
-        <li>Fast to check, easy to delegate — and hard to revoke</li>
-        <li>
-          A bearer token is a capability, which is exactly why lecture 6 worries
-          about where it is stored
-        </li>
-      </ul>
     </ul>
   </section>
   <section>
@@ -199,18 +201,20 @@ draft: false
         owns an object sets its permissions
       </li>
       <li>Flexible, familiar, and the default nearly everywhere</li>
-      <li>Two weaknesses, both structural:</li>
-      <ul>
-        <li>
-          One careless owner can expose anything they own —
-          <code>chmod 777</code> is one keystroke
-        </li>
-        <li>
-          <strong class="hl-red">Rights are transitive.</strong> A program you
-          run acts with <em>your</em> rights, so any program you run can give
-          your data away
-        </li>
-      </ul>
+      <li>
+        Two weaknesses, both structural:
+        <ul>
+          <li>
+            One careless owner can expose anything they own —
+            <code>chmod 777</code> is one keystroke
+          </li>
+          <li>
+            <strong class="hl-red">Rights are transitive.</strong> A program you
+            run acts with <em>your</em> rights, so any program you run can give
+            your data away
+          </li>
+        </ul>
+      </li>
     </ul>
   </section>
   <section class="hands-on">
@@ -274,11 +278,14 @@ drwxrwxrwt  110 root  wheel  3520 Aug 18 00:51 /private/tmp
       <li>
         <span class="hl-green">Bell–LaPadula</span> protects
         <strong>confidentiality</strong>
+
+        <ul>
+          <li><em>No read up</em> — you cannot read above your clearance</li>
+          <li>
+            <em>No write down</em> — and you cannot copy it downward either
+          </li>
+        </ul>
       </li>
-      <ul>
-        <li><em>No read up</em> — you cannot read above your clearance</li>
-        <li><em>No write down</em> — and you cannot copy it downward either</li>
-      </ul>
       <li>
         <span class="hl-cyan">Biba</span> protects <strong>integrity</strong>,
         and is exactly upside down: no read down, no write up
@@ -302,17 +309,19 @@ drwxrwxrwt  110 root  wheel  3520 Aug 18 00:51 /private/tmp
         When someone changes job you change one assignment, not forty
         permissions
       </li>
-      <li>Two refinements that matter in practice:</li>
-      <ul>
-        <li>
-          <span class="hl-green">Role hierarchy</span> — professor inherits
-          everything a lecturer may do
-        </li>
-        <li>
-          <span class="hl-cyan">Separation of duty</span> — no one person may
-          hold both <em>request payment</em> and <em>approve payment</em>
-        </li>
-      </ul>
+      <li>
+        Two refinements that matter in practice:
+        <ul>
+          <li>
+            <span class="hl-green">Role hierarchy</span> — professor inherits
+            everything a lecturer may do
+          </li>
+          <li>
+            <span class="hl-cyan">Separation of duty</span> — no one person may
+            hold both <em>request payment</em> and <em>approve payment</em>
+          </li>
+        </ul>
+      </li>
     </ul>
   </section>
   <section>
@@ -420,17 +429,18 @@ drwxrwxrwt  110 root  wheel  3520 Aug 18 00:51 /private/tmp
       <li>
         <span class="hl-cyan">FIDO2 / WebAuthn</span> — a key pair per site,
         held in hardware
+
+        <ul>
+          <li>
+            The one design that is <strong>phishing-resistant</strong>: the
+            browser signs over the real origin, so a look-alike domain gets a
+            signature that does not verify
+          </li>
+          <li>
+            Nothing shared, nothing to type, nothing to leak from the server
+          </li>
+        </ul>
       </li>
-      <ul>
-        <li>
-          The one design that is <strong>phishing-resistant</strong>: the
-          browser signs over the real origin, so a look-alike domain gets a
-          signature that does not verify
-        </li>
-        <li>
-          Nothing shared, nothing to type, nothing to leak from the server
-        </li>
-      </ul>
     </ul>
   </section>
   <section class="hands-on">
@@ -492,17 +502,19 @@ T=2000000000   code=69279037
       <li>
         And they are <em>reused</em>, guessable, phishable, and shared over chat
       </li>
-      <li>Two problems that need separating:</li>
-      <ul>
-        <li>
-          <span class="hl-orange">How the user chooses one</span> — a
-          human-factors problem
-        </li>
-        <li>
-          <span class="hl-green">How you store it</span> — an engineering
-          problem, and entirely your fault when it goes wrong
-        </li>
-      </ul>
+      <li>
+        Two problems that need separating:
+        <ul>
+          <li>
+            <span class="hl-orange">How the user chooses one</span> — a
+            human-factors problem
+          </li>
+          <li>
+            <span class="hl-green">How you store it</span> — an engineering
+            problem, and entirely your fault when it goes wrong
+          </li>
+        </ul>
+      </li>
     </ul>
   </section>
   <section class="hands-on">
@@ -730,23 +742,25 @@ scrypt, N=2^17 r=8 p=1              198.368 ms/hash            5 guesses/sec
       <li>
         <span class="hl-red">Presentation attack</span> — a lifted print in
         gelatin, a printed photograph, a recorded voice
+
+        <ul>
+          <li>
+            Answer: <span class="hl-green">liveness detection</span> — pulse,
+            depth, involuntary movement
+          </li>
+        </ul>
       </li>
-      <ul>
-        <li>
-          Answer: <span class="hl-green">liveness detection</span> — pulse,
-          depth, involuntary movement
-        </li>
-      </ul>
       <li>
         <span class="hl-red">Template theft</span> — the stored template is the
         irrevocable part
+
+        <ul>
+          <li>
+            Answer: never store raw biometrics; keep the template in secure
+            hardware, on the user's own device
+          </li>
+        </ul>
       </li>
-      <ul>
-        <li>
-          Answer: never store raw biometrics; keep the template in secure
-          hardware, on the user's own device
-        </li>
-      </ul>
       <li>
         <span class="hl-orange">Bias</span> — error rates differ measurably
         across demographic groups. A single published accuracy figure hides that

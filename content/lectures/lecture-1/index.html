@@ -89,13 +89,15 @@ draft: false
       <span class="hl-orange">property of the whole system</span>, and it is
       only as good as its worst part
     </li>
-    <li>Four questions we keep coming back to</li>
-    <ul>
-      <li>What are we protecting, and from whom?</li>
-      <li>What could go wrong, and how badly?</li>
-      <li>What does the defence cost — in money, and in usability?</li>
-      <li>How do we know it is working?</li>
-    </ul>
+    <li>
+      Four questions we keep coming back to
+      <ul>
+        <li>What are we protecting, and from whom?</li>
+        <li>What could go wrong, and how badly?</li>
+        <li>What does the defence cost — in money, and in usability?</li>
+        <li>How do we know it is working?</li>
+      </ul>
+    </li>
     <li>
       Engineer's approach: understand the mechanism, then decide where to spend
     </li>
@@ -107,24 +109,26 @@ draft: false
     <li>
       <strong class="hl-red">Not</strong> a list of tools to run against
       machines you do not own
+
+      <ul>
+        <li>
+          Every attack here is taught so you can <em>defend</em> against it —
+          you cannot defend what you do not understand
+        </li>
+      </ul>
     </li>
-    <ul>
-      <li>
-        Every attack here is taught so you can <em>defend</em> against it — you
-        cannot defend what you do not understand
-      </li>
-    </ul>
     <li>
       <strong class="hl-red">Not</strong> a cryptography course. We use
       cryptography as a <span class="hl-green">toolbox</span>; we do not prove
       it secure
+
+      <ul>
+        <li>
+          The rule for this course:
+          <em class="hl-cyan">never invent your own</em>
+        </li>
+      </ul>
     </li>
-    <ul>
-      <li>
-        The rule for this course:
-        <em class="hl-cyan">never invent your own</em>
-      </li>
-    </ul>
     <li>
       <strong class="hl-red">Not</strong> a product catalogue. Vendors and
       version numbers change; the failure modes do not
@@ -211,10 +215,13 @@ draft: false
       <li>
         <span class="hl-green">Non-repudiation</span> — and the sender cannot
         later deny it
+
+        <ul>
+          <li>
+            Needs a <em>digital signature</em>, not just a MAC (lecture 3)
+          </li>
+        </ul>
       </li>
-      <ul>
-        <li>Needs a <em>digital signature</em>, not just a MAC (lecture 3)</li>
-      </ul>
       <li>
         <span class="hl-cyan">Accountability</span> — every action traces back
         to a responsible identity
@@ -310,25 +317,27 @@ $ shasum -a 256 order.txt
       <li>
         <span class="hl-orange">Passive</span> — the attacker only
         <em>observes</em>. Nothing changes, so there is nothing to notice
+
+        <ul>
+          <li>Release of message contents · traffic analysis</li>
+          <li>
+            You cannot detect it; you
+            <strong class="hl-green">prevent</strong> it, with encryption
+          </li>
+        </ul>
       </li>
-      <ul>
-        <li>Release of message contents · traffic analysis</li>
-        <li>
-          You cannot detect it; you
-          <strong class="hl-green">prevent</strong> it, with encryption
-        </li>
-      </ul>
       <li>
         <span class="hl-red">Active</span> — the attacker <em>modifies</em> the
         stream or fakes one
+
+        <ul>
+          <li>Masquerade · replay · modification · denial of service</li>
+          <li>
+            You cannot prevent all of it; you
+            <strong class="hl-green">detect</strong> it and recover
+          </li>
+        </ul>
       </li>
-      <ul>
-        <li>Masquerade · replay · modification · denial of service</li>
-        <li>
-          You cannot prevent all of it; you
-          <strong class="hl-green">detect</strong> it and recover
-        </li>
-      </ul>
     </ul>
   </section>
   <section>
@@ -390,11 +399,12 @@ $ shasum -a 256 order.txt
       <li>
         The first and cheapest defence is always to
         <strong class="hl-green">make it smaller</strong>
+
+        <ul>
+          <li>Turn the service off · close the port · remove the feature</li>
+          <li>Code that is not there has no vulnerabilities</li>
+        </ul>
       </li>
-      <ul>
-        <li>Turn the service off · close the port · remove the feature</li>
-        <li>Code that is not there has no vulnerabilities</li>
-      </ul>
       <li>
         <span class="hl-orange">Attack tree</span>: put the goal at the root,
         the ways to reach it beneath, and keep asking "how?" until the leaves

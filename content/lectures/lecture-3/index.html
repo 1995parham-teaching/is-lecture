@@ -28,14 +28,16 @@ draft: false
       <li>
         That is a real win — key management is a problem we know how to work on
       </li>
-      <li>It is not a solution to anything by itself:</li>
-      <ul>
-        <li>It cannot fix a program that trusts the wrong input</li>
-        <li>It cannot tell you <em>who</em> the key belongs to</li>
-        <li>
-          It cannot help once the attacker is on the machine holding the key
-        </li>
-      </ul>
+      <li>
+        It is not a solution to anything by itself:
+        <ul>
+          <li>It cannot fix a program that trusts the wrong input</li>
+          <li>It cannot tell you <em>who</em> the key belongs to</li>
+          <li>
+            It cannot help once the attacker is on the machine holding the key
+          </li>
+        </ul>
+      </li>
     </ul>
     <div class="box">
       <p>
@@ -110,14 +112,15 @@ draft: false
       <li>
         <span class="hl-orange">Substitution</span> — an arbitrary permutation
         of the alphabet. 26! ≈ 2<sup>88</sup> keys, and still trivially broken
+
+        <ul>
+          <li>
+            Because the key space is not the point:
+            <strong class="hl-red">structure survives</strong>. `E` is still the
+            most common letter, whatever you call it
+          </li>
+        </ul>
       </li>
-      <ul>
-        <li>
-          Because the key space is not the point:
-          <strong class="hl-red">structure survives</strong>. `E` is still the
-          most common letter, whatever you call it
-        </li>
-      </ul>
       <li>
         <span class="hl-cyan">Vigenère</span> — a repeating key, which hides the
         frequencies until you find the period
@@ -176,15 +179,17 @@ draft: false
         Shannon proved it: with a random key used once, the ciphertext reveals
         <em class="hl-green">nothing</em>. Perfect secrecy, not "hard to break"
       </li>
-      <li>And it is useless in practice, for three reasons:</li>
-      <ul>
-        <li>The key is as big as the data, and must be shared in advance</li>
-        <li>It must be truly random</li>
-        <li>
-          <strong class="hl-red">Used twice, it collapses</strong> — XOR two
-          ciphertexts and the key cancels out
-        </li>
-      </ul>
+      <li>
+        And it is useless in practice, for three reasons:
+        <ul>
+          <li>The key is as big as the data, and must be shared in advance</li>
+          <li>It must be truly random</li>
+          <li>
+            <strong class="hl-red">Used twice, it collapses</strong> — XOR two
+            ciphertexts and the key cancels out
+          </li>
+        </ul>
+      </li>
       <li>
         Every stream cipher is an attempt to fake this, and the "never twice"
         rule follows it all the way
@@ -222,19 +227,21 @@ draft: false
       <li>
         <span class="hl-orange">Block cipher</span> — encrypts a fixed-size
         block, e.g. 128 bits at a time
+
+        <ul>
+          <li>
+            AES. Needs a <em>mode</em> to handle anything longer than one block
+          </li>
+        </ul>
       </li>
-      <ul>
-        <li>
-          AES. Needs a <em>mode</em> to handle anything longer than one block
-        </li>
-      </ul>
       <li>
         <span class="hl-green">Stream cipher</span> — generates a keystream and
         XORs it with the data
+
+        <ul>
+          <li>ChaCha20. Naturally handles any length, byte by byte</li>
+        </ul>
       </li>
-      <ul>
-        <li>ChaCha20. Naturally handles any length, byte by byte</li>
-      </ul>
       <li>
         In modern practice the line is blurred: AES in counter mode
         <em class="hl-cyan">is</em> a stream cipher built from a block cipher
@@ -381,21 +388,23 @@ draft: false
         <em class="hl-orange">Not encryption</em> — there is nothing to reverse,
         because information was thrown away
       </li>
-      <li>Three properties, in increasing order of difficulty to achieve:</li>
-      <ul>
-        <li>
-          <span class="hl-green">Preimage</span> — given <em>h</em>, you cannot
-          find any <em>m</em> with hash <em>h</em>
-        </li>
-        <li>
-          <span class="hl-cyan">Second preimage</span> — given <em>m</em>, you
-          cannot find a different <em>m′</em> with the same hash
-        </li>
-        <li>
-          <span class="hl-violet">Collision</span> — you cannot find
-          <em>any</em> pair that collides
-        </li>
-      </ul>
+      <li>
+        Three properties, in increasing order of difficulty to achieve:
+        <ul>
+          <li>
+            <span class="hl-green">Preimage</span> — given <em>h</em>, you
+            cannot find any <em>m</em> with hash <em>h</em>
+          </li>
+          <li>
+            <span class="hl-cyan">Second preimage</span> — given <em>m</em>, you
+            cannot find a different <em>m′</em> with the same hash
+          </li>
+          <li>
+            <span class="hl-violet">Collision</span> — you cannot find
+            <em>any</em> pair that collides
+          </li>
+        </ul>
+      </li>
       <li>
         Collisions are the easiest to attack — the birthday bound puts an
         <em>n</em>-bit hash at only <em>n</em>/2 bits of collision resistance
@@ -516,15 +525,16 @@ HMAC(K, m) = H( (K ⊕ opad) ‖ H( (K ⊕ ipad) ‖ m ) )
       <li>
         The answer is <span class="hl-green">authenticated encryption</span>:
         confidentiality and integrity from one primitive, with one key
+
+        <ul>
+          <li>AES-GCM · ChaCha20-Poly1305 · AES-CCM</li>
+          <li>
+            If you must combine them by hand, it is
+            <em class="hl-cyan">encrypt-then-MAC</em>. The other orders have
+            published attacks
+          </li>
+        </ul>
       </li>
-      <ul>
-        <li>AES-GCM · ChaCha20-Poly1305 · AES-CCM</li>
-        <li>
-          If you must combine them by hand, it is
-          <em class="hl-cyan">encrypt-then-MAC</em>. The other orders have
-          published attacks
-        </li>
-      </ul>
     </ul>
   </section>
   <section class="hands-on">
@@ -700,14 +710,15 @@ open one bit flipped: "" err=cipher: message authentication failed
       </li>
       <li>
         <span class="hl-green">Hybrid encryption</span> is what actually runs:
+
+        <ol>
+          <li>Generate a random symmetric key for this message</li>
+          <li>Encrypt the data with AES-GCM under that key — fast</li>
+          <li>
+            Encrypt <em>the key</em> with the recipient's public key — small
+          </li>
+        </ol>
       </li>
-      <ol>
-        <li>Generate a random symmetric key for this message</li>
-        <li>Encrypt the data with AES-GCM under that key — fast</li>
-        <li>
-          Encrypt <em>the key</em> with the recipient's public key — small
-        </li>
-      </ol>
       <li>
         TLS, PGP, Signal, encrypted disks: all the same shape. Public key to
         move a key, symmetric key to move the data
@@ -848,13 +859,15 @@ Signature Verification Failure
         <em>"this public key belongs to this name"</em>
       </li>
       <li>Signed by a <span class="hl-orange">Certificate Authority</span></li>
-      <li>An X.509 certificate carries, at minimum:</li>
-      <ul>
-        <li>Subject — the name it is about</li>
-        <li>The subject's public key</li>
-        <li>Issuer, validity dates, allowed uses</li>
-        <li>The CA's signature over all of it</li>
-      </ul>
+      <li>
+        An X.509 certificate carries, at minimum:
+        <ul>
+          <li>Subject — the name it is about</li>
+          <li>The subject's public key</li>
+          <li>Issuer, validity dates, allowed uses</li>
+          <li>The CA's signature over all of it</li>
+        </ul>
+      </li>
       <li>
         Your trust in a website is a chain: leaf → intermediate →
         <span class="hl-cyan">root</span>, and the root is
@@ -874,17 +887,19 @@ Signature Verification Failure
         a valid certificate for <code>*.google.com</code>, used to intercept
         Iranian users. The CA was distrusted and went bankrupt
       </li>
-      <li>The patches are structural, not cryptographic:</li>
-      <ul>
-        <li>
-          <span class="hl-green">Certificate Transparency</span> — every issued
-          certificate is logged publicly, so misissuance is visible
-        </li>
-        <li>
-          <span class="hl-cyan">CAA records</span> — the domain owner names
-          which CAs may issue for it
-        </li>
-      </ul>
+      <li>
+        The patches are structural, not cryptographic:
+        <ul>
+          <li>
+            <span class="hl-green">Certificate Transparency</span> — every
+            issued certificate is logged publicly, so misissuance is visible
+          </li>
+          <li>
+            <span class="hl-cyan">CAA records</span> — the domain owner names
+            which CAs may issue for it
+          </li>
+        </ul>
+      </li>
     </ul>
   </section>
   <section>

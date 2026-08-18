@@ -239,12 +239,16 @@ draft: false
         <span class="hl-orange">enterprise security architecture</span> says
         where they go in <em>your</em> organization
       </li>
-      <li>It answers, on one page each:</li>
-      <ul>
-        <li>What are the assets, and who owns each one?</li>
-        <li>What are the zones, and what crosses between them?</li>
-        <li>Which control enforces which requirement, and who operates it?</li>
-      </ul>
+      <li>
+        It answers, on one page each:
+        <ul>
+          <li>What are the assets, and who owns each one?</li>
+          <li>What are the zones, and what crosses between them?</li>
+          <li>
+            Which control enforces which requirement, and who operates it?
+          </li>
+        </ul>
+      </li>
       <li>
         Without it you get <em class="hl-red">point solutions</em>: nine
         products, six of them overlapping, and one gap nobody owns
@@ -294,11 +298,12 @@ draft: false
       <li>
         The interesting security is never inside a zone. It is at the
         <strong class="hl-red">boundary</strong>
+
+        <ul>
+          <li>Every boundary needs one place traffic must pass through</li>
+          <li>Every boundary is where you authenticate, filter and log</li>
+        </ul>
       </li>
-      <ul>
-        <li>Every boundary needs one place traffic must pass through</li>
-        <li>Every boundary is where you authenticate, filter and log</li>
-      </ul>
       <li>
         Draw them once and the firewall rules, the network design and the audit
         scope all fall out of the same picture — lecture 7 builds this properly
@@ -316,16 +321,18 @@ draft: false
         Every breach report has the same sentence in it somewhere:
         <em class="hl-red">"the server was not in the inventory"</em>
       </li>
-      <li>Each asset needs an owner, a classification, and a location</li>
-      <ul>
-        <li>
-          <span class="hl-cyan">Classification</span> — public · internal ·
-          confidential · restricted
-        </li>
-        <li>
-          The label decides which controls apply, so it must be a short list
-        </li>
-      </ul>
+      <li>
+        Each asset needs an owner, a classification, and a location
+        <ul>
+          <li>
+            <span class="hl-cyan">Classification</span> — public · internal ·
+            confidential · restricted
+          </li>
+          <li>
+            The label decides which controls apply, so it must be a short list
+          </li>
+        </ul>
+      </li>
       <li>
         CIS Control 1 and 2 are inventory of hardware and software. They are
         first on purpose
@@ -434,17 +441,20 @@ draft: false
         An <span class="hl-orange">Information Security Management System</span>
         is the machinery that keeps policy connected to reality
       </li>
-      <li>Plan · Do · Check · Act, forever</li>
-      <ul>
-        <li>
-          <span class="hl-green">Plan</span> — assess risk, choose controls
-        </li>
-        <li><span class="hl-green">Do</span> — implement and operate them</li>
-        <li>
-          <span class="hl-cyan">Check</span> — measure, audit, review incidents
-        </li>
-        <li><span class="hl-cyan">Act</span> — fix what the check found</li>
-      </ul>
+      <li>
+        Plan · Do · Check · Act, forever
+        <ul>
+          <li>
+            <span class="hl-green">Plan</span> — assess risk, choose controls
+          </li>
+          <li><span class="hl-green">Do</span> — implement and operate them</li>
+          <li>
+            <span class="hl-cyan">Check</span> — measure, audit, review
+            incidents
+          </li>
+          <li><span class="hl-cyan">Act</span> — fix what the check found</li>
+        </ul>
+      </li>
       <li>
         ISO 27001 certifies the <em>loop</em>, not the controls. An organization
         can be certified and still be badly defended
@@ -494,14 +504,16 @@ draft: false
         <span class="hl-green">Risk = likelihood × impact</span>, on the asset,
         given the threat and the vulnerability
       </li>
-      <li>The loop, from ISO 27005 and NIST SP 800-30:</li>
-      <ol>
-        <li>Identify — assets, threats, vulnerabilities</li>
-        <li>Analyse — how likely, how bad</li>
-        <li>Evaluate — compare against the appetite</li>
-        <li>Treat — do something about it</li>
-        <li>Monitor — because all four inputs move</li>
-      </ol>
+      <li>
+        The loop, from ISO 27005 and NIST SP 800-30:
+        <ol>
+          <li>Identify — assets, threats, vulnerabilities</li>
+          <li>Analyse — how likely, how bad</li>
+          <li>Evaluate — compare against the appetite</li>
+          <li>Treat — do something about it</li>
+          <li>Monitor — because all four inputs move</li>
+        </ol>
+      </li>
     </ul>
   </section>
   <section>
@@ -510,19 +522,24 @@ draft: false
       <li>
         <span class="hl-orange">Qualitative</span> — high / medium / low on a
         5×5 matrix
+
+        <ul>
+          <li>Fast, needs no data, and everyone can join in</li>
+          <li>
+            <em class="hl-red">"High" is not a number</em> — you cannot add two
+            of them, or compare across teams
+          </li>
+        </ul>
       </li>
-      <ul>
-        <li>Fast, needs no data, and everyone can join in</li>
-        <li>
-          <em class="hl-red">"High" is not a number</em> — you cannot add two of
-          them, or compare across teams
-        </li>
-      </ul>
-      <li><span class="hl-cyan">Quantitative</span> — money per year</li>
-      <ul>
-        <li>Comparable, and speaks the language of the budget holder</li>
-        <li>Needs frequency data that most organizations simply do not have</li>
-      </ul>
+      <li>
+        <span class="hl-cyan">Quantitative</span> — money per year
+        <ul>
+          <li>Comparable, and speaks the language of the budget holder</li>
+          <li>
+            Needs frequency data that most organizations simply do not have
+          </li>
+        </ul>
+      </li>
       <li>
         In practice: qualitative to triage, quantitative for the few decisions
         big enough to deserve it
@@ -654,15 +671,16 @@ net                           =      -18,000 per year
       <li>
         The four phases of NIST SP 800-61, and note that the middle one is a
         loop
+
+        <ol>
+          <li><span class="hl-green">Preparation</span></li>
+          <li><span class="hl-cyan">Detection and analysis</span></li>
+          <li>
+            <span class="hl-orange">Containment, eradication and recovery</span>
+          </li>
+          <li><span class="hl-violet">Post-incident activity</span></li>
+        </ol>
       </li>
-      <ol>
-        <li><span class="hl-green">Preparation</span></li>
-        <li><span class="hl-cyan">Detection and analysis</span></li>
-        <li>
-          <span class="hl-orange">Containment, eradication and recovery</span>
-        </li>
-        <li><span class="hl-violet">Post-incident activity</span></li>
-      </ol>
       <li>
         Phase 1 is the only one you can do <em>today</em>, and it decides how
         the other three go
@@ -723,13 +741,14 @@ net                           =      -18,000 per year
       <li>
         <span class="hl-green">Blameless.</span> The question is what let a
         mistake become an incident, not who made it
+
+        <ul>
+          <li>
+            Blame produces silence, and silence is how the next one goes
+            undetected
+          </li>
+        </ul>
       </li>
-      <ul>
-        <li>
-          Blame produces silence, and silence is how the next one goes
-          undetected
-        </li>
-      </ul>
       <li>Output is a small number of dated actions with owners</li>
       <li>
         Feed it back into the risk register — an incident is
@@ -750,17 +769,19 @@ net                           =      -18,000 per year
         It starts with a <span class="hl-green">Business Impact Analysis</span>:
         which processes matter, and how long can each be down
       </li>
-      <li>Two numbers per process, and they are not the same number</li>
-      <ul>
-        <li>
-          <span class="hl-cyan">RTO</span> — recovery time objective: how long
-          until it is back
-        </li>
-        <li>
-          <span class="hl-violet">RPO</span> — recovery point objective: how
-          much data you can afford to lose
-        </li>
-      </ul>
+      <li>
+        Two numbers per process, and they are not the same number
+        <ul>
+          <li>
+            <span class="hl-cyan">RTO</span> — recovery time objective: how long
+            until it is back
+          </li>
+          <li>
+            <span class="hl-violet">RPO</span> — recovery point objective: how
+            much data you can afford to lose
+          </li>
+        </ul>
+      </li>
       <li>
         An RPO of one hour means backups every hour. The number
         <em>is</em> the requirement

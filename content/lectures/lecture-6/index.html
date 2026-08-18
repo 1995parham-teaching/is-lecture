@@ -25,14 +25,16 @@ draft: false
         <strong class="hl-red">arbitrary input from strangers</strong>, all day,
         with no gate in front of it
       </li>
-      <li>Everything the client sends is under the client's control</li>
-      <ul>
-        <li>Path, query, headers, cookies, body — all of it</li>
-        <li>
-          Including fields <em>your own form</em> generated. The browser is
-          <span class="hl-orange">not</span> part of your system
-        </li>
-      </ul>
+      <li>
+        Everything the client sends is under the client's control
+        <ul>
+          <li>Path, query, headers, cookies, body — all of it</li>
+          <li>
+            Including fields <em>your own form</em> generated. The browser is
+            <span class="hl-orange">not</span> part of your system
+          </li>
+        </ul>
+      </li>
       <li>
         Client-side validation is a <em class="hl-cyan">usability</em> feature.
         It is not a control, because the attacker does not use your form
@@ -73,12 +75,13 @@ draft: false
       <li>
         Nearly every vulnerability in this lecture is one bug: data supplied by
         a user is parsed as instructions by some interpreter
+
+        <ul>
+          <li>SQL injection — data becomes part of a query</li>
+          <li>XSS — data becomes part of an HTML document</li>
+          <li>Command injection — data becomes part of a shell command</li>
+        </ul>
       </li>
-      <ul>
-        <li>SQL injection — data becomes part of a query</li>
-        <li>XSS — data becomes part of an HTML document</li>
-        <li>Command injection — data becomes part of a shell command</li>
-      </ul>
       <li>
         Lecture 5 met the same bug in C: a name became a privilege flag because
         nothing separated the two
@@ -210,16 +213,17 @@ GET /api/invoices/1042     → someone else's invoice
       <li>
         The attacker points it <strong class="hl-red">inward</strong>, and your
         server is already inside the firewall
+
+        <ul>
+          <li>
+            <code>http://169.254.169.254/</code> — the cloud metadata service,
+            and often the credentials with it
+          </li>
+          <li>
+            <code>http://localhost:6379/</code> — the admin port with no auth
+          </li>
+        </ul>
       </li>
-      <ul>
-        <li>
-          <code>http://169.254.169.254/</code> — the cloud metadata service, and
-          often the credentials with it
-        </li>
-        <li>
-          <code>http://localhost:6379/</code> — the admin port with no auth
-        </li>
-      </ul>
       <li>
         Defences: an <em class="hl-green">allow-list</em> of destinations,
         resolve the name and check the address before connecting, and give the
@@ -478,14 +482,15 @@ Set-Cookie: session=1nEDix88iEUq4gQ16crT6A; Path=/; HttpOnly; Secure; SameSite=L
         <span class="hl-orange">Fixation</span> — the attacker plants a session
         identifier <em>before</em> you log in and waits for you to authenticate
         it
+
+        <ul>
+          <li>
+            Fix in one line:
+            <strong class="hl-green">issue a new identifier at login</strong>,
+            and again at any privilege change
+          </li>
+        </ul>
       </li>
-      <ul>
-        <li>
-          Fix in one line:
-          <strong class="hl-green">issue a new identifier at login</strong>, and
-          again at any privilege change
-        </li>
-      </ul>
       <li>
         <span class="hl-yellow">Never in the URL.</span> URLs end up in browser
         history, server logs, and the <code>Referer</code> header sent to other
@@ -512,17 +517,18 @@ Set-Cookie: session=1nEDix88iEUq4gQ16crT6A; Path=/; HttpOnly; Secure; SameSite=L
       <li>
         This is the strongest argument for server-side sessions over
         self-contained tokens
+
+        <ul>
+          <li>
+            A signed <span class="hl-orange">JWT</span> is valid until it
+            expires, because nothing is consulted to check it
+          </li>
+          <li>
+            Revoking one means keeping a deny-list — which is a session store,
+            rebuilt reluctantly
+          </li>
+        </ul>
       </li>
-      <ul>
-        <li>
-          A signed <span class="hl-orange">JWT</span> is valid until it expires,
-          because nothing is consulted to check it
-        </li>
-        <li>
-          Revoking one means keeping a deny-list — which is a session store,
-          rebuilt reluctantly
-        </li>
-      </ul>
       <li>
         And a JWT is <em class="hl-red">signed, not encrypted</em>. The payload
         is readable base64url; do not put secrets in it

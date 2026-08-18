@@ -68,21 +68,23 @@ draft: false
   <section>
     <h2>The Reference Monitor</h2>
     <ul>
-      <li>The idealised access-control enforcer. Three requirements:</li>
-      <ul>
-        <li>
-          <span class="hl-orange">Complete mediation</span> — every access goes
-          through it, with no side door
-        </li>
-        <li>
-          <span class="hl-green">Tamper-proof</span> — nothing it governs can
-          modify it
-        </li>
-        <li>
-          <span class="hl-cyan">Verifiable</span> — small enough that it can be
-          analysed
-        </li>
-      </ul>
+      <li>
+        The idealised access-control enforcer. Three requirements:
+        <ul>
+          <li>
+            <span class="hl-orange">Complete mediation</span> — every access
+            goes through it, with no side door
+          </li>
+          <li>
+            <span class="hl-green">Tamper-proof</span> — nothing it governs can
+            modify it
+          </li>
+          <li>
+            <span class="hl-cyan">Verifiable</span> — small enough that it can
+            be analysed
+          </li>
+        </ul>
+      </li>
       <li>
         Real kernels approximate all three and achieve none exactly, which is
         why the rest of this lecture exists
@@ -127,21 +129,23 @@ draft: false
         Configuration, credentials, keys, logs and the data itself all live in
         one namespace governed by one mechanism
       </li>
-      <li>Lecture 4 gave the model. Here it is the operational detail:</li>
-      <ul>
-        <li>
-          Sensitive files should be <code>0600</code>, owned by the service
-          account
-        </li>
-        <li>
-          Directories need <code>x</code> to traverse — a permissive parent
-          undoes a strict child
-        </li>
-        <li>
-          Audit setuid binaries. Each one is a place a local user becomes
-          another user
-        </li>
-      </ul>
+      <li>
+        Lecture 4 gave the model. Here it is the operational detail:
+        <ul>
+          <li>
+            Sensitive files should be <code>0600</code>, owned by the service
+            account
+          </li>
+          <li>
+            Directories need <code>x</code> to traverse — a permissive parent
+            undoes a strict child
+          </li>
+          <li>
+            Audit setuid binaries. Each one is a place a local user becomes
+            another user
+          </li>
+        </ul>
+      </li>
       <li>
         The mistakes that recur: a world-readable key, a backup written with the
         wrong <code>umask</code>, a config committed to git
@@ -283,13 +287,15 @@ draft: false
       <li>
         <span class="hl-orange">Signature</span> — match known bytes. Exact, and
         useless against anything new
+
+        <ul>
+          <li>
+            Defeated by <em>polymorphic</em> malware, which re-encrypts itself
+            per copy, and <em>metamorphic</em>, which rewrites its own
+            instructions
+          </li>
+        </ul>
       </li>
-      <ul>
-        <li>
-          Defeated by <em>polymorphic</em> malware, which re-encrypts itself per
-          copy, and <em>metamorphic</em>, which rewrites its own instructions
-        </li>
-      </ul>
       <li>
         <span class="hl-green">Heuristic</span> — suspicious structure. Catches
         variants, and raises false alarms
@@ -492,17 +498,19 @@ exit=134          # SIGABRT — the canary was overwritten
         place, and is invisible to the host it is watching
       </li>
       <li>They are complements, not alternatives</li>
-      <li>Two detection strategies, with opposite failure modes:</li>
-      <ul>
-        <li>
-          <span class="hl-green">Misuse</span> — match known-bad. Precise; blind
-          to the new
-        </li>
-        <li>
-          <span class="hl-violet">Anomaly</span> — model normal, alert on
-          deviation. Can catch the new; buries you in false alarms
-        </li>
-      </ul>
+      <li>
+        Two detection strategies, with opposite failure modes:
+        <ul>
+          <li>
+            <span class="hl-green">Misuse</span> — match known-bad. Precise;
+            blind to the new
+          </li>
+          <li>
+            <span class="hl-violet">Anomaly</span> — model normal, alert on
+            deviation. Can catch the new; buries you in false alarms
+          </li>
+        </ul>
+      </li>
     </ul>
   </section>
   <section class="hands-on">
@@ -535,21 +543,23 @@ P(attack | alarm)            9.01%
         This is why analysts stop reading alerts, and why the alert that
         mattered was in the queue all along
       </li>
-      <li>What actually helps:</li>
-      <ul>
-        <li>
-          <span class="hl-green">Raise the base rate</span> — watch a narrower,
-          higher-value population rather than everything
-        </li>
-        <li>
-          <span class="hl-cyan">Correlate</span> — require two weak signals, so
-          the false-positive rates multiply
-        </li>
-        <li>
-          <span class="hl-orange">Drive the false-alarm rate down</span>, even
-          at the cost of detection. 0.01% would change the table above tenfold
-        </li>
-      </ul>
+      <li>
+        What actually helps:
+        <ul>
+          <li>
+            <span class="hl-green">Raise the base rate</span> — watch a
+            narrower, higher-value population rather than everything
+          </li>
+          <li>
+            <span class="hl-cyan">Correlate</span> — require two weak signals,
+            so the false-positive rates multiply
+          </li>
+          <li>
+            <span class="hl-orange">Drive the false-alarm rate down</span>, even
+            at the cost of detection. 0.01% would change the table above tenfold
+          </li>
+        </ul>
+      </li>
     </ul>
   </section>
 </section>
@@ -563,17 +573,18 @@ P(attack | alarm)            9.01%
       <li>
         A <span class="hl-orange">hypervisor</span> runs several operating
         systems on one machine, each believing it has the hardware
+
+        <ul>
+          <li>
+            <span class="hl-green">Type 1</span> — on the bare metal. ESXi,
+            Hyper-V, KVM. Small TCB, and what clouds run
+          </li>
+          <li>
+            <span class="hl-cyan">Type 2</span> — on top of a host OS.
+            VirtualBox, VMware Workstation. The whole host OS joins your TCB
+          </li>
+        </ul>
       </li>
-      <ul>
-        <li>
-          <span class="hl-green">Type 1</span> — on the bare metal. ESXi,
-          Hyper-V, KVM. Small TCB, and what clouds run
-        </li>
-        <li>
-          <span class="hl-cyan">Type 2</span> — on top of a host OS. VirtualBox,
-          VMware Workstation. The whole host OS joins your TCB
-        </li>
-      </ul>
       <li>
         For security the appeal is simple: a compromised VM is a compromised
         <em>VM</em>. The blast radius has a wall around it

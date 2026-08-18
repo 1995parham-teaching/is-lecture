@@ -25,13 +25,17 @@ draft: false
         knew every other operator. Authentication was not an omission — it was
         <em class="hl-orange">out of scope</em>
       </li>
-      <li>Consequences we still live with:</li>
-      <ul>
-        <li>A source IP address is a <strong class="hl-red">claim</strong></li>
-        <li>An ARP reply is believed by whoever hears it</li>
-        <li>A DNS answer is accepted if it arrives first</li>
-        <li>A BGP announcement is accepted because a peer said so</li>
-      </ul>
+      <li>
+        Consequences we still live with:
+        <ul>
+          <li>
+            A source IP address is a <strong class="hl-red">claim</strong>
+          </li>
+          <li>An ARP reply is believed by whoever hears it</li>
+          <li>A DNS answer is accepted if it arrives first</li>
+          <li>A BGP announcement is accepted because a peer said so</li>
+        </ul>
+      </li>
       <li>
         Everything in this lecture is a patch over that original assumption
       </li>
@@ -47,13 +51,14 @@ draft: false
       <li>
         Switches made it harder by accident, not by design: a switch forwards by
         MAC address, so you only see your own traffic
+
+        <ul>
+          <li>
+            Until <span class="hl-red">MAC flooding</span> overflows the
+            switch's address table and it fails open, broadcasting everything
+          </li>
+        </ul>
       </li>
-      <ul>
-        <li>
-          Until <span class="hl-red">MAC flooding</span> overflows the switch's
-          address table and it fails open, broadcasting everything
-        </li>
-      </ul>
       <li>
         The defence is not "stop them listening" — it is
         <strong class="hl-green">encryption</strong>, so that listening gains
@@ -68,10 +73,11 @@ draft: false
         <span class="hl-orange">ARP spoofing</span> — announce that
         <em>your</em> MAC address owns the gateway's IP. Every host on the
         segment believes you, and now you are the gateway
+
+        <ul>
+          <li>ARP has no authentication at all. There is nothing to break</li>
+        </ul>
       </li>
-      <ul>
-        <li>ARP has no authentication at all. There is nothing to break</li>
-      </ul>
       <li>
         <span class="hl-orange">DNS spoofing</span> — answer the query before
         the real server does, or poison a resolver's cache so it lies to
@@ -268,14 +274,18 @@ draft: false
         The perimeter model assumes inside is safe. Remote work, cloud services
         and phones on the corporate wifi ended that assumption
       </li>
-      <li>Zero trust replaces it with per-request decisions:</li>
-      <ul>
-        <li>
-          Authenticate the <em>user</em> and the <em>device</em>, every time
-        </li>
-        <li>Authorize the specific resource, not the network</li>
-        <li>Assume breach — design as though the attacker is already inside</li>
-      </ul>
+      <li>
+        Zero trust replaces it with per-request decisions:
+        <ul>
+          <li>
+            Authenticate the <em>user</em> and the <em>device</em>, every time
+          </li>
+          <li>Authorize the specific resource, not the network</li>
+          <li>
+            Assume breach — design as though the attacker is already inside
+          </li>
+        </ul>
+      </li>
       <li>
         NIST SP 800-207 is the reference. It is a
         <strong class="hl-orange">direction</strong>, not a product, whatever
@@ -431,17 +441,18 @@ draft: false
       <li>
         <span class="hl-orange">802.1X</span> authenticates the
         <em>device or user</em> before the port carries any traffic
+
+        <ul>
+          <li>
+            Supplicant (the client) → authenticator (the switch or access point)
+            → authentication server (RADIUS)
+          </li>
+          <li>
+            Until it succeeds, the port passes nothing but the authentication
+            exchange itself
+          </li>
+        </ul>
       </li>
-      <ul>
-        <li>
-          Supplicant (the client) → authenticator (the switch or access point) →
-          authentication server (RADIUS)
-        </li>
-        <li>
-          Until it succeeds, the port passes nothing but the authentication
-          exchange itself
-        </li>
-      </ul>
       <li>
         <span class="hl-green">NAC</span> adds a posture check — patched,
         encrypted, running the agent — and can drop a failing device into a
@@ -465,17 +476,19 @@ draft: false
         <span class="hl-cyan">peer authentication</span> — the X.800 services,
         applied to a whole link
       </li>
-      <li>Two shapes, for two problems:</li>
-      <ul>
-        <li>
-          <span class="hl-violet">Site-to-site</span> — two offices joined
-          through routers. Users never know it is there
-        </li>
-        <li>
-          <span class="hl-violet">Remote access</span> — one device joining from
-          anywhere
-        </li>
-      </ul>
+      <li>
+        Two shapes, for two problems:
+        <ul>
+          <li>
+            <span class="hl-violet">Site-to-site</span> — two offices joined
+            through routers. Users never know it is there
+          </li>
+          <li>
+            <span class="hl-violet">Remote access</span> — one device joining
+            from anywhere
+          </li>
+        </ul>
+      </li>
       <li>
         What it is <strong class="hl-red">not</strong>: a defence against
         anything on either end. A compromised laptop on a VPN is a compromised
@@ -487,28 +500,32 @@ draft: false
     <h2>IPsec</h2>
     <ul>
       <li>Security at the IP layer, so every protocol above it is covered</li>
-      <li>Two protocols, and only one is used:</li>
-      <ul>
-        <li>
-          <span class="hl-yellow">AH</span> — integrity and authentication, no
-          encryption. Rarely deployed
-        </li>
-        <li>
-          <span class="hl-green">ESP</span> — encryption plus integrity. This is
-          the one
-        </li>
-      </ul>
-      <li>Two modes, and the difference is what gets hidden:</li>
-      <ul>
-        <li>
-          <span class="hl-cyan">Transport</span> — protects the payload, leaves
-          the original header. Host to host
-        </li>
-        <li>
-          <span class="hl-cyan">Tunnel</span> — wraps the entire packet in a new
-          one, so the inner addresses are hidden too. Gateway to gateway
-        </li>
-      </ul>
+      <li>
+        Two protocols, and only one is used:
+        <ul>
+          <li>
+            <span class="hl-yellow">AH</span> — integrity and authentication, no
+            encryption. Rarely deployed
+          </li>
+          <li>
+            <span class="hl-green">ESP</span> — encryption plus integrity. This
+            is the one
+          </li>
+        </ul>
+      </li>
+      <li>
+        Two modes, and the difference is what gets hidden:
+        <ul>
+          <li>
+            <span class="hl-cyan">Transport</span> — protects the payload,
+            leaves the original header. Host to host
+          </li>
+          <li>
+            <span class="hl-cyan">Tunnel</span> — wraps the entire packet in a
+            new one, so the inner addresses are hidden too. Gateway to gateway
+          </li>
+        </ul>
+      </li>
       <li>
         <span class="hl-orange">IKEv2</span> does the authentication and key
         agreement, and rekeys on a timer
@@ -572,17 +589,18 @@ draft: false
       </li>
       <li>
         Two kinds of port, and the distinction causes most VLAN incidents:
+
+        <ul>
+          <li>
+            <span class="hl-cyan">Access port</span> — one VLAN, untagged. Where
+            a host plugs in
+          </li>
+          <li>
+            <span class="hl-cyan">Trunk port</span> — many VLANs, tagged.
+            Between switches
+          </li>
+        </ul>
       </li>
-      <ul>
-        <li>
-          <span class="hl-cyan">Access port</span> — one VLAN, untagged. Where a
-          host plugs in
-        </li>
-        <li>
-          <span class="hl-cyan">Trunk port</span> — many VLANs, tagged. Between
-          switches
-        </li>
-      </ul>
     </ul>
   </section>
   <section>
@@ -591,24 +609,27 @@ draft: false
       <li>
         <span class="hl-red">Switch spoofing</span> — the attacker's host
         pretends to be a switch and negotiates a trunk, receiving every VLAN
+
+        <ul>
+          <li>
+            Fix: disable automatic trunk negotiation, and set every user-facing
+            port to access mode explicitly
+          </li>
+        </ul>
       </li>
-      <ul>
-        <li>
-          Fix: disable automatic trunk negotiation, and set every user-facing
-          port to access mode explicitly
-        </li>
-      </ul>
       <li>
         <span class="hl-red">Double tagging</span> — send a frame with two tags.
         The first switch strips the outer one and forwards it; the second reads
         the inner tag and delivers it to a VLAN the attacker cannot reach
+
+        <ul>
+          <li>
+            It works because the <em class="hl-orange">native VLAN</em> is
+            carried untagged. Fix: make the native VLAN an unused one, and tag
+            it
+          </li>
+        </ul>
       </li>
-      <ul>
-        <li>
-          It works because the <em class="hl-orange">native VLAN</em> is carried
-          untagged. Fix: make the native VLAN an unused one, and tag it
-        </li>
-      </ul>
       <li>
         Note the direction — double tagging is one-way. Enough to attack, not to
         converse
