@@ -38,6 +38,13 @@ fact only the instructor has, and it needs changing in both repositories.
 - The slide after it is the point of the pair: a bare hash is integrity against
   accident, not against an adversary, because whoever rewrites the file rewrites
   the digest. Do not merge the two slides.
+- The hexdump on **Metadata, in One Command** is a real capture, taken with the
+  command printed on the slide. It is the `server_name` extension of a
+  ClientHello to `example.com`: `00 00` is the extension type, `00 0b` the
+  length, then the hostname in ASCII. The offsets are OpenSSL's — a different
+  client sends a different-sized hello and the name lands elsewhere, so
+  re-capture rather than adjust the offsets by hand. Nothing here touches the
+  instructor's own network: the only address involved is a public one.
 - FIPS 199 defines C, I and A. Authenticity and accountability come from NIST
   SP 800-33 — the attribution on **Three Is Not Always Enough** is deliberate.
 - The eight design principles are Saltzer and Schroeder, 1975, and the names are

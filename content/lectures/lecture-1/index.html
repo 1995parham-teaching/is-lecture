@@ -361,6 +361,26 @@ $ shasum -a 256 order.txt
       </li>
     </ul>
   </section>
+  <section class="hands-on">
+    <h2>Metadata, in One Command</h2>
+    <pre><code class="lang-sh">
+$ openssl s_client -connect example.com:443 -servername example.com \
+      -msg &lt;/dev/null 2&gt;&amp;1 |
+    awk '/ClientHello/{p=1;next} /^[&lt;&gt;]/{p=0} p' | xxd -r -p |
+    xxd | grep -B1 -A1 example
+
+00000080: 3c00 3500 2f01 0005 78ff 0100 0100 0000  &lt;.5./...x.......
+00000090: 0010 000e 0000 0b65 7861 6d70 6c65 2e63  .......example.c
+000000a0: 6f6d 000b 0002 0100 000a 0012 0010 11ec  om..............
+    </code></pre>
+    <p>
+      The first packet of the connection, sent before any key exists. Every byte
+      of the request that follows is encrypted; the
+      <strong class="hl-orange">name of the site is not</strong>, because the
+      server needs it to pick a certificate. Metadata is not a leftover — it is
+      structural.
+    </p>
+  </section>
   <section>
     <h2>Who Is the Attacker?</h2>
     <p>
