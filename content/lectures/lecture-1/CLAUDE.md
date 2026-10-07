@@ -2,7 +2,7 @@
 
 The opening session: who the instructor is, what the course is and is not, the
 properties being defended, the vocabulary for threats and attacks, defence in
-depth, and the policies. 38 slides, 4 vertical stacks.
+depth, and the policies. 41 slides, 5 vertical stacks.
 
 Topics (TOC indices): `0` Instructor · `1` Course Overview · `2` Security
 Properties · `3` Threats & Attacks · `4` Defence in Depth · `5` Course Policies.
@@ -13,6 +13,108 @@ The deck ends on the line it is built to earn: **name the property, name the
 threat, then pick the mechanism.** The three sections before it are those three
 steps in order — CIA first, the attacker second, controls last. Slides that
 jump straight to a mechanism break the spine.
+
+## The grade service
+
+The grade database on **The Same System, Three Failures** is the deck's one
+running example. The three-slide `hands-on` stack that closes the Defence in
+Depth section — **The Grade Service** · **The Attack, in One Request** ·
+**The Fix, and the Log** — turns it into a program, so that every term of the
+lecture lands on a line of code instead of a table of names. The instructor's
+brief (6 October 2026) was _no concept under a different name every time, more
+flow, more engineering and hands-on_. Keep it that way: no vocabulary tables,
+no renaming; a term appears once, next to the code or the transcript that
+earns it.
+
+Lecture 2 picks up the **same program** on its closing stack (`#/12`, "The
+Same Code, Two Mechanisms" through "The Day It Happens"). If the code or a
+captured line changes here, re-capture there too; the transcripts share the
+same `server.log`.
+
+### The source
+
+Every transcript on the three slides is a real run, captured on 6 October 2026
+on macOS with Go 1.27.1. The full first version, `main.go` (module `grades`,
+`go 1.27` in `go.mod`):
+
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+	"net/http"
+	"strconv"
+)
+
+var grades = map[string]int{"4001": 12, "4002": 17}
+
+func setGrade(w http.ResponseWriter, r *http.Request) {
+	user := r.Header.Get("X-User") // filled in by the login layer in front
+	if user == "" {
+		http.Error(w, "login first", http.StatusUnauthorized)
+		return
+	}
+	id := r.FormValue("id")
+	grade, _ := strconv.Atoi(r.FormValue("grade"))
+	grades[id] = grade
+	log.Printf("grade %s=%d by %s", id, grade, user)
+	fmt.Fprintf(w, "%s is now %d\n", id, grade)
+}
+
+func main() {
+	http.HandleFunc("POST /grade", setGrade)
+	log.Fatal(http.ListenAndServe("localhost:8080", nil))
+}
+```
+
+The second version adds one map and one block, exactly as the fix slide shows:
+
+```go
+var roles = map[string]string{"parham": "instructor", "4001": "student"}
+```
+
+inserted after `grades`, and before `grades[id] = grade`:
+
+```go
+	if roles[user] != "instructor" {
+		log.Printf("DENIED grade %s=%d by %s", id, grade, user)
+		http.Error(w, "forbidden", http.StatusForbidden)
+		return
+	}
+```
+
+Both versions `gofmt`, `go build` and `go vet` clean. The `"POST /grade"`
+pattern needs Go 1.22 or later.
+
+### How the captures were made
+
+```sh
+go build -o grades . && ./grades 2> server.log &
+curl -H 'X-User: parham' -d 'id=4002&grade=18' localhost:8080/grade
+curl -H 'X-User: 4001'   -d 'id=4001&grade=20' localhost:8080/grade
+tail -1 server.log                    # first version: the attack succeeds
+head -1 server.log                    # second version: DENIED
+```
+
+Facts worth not re-deriving:
+
+- **The `X-User` header is a deliberate simplification** and the first slide
+  says so: identity comes from "the login layer in front", which lecture 4
+  builds. Do not add sessions or passwords here; that is lecture 4's job, and
+  the point of the stack is that the bug is the missing _role_ check, not the
+  missing login.
+- **The vulnerability is the `if`.** It checks that `user` is non-empty, i.e.
+  logged in, and never checks what the user may do. The attack slide names
+  that line; keep the check in the first version so the line exists to point
+  at.
+- **The log is in the first version on purpose.** It is what makes lecture 2's
+  "The Day It Happens" possible: the attack was logged before anyone thought
+  to check. Preparation existed; nobody read it.
+- The timestamps (`01:01:23`, `01:01:25`) are the real capture. The server
+  binds `localhost:8080` only.
+- The marker on each slide is `class="hands-on"` on the `<section>`, per the
+  repository rule.
 
 ## The instructor stack
 

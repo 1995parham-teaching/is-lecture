@@ -612,6 +612,98 @@ $ openssl s_client -connect example.com:443 -servername example.com \
   </section>
 </section>
 <section>
+  <section class="hands-on">
+    <h2>The Grade Service</h2>
+    <p>
+      Everything in this lecture, on one program. A grade service with a single
+      endpoint; who the caller is comes from the login layer in front of it, and
+      today we trust that header.
+    </p>
+    <pre><code class="lang-go">
+var grades = map[string]int{"4001": 12, "4002": 17}
+
+func setGrade(w http.ResponseWriter, r *http.Request) {
+	user := r.Header.Get("X-User") // filled in by the login layer in front
+	if user == "" {
+		http.Error(w, "login first", http.StatusUnauthorized)
+		return
+	}
+	id := r.FormValue("id")
+	grade, _ := strconv.Atoi(r.FormValue("grade"))
+	grades[id] = grade
+	log.Printf("grade %s=%d by %s", id, grade, user)
+	fmt.Fprintf(w, "%s is now %d\n", id, grade)
+}
+    </code></pre>
+  </section>
+  <section class="hands-on">
+    <h2>The Attack, in One Request</h2>
+    <pre><code class="lang-sh">
+$ curl -H 'X-User: parham' -d 'id=4002&amp;grade=18' localhost:8080/grade
+4002 is now 18
+
+$ curl -H 'X-User: 4001' -d 'id=4001&amp;grade=20' localhost:8080/grade
+4001 is now 20
+
+$ tail -1 server.log
+2026/10/06 01:01:23 grade 4001=20 by 4001
+    </code></pre>
+    <ul>
+      <li>
+        Student 4001 just gave themselves a 20. The
+        <span class="hl-cyan">property</span> that broke is integrity
+      </li>
+      <li>
+        The <span class="hl-red">vulnerability</span> is the <code>if</code>: it
+        asks "are you logged in?", never "are you allowed to set grades?"
+      </li>
+      <li>
+        The <span class="hl-orange">threat</span> is anyone with a student
+        login. The <span class="hl-orange">attack</span> is this one request,
+        and it is active: something changed
+      </li>
+      <li>
+        The <span class="hl-yellow">risk</span> is how often this happens and
+        what it costs. Lecture 2 puts a number on it
+      </li>
+    </ul>
+  </section>
+  <section class="hands-on">
+    <h2>The Fix, and the Log</h2>
+    <pre><code class="lang-go">
+var roles = map[string]string{"parham": "instructor", "4001": "student"}
+
+	if roles[user] != "instructor" {
+		log.Printf("DENIED grade %s=%d by %s", id, grade, user)
+		http.Error(w, "forbidden", http.StatusForbidden)
+		return
+	}
+    </code></pre>
+    <pre><code class="lang-sh">
+$ curl -H 'X-User: 4001' -d 'id=4001&amp;grade=20' localhost:8080/grade
+forbidden
+
+$ head -1 server.log
+2026/10/06 01:01:25 DENIED grade 4001=20 by 4001
+    </code></pre>
+    <ul>
+      <li>
+        The check <span class="hl-green">prevents</span>, at the application
+        layer. The log <span class="hl-yellow">detects</span>, and it lives on
+        the host, where no student can reach it
+      </li>
+      <li>
+        The reader on the lab wifi is a passive attack; no check stops it. That
+        needs TLS, and TLS is lecture 3
+      </li>
+      <li>
+        No single wall: the check can be wrong again. The log is the layer that
+        says so. Lecture 2 picks up this same program
+      </li>
+    </ul>
+  </section>
+</section>
+<section>
   <div class="toc" data-selected="5"></div>
 </section>
 <section>
