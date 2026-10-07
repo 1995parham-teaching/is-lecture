@@ -1,7 +1,7 @@
 # Lecture 2 — Security Architecture
 
 The management half of the course, and the only deck with no attack in it.
-34 slides, 5 vertical stacks. Topics (TOC indices): `0` X.800 ·
+38 slides, 6 vertical stacks. Topics (TOC indices): `0` X.800 ·
 `1` Enterprise Architecture · `2` Security Policy · `3` Risk Management ·
 `4` Incidents & Continuity.
 
@@ -16,6 +16,80 @@ where the answer was wrong.
 The closing slide hands off to lecture 3 by observing that nearly every X.800
 mechanism is cryptographic. That hand-off is why X.800 comes first in the deck
 rather than last.
+
+## The grade service, continued
+
+The four-slide stack before the closing slide — **The Same Code, Two
+Mechanisms** · **The Policy Is a Test** · **Is the Check Worth It?** · **The
+Day It Happens** — continues the grade service that lecture 1 builds and
+attacks on its `#/14` stack (`lecture-1/CLAUDE.md` has the full source). The
+instructor's brief (6 October 2026) was _no concept under a different name
+every time, more flow, more engineering and hands-on_, so the stack never
+restates lecture 1's words: it shows the same code and the same log, and
+attaches this lecture's ideas to lines that already exist. Keep it that way.
+No "lecture 1 said / X.800 says" tables.
+
+- **Two Mechanisms** annotates lecture 1's fix: the `if` is access control (a
+  specific mechanism), the `log.Printf` is the security audit trail (a
+  pervasive one), and together they are the data integrity service. The last
+  bullet points the wifi reader at encipherment and lecture 3 so that
+  confidentiality is not forgotten.
+- **The Policy Is a Test** is the deck's own line from **Why Policies Fail**
+  — the best policy is enforced by a mechanism — made literal. The test is
+  `main_test.go` in the same package:
+
+  ```go
+  package main
+
+  import (
+  	"net/http"
+  	"net/http/httptest"
+  	"testing"
+  )
+
+  // The policy: only the instructor of record may enter or change a grade.
+  func TestOnlyInstructorSetsGrade(t *testing.T) {
+  	req := httptest.NewRequest("POST", "/grade?id=4001&grade=20", nil)
+  	req.Header.Set("X-User", "4001") // a student
+  	rec := httptest.NewRecorder()
+  	setGrade(rec, req)
+  	if rec.Code != http.StatusForbidden {
+  		t.Fatalf("a student changed a grade: HTTP %d", rec.Code)
+  	}
+  	if grades["4001"] != 12 {
+  		t.Fatalf("grade moved to %d", grades["4001"])
+  	}
+  }
+  ```
+
+  The slide shows it without the second `if`, for height. Run against
+  lecture 1's first version it fails with `HTTP 200`; against the second it
+  passes. **The `2026/10/06 01:01:24 grade 4001=20 by 4001` line inside the
+  failing run is real**: the handler logs to stderr and `go test` shows it. Do
+  not strip it. The second run uses `-count=1` so the output is not
+  `(cached)`; the timing (`0.219s`) will differ on re-capture.
+
+- **Is the Check Worth It?** is `risk.py`, in the same style as **The Control
+  That Does Not Pay** and answering lecture 1's "which failure is worst?":
+
+  ```python
+  check_cost = 1_000          # one developer-day, paid once
+  sle        = 5_000          # one hearing, one reissued transcript
+  aro        = 2              # every term, someone tries
+
+  ale = sle * aro
+  print(f"ALE               = {sle:,} x {aro}  = {ale:>8,} per year")
+  print(f"check pays back in  {check_cost / ale * 365:.0f} days")
+  ```
+
+  The numbers are invented and unitless, chosen so the check is bought
+  (reduce) and the deadline-day outage is accepted. Keep that pair if you
+  change them.
+
+- **The Day It Happens** is `grep -v 'by parham' server.log` over lecture 1's
+  first-version log, so the timestamp (`01:01:23`) is the same line the
+  attack slide shows. The bullets walk the NIST SP 800-61 phases without
+  naming them; the last one is where the test and the risk register meet.
 
 ## Facts worth not re-deriving
 

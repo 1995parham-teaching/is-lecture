@@ -811,6 +811,128 @@ net                           =      -18,000 per year
   </section>
 </section>
 <section>
+  <section>
+    <h2>The Same Code, Two Mechanisms</h2>
+    <p>Lecture 1's fix, read with this lecture's eyes:</p>
+    <pre><code class="lang-go">
+	if roles[user] != "instructor" {              // access control
+		log.Printf("DENIED grade %s=%d by %s", id, grade, user)
+		http.Error(w, "forbidden", http.StatusForbidden)
+		return
+	}
+	grades[id] = grade
+	log.Printf("grade %s=%d by %s", id, grade, user)  // security audit trail
+    </code></pre>
+    <ul>
+      <li>
+        The <code>if</code> is a <span class="hl-orange">specific</span>
+        mechanism: access control, at one layer, in one place
+      </li>
+      <li>
+        The log is a <span class="hl-violet">pervasive</span> one: the audit
+        trail, which belongs to no layer and watches every request
+      </li>
+      <li>
+        Together they deliver the <span class="hl-cyan">data integrity</span>
+        service. Neither does on its own: the check stops the change, the log
+        proves what happened
+      </li>
+      <li>
+        Nothing here helps the reader on the lab wifi. That service is
+        confidentiality, its mechanism is encipherment, and it is lecture 3
+      </li>
+    </ul>
+  </section>
+  <section class="hands-on">
+    <h2>The Policy Is a Test</h2>
+    <p>
+      <em>"Only the instructor of record may enter or change a grade."</em>
+      Written as a test, it runs on every commit:
+    </p>
+    <pre><code class="lang-go">
+func TestOnlyInstructorSetsGrade(t *testing.T) {
+	req := httptest.NewRequest("POST", "/grade?id=4001&amp;grade=20", nil)
+	req.Header.Set("X-User", "4001") // a student
+	rec := httptest.NewRecorder()
+	setGrade(rec, req)
+	if rec.Code != http.StatusForbidden {
+		t.Fatalf("a student changed a grade: HTTP %d", rec.Code)
+	}
+}
+    </code></pre>
+    <pre><code class="lang-sh">
+$ go test ./...                 # lecture 1's first version
+2026/10/06 01:01:24 grade 4001=20 by 4001
+--- FAIL: TestOnlyInstructorSetsGrade (0.00s)
+    main_test.go:16: a student changed a grade: HTTP 200
+FAIL
+FAIL	grades	0.111s
+FAIL
+
+$ go test -count=1 ./...        # with the check in place
+ok  	grades	0.219s
+    </code></pre>
+  </section>
+  <section class="hands-on">
+    <h2>Is the Check Worth It?</h2>
+    <p>
+      Lecture 1 asked which failure is worst. Priced like the customer database:
+    </p>
+    <pre><code class="lang-python">
+check_cost = 1_000          # one developer-day, paid once
+sle        = 5_000          # one hearing, one reissued transcript
+aro        = 2              # every term, someone tries
+
+ale = sle * aro
+    </code></pre>
+    <pre><code class="lang-text">
+ALE               = 5,000 x 2  =   10,000 per year
+check pays back in  36 days
+    </code></pre>
+    <ul>
+      <li>
+        <span class="hl-green">Reduce</span>: a day of work against 10,000 a
+        year. The check is bought
+      </li>
+      <li>
+        The deadline-day outage costs one extended deadline a year. A second
+        server costs more than that. <span class="hl-cyan">Accept</span>, in
+        writing, with a name on it
+      </li>
+    </ul>
+  </section>
+  <section class="hands-on">
+    <h2>The Day It Happens</h2>
+    <pre><code class="lang-sh">
+$ grep -v 'by parham' server.log
+2026/10/06 01:01:23 grade 4001=20 by 4001
+    </code></pre>
+    <ul>
+      <li>
+        <span class="hl-yellow">Alert</span>: the nightly grep finds a grade
+        changed by someone who is not the instructor
+      </li>
+      <li>
+        <span class="hl-red">Incident</span>: the instructor confirms it was not
+        them. Freeze grade entry, copy the log before touching anything
+      </li>
+      <li>
+        <span class="hl-green">Eradicate</span>: deploy the check. The test is
+        green. <span class="hl-cyan">Recover</span>: the log says 12, so 12 goes
+        back
+      </li>
+      <li>
+        <span class="hl-orange">Afterwards</span>: the test now exists, so the
+        check cannot go missing again. And "twice a year" in the risk register
+        becomes a count of one, with a date
+      </li>
+    </ul>
+    <div class="box">
+      <p>One program, two lectures. Every idea had a line of code.</p>
+    </div>
+  </section>
+</section>
+<section>
   <h2>Where This Leaves Us</h2>
   <ul>
     <li>
