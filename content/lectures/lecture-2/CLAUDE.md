@@ -1,7 +1,7 @@
 # Lecture 2 — Security Architecture
 
 The management half of the course, and the only deck with no attack in it.
-38 slides, 6 vertical stacks. Topics (TOC indices): `0` X.800 ·
+43 slides including the generated title, 5 vertical stacks. Topics (TOC indices): `0` X.800 ·
 `1` Enterprise Architecture · `2` Security Policy · `3` Risk Management ·
 `4` Incidents & Continuity.
 
@@ -19,21 +19,28 @@ rather than last.
 
 ## The grade service, continued
 
-The four-slide stack before the closing slide — **The Same Code, Two
-Mechanisms** · **The Policy Is a Test** · **Is the Check Worth It?** · **The
-Day It Happens** — continues the grade service that lecture 1 builds and
-attacks on its `#/14` stack (`lecture-1/CLAUDE.md` has the full source). The
-instructor's brief (6 October 2026) was _no concept under a different name
-every time, more flow, more engineering and hands-on_, so the stack never
-restates lecture 1's words: it shows the same code and the same log, and
-attaches this lecture's ideas to lines that already exist. Keep it that way.
-No "lecture 1 said / X.800 says" tables.
+The grade service from lecture 1's `#/14` stack is the running example
+(`lecture-1/CLAUDE.md` has the full source). Its four application slides now
+sit beside their concepts: **The Same Code, Two Mechanisms** closes X.800;
+**The Policy Is a Test** follows **Why Policies Fail**; **Is the Check Worth
+It?** follows risk treatment; **The Day It Happens** closes Incidents &
+Continuity as a reconstruction of the original incident before the fix.
+
+The instructor's brief (6 October 2026) was _no concept under a different name
+every time, more flow, more engineering and hands-on_. Keep the same code and
+log, attaching ideas to lines that already exist. No "lecture 1 said / X.800
+says" tables.
+
+Enterprise Architecture starts with inventory, then the grade service's trust
+boundaries, then SABSA's views of that same system. The policy opening connects
+those boundaries to allowed actions and decision owners, and distinguishes an
+internal mandatory standard from the external standards catalogue.
 
 - **Two Mechanisms** annotates lecture 1's fix: the `if` is access control (a
-  specific mechanism), the `log.Printf` is the security audit trail (a
-  pervasive one), and together they are the data integrity service. The last
-  bullet points the wifi reader at encipherment and lecture 3 so that
-  confidentiality is not forgotten.
+  specific mechanism) and `log.Printf` is the security audit trail (a pervasive
+  one). The check protects integrity; the log supports detection and
+  investigation. The last bullet points the wifi reader at encipherment and
+  lecture 3 so that confidentiality is not forgotten.
 - **The Policy Is a Test** is the deck's own line from **Why Policies Fail**
   — the best policy is enforced by a mechanism — made literal. The test is
   `main_test.go` in the same package:
@@ -75,7 +82,7 @@ No "lecture 1 said / X.800 says" tables.
   ```python
   check_cost = 1_000          # one developer-day, paid once
   sle        = 5_000          # one hearing, one reissued transcript
-  aro        = 2              # every term, someone tries
+  aro        = 2              # assumed successful changes per year without control
 
   ale = sle * aro
   print(f"ALE               = {sle:,} x {aro}  = {ale:>8,} per year")
@@ -88,8 +95,10 @@ No "lecture 1 said / X.800 says" tables.
 
 - **The Day It Happens** is `grep -v 'by parham' server.log` over lecture 1's
   first-version log, so the timestamp (`01:01:23`) is the same line the
-  attack slide shows. The bullets walk the NIST SP 800-61 phases without
-  naming them; the last one is where the test and the risk register meet.
+  attack slide shows. It explicitly revisits the vulnerable version. Recovery
+  requires verifying 12 against the instructor's grade record: the displayed
+  log only records the new value, 20. The last bullet connects regression tests
+  and dated incident evidence to a review of the risk assumptions.
 
 ## Facts worth not re-deriving
 
@@ -116,12 +125,24 @@ No "lecture 1 said / X.800 says" tables.
 The two transcripts in the Risk Management stack are one real run of a script,
 split across two slides. The numbers are chosen so the control **loses money**
 — 42,000 of avoided loss against 60,000 of cost, a net of −18,000 per year.
+The second slide states the assumed 75% frequency reduction (0.40 to 0.10
+breaches/year), with loss per breach unchanged, before showing the result.
 
 That negative is the point of the pair. A worked example where the control pays
 for itself teaches nothing, because the interesting move is what happens next:
 the argument shifts to whether the asset is really worth 400,000. If you change
 any input, re-run it and re-capture **both** blocks — the second slide's figures
 are derived from the first's and will silently stop adding up.
+
+## Real-world photographs
+
+Three photo slides follow Zones and Boundaries, Preparation Is the Whole Game,
+and Backups, Honestly. Each carries a source/license credit, a teaching point,
+and a question tied to the grade service. `img/SOURCES.md` records provenance.
+The FEMA photo depicts a hurricane exercise, used explicitly as a preparation
+analogy. The tape-library photo does not establish that its tapes are offline,
+off-site, or used as backups; the slide makes that distinction explicit.
+Images use a 300px contained frame without cropping to leave room for discussion.
 
 ## Cautions
 
@@ -131,5 +152,5 @@ are derived from the first's and will silently stop adding up.
 - The Standards You Will Meet slide is a list of names, not a recommendation.
   The one opinion on it — start with the CIS Controls — is in the closing line
   and is deliberate.
-- Nothing in this deck was captured from a real organization, and it should stay
-  that way. The examples are generic on purpose.
+- The code and logs are generic teaching examples. Publicly sourced photographs
+  illustrate concepts; do not add captures of an organization's private systems.
