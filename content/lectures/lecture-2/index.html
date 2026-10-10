@@ -1038,6 +1038,343 @@ $ grep -v 'by parham' server.log
   </section>
 </section>
 <section>
+  <section>
+    <h2>Names to Keep: X.800</h2>
+    <p>Name the promise before choosing its implementation.</p>
+    <table style="font-size: 0.78em">
+      <tr>
+        <td class="hl-cyan"><strong>X.800 / ISO 7498-2</strong></td>
+        <td>The shared vocabulary for attacks, services, and mechanisms</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>Attack · service · mechanism</strong></td>
+        <td>What compromises security · what we promise · how we deliver it</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>Authentication</strong></td>
+        <td>
+          Peer entity: who is communicating; data origin: who sent the data
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>Access control</strong></td>
+        <td>Prevent unauthorized use of a resource</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>Data confidentiality</strong></td>
+        <td>
+          Prevent disclosure, including information revealed by traffic flow
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>Data integrity</strong></td>
+        <td>Protect against unauthorized modification</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>Non-repudiation</strong></td>
+        <td>Evidence of origin or delivery</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>Availability</strong></td>
+        <td>A system property; not a separate X.800 service category</td>
+      </tr>
+    </table>
+  </section>
+  <section>
+    <h2>Names to Keep: Mechanisms</h2>
+    <p>
+      Specific mechanisms act at a layer; pervasive mechanisms support the whole
+      system.
+    </p>
+    <table style="font-size: 0.78em">
+      <tr>
+        <td class="hl-cyan">
+          <strong>Encipherment · digital signature</strong>
+        </td>
+        <td>Hide data · bind a message to a signer</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan">
+          <strong>Access control · data integrity</strong>
+        </td>
+        <td>Enforce rights · detect modification</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>Authentication exchange</strong></td>
+        <td>Establish identity through an exchange</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan">
+          <strong>Traffic padding · routing control</strong>
+        </td>
+        <td>Obscure traffic patterns · select an appropriate path</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>Notarization</strong></td>
+        <td>A trusted third party supplies evidence</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan">
+          <strong>Trusted functionality · security labels</strong>
+        </td>
+        <td>Trusted system functions · sensitivity markings</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan">
+          <strong
+            >Event detection · security audit trail · security recovery</strong
+          >
+        </td>
+        <td>Notice events · record them · restore security</td>
+      </tr>
+    </table>
+  </section>
+  <section>
+    <h2>Names to Keep: Architecture</h2>
+    <p>Locate the assets, trust boundaries, controls, and owners.</p>
+    <table style="font-size: 0.78em">
+      <tr>
+        <td class="hl-cyan">
+          <strong>Enterprise security architecture</strong>
+        </td>
+        <td>Connect requirements to controls and the people operating them</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan">
+          <strong>Asset inventory · classification</strong>
+        </td>
+        <td>
+          List assets and owners; label public / internal / confidential /
+          restricted
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>Zone · boundary</strong></td>
+        <td>
+          Group assets under a common trust policy · control where trust changes
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>SABSA</strong></td>
+        <td>Six architectural views of the same system</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>Contextual · conceptual</strong></td>
+        <td>Business needs · domains, trust, and principles</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>Logical · physical</strong></td>
+        <td>Services, policies, and flows · mechanisms and protocols</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>Component · operational</strong></td>
+        <td>Products and versions · operation and measurement</td>
+      </tr>
+    </table>
+  </section>
+  <section>
+    <h2>Names to Keep: Standards</h2>
+    <p>Use this as a reference map when a name appears again.</p>
+    <table style="font-size: 0.78em">
+      <tr>
+        <td class="hl-cyan"><strong>ISO/IEC 27001</strong></td>
+        <td>
+          Requirements for an Information Security Management System (ISMS);
+          certifiable
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>ISO/IEC 27002</strong></td>
+        <td>Guidance on information security controls</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>NIST CSF</strong></td>
+        <td>
+          Cybersecurity Framework: Govern · Identify · Protect · Detect ·
+          Respond · Recover
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>NIST SP 800-53</strong></td>
+        <td>Security and privacy control catalogue</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>CIS Controls</strong></td>
+        <td>
+          Prioritized controls; hardware and software inventories come first
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>PCI DSS</strong></td>
+        <td>
+          Payment Card Industry Data Security Standard: card-data protection
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>ISO 27005 · NIST SP 800-30</strong></td>
+        <td>Risk-management guidance · risk-assessment guidance</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>NIST SP 800-61</strong></td>
+        <td>Incident-response guidance</td>
+      </tr>
+    </table>
+  </section>
+  <section>
+    <h2>Names to Keep: Policy</h2>
+    <p>Turn a requirement into an owned, enforced, and reviewed rule.</p>
+    <table style="font-size: 0.78em">
+      <tr>
+        <td class="hl-cyan"><strong>Policy</strong></td>
+        <td>What must be true, approved by management</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan">
+          <strong>Standard · procedure · guideline</strong>
+        </td>
+        <td>Mandatory specifics · ordered steps · optional advice</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>Scope · statement</strong></td>
+        <td>Who and what the policy covers · what it requires</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan">
+          <strong>Roles · consequences · review date</strong>
+        </td>
+        <td>
+          Who owns, enforces, and grants exceptions · response to violations ·
+          when to review
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>ISMS</strong></td>
+        <td>
+          Information Security Management System: keep policy connected to
+          reality
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>Plan · Do · Check · Act</strong></td>
+        <td>Assess and choose · operate · measure · improve</td>
+      </tr>
+    </table>
+  </section>
+  <section>
+    <h2>Names to Keep: Risk</h2>
+    <p>Make the assumptions explicit, then decide how to treat the risk.</p>
+    <table style="font-size: 0.78em">
+      <tr>
+        <td class="hl-cyan">
+          <strong>Likelihood · impact · risk appetite</strong>
+        </td>
+        <td>
+          How likely · how bad · how much risk the organization will tolerate
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-cyan">
+          <strong>Identify · analyse · evaluate · treat · monitor</strong>
+        </td>
+        <td>Find risks · estimate them · compare · act · revisit</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>Qualitative · quantitative</strong></td>
+        <td>Rank risks with categories · estimate loss in money per year</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>Exposure factor · SLE</strong></td>
+        <td>
+          Fraction of asset value lost · single loss expectancy = value ×
+          exposure
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>ARO · ALE</strong></td>
+        <td>
+          Annualized rate of occurrence · annualized loss expectancy = SLE × ARO
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-cyan">
+          <strong>Avoid · reduce · transfer · accept</strong>
+        </td>
+        <td>
+          Stop the activity · apply controls · shift financial cost · approve
+          the risk
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>Residual risk · risk register</strong></td>
+        <td>
+          Risk left after treatment · the record of risks, owners, decisions,
+          and evidence
+        </td>
+      </tr>
+    </table>
+  </section>
+  <section>
+    <h2>Names to Keep: Incidents &amp; Continuity</h2>
+    <p>
+      Prepare to respond, and keep the organization working during recovery.
+    </p>
+    <table style="font-size: 0.78em">
+      <tr>
+        <td class="hl-cyan"><strong>Event · alert · incident</strong></td>
+        <td>
+          An observation · a signal to investigate · a security failure
+          requiring response
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-cyan">
+          <strong>Preparation · detection and analysis</strong>
+        </td>
+        <td>
+          Arrange team, logs, and authority · investigate and establish what
+          happened
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-cyan">
+          <strong>Containment · eradication · recovery</strong>
+        </td>
+        <td>Limit damage · remove the cause · restore safe operation</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan">
+          <strong>Post-incident activity · tabletop exercise</strong>
+        </td>
+        <td>
+          Review and assign improvements · rehearse decisions before an
+          emergency
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>Business continuity · BIA</strong></td>
+        <td>
+          Keep business processes running · Business Impact Analysis identifies
+          priorities
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>RTO · RPO</strong></td>
+        <td>
+          Recovery time objective: target downtime · recovery point objective:
+          tolerable data loss
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>3-2-1 · offline · immutable</strong></td>
+        <td>
+          Three copies, two media, one off-site · disconnected · protected from
+          alteration
+        </td>
+      </tr>
+    </table>
+  </section>
+</section>
+<section>
   <h2>Where This Leaves Us</h2>
   <ul>
     <li>

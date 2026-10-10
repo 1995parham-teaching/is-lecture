@@ -1,7 +1,7 @@
 # Lecture 2 — Security Architecture
 
 The management half of the course, and the only deck with no attack in it.
-43 slides including the generated title, 5 vertical stacks. Topics (TOC indices): `0` X.800 ·
+50 slides including the generated title, 6 vertical stacks. Topics (TOC indices): `0` X.800 ·
 `1` Enterprise Architecture · `2` Security Policy · `3` Risk Management ·
 `4` Incidents & Continuity.
 
@@ -143,6 +143,14 @@ The FEMA photo depicts a hurricane exercise, used explicitly as a preparation
 analogy. The tape-library photo does not establish that its tapes are offline,
 off-site, or used as backups; the slide makes that distinction explicit.
 Images use a 300px contained frame without cropping to leave room for discussion.
+
+## Closing terminology recap
+
+A seven-slide vertical stack before **Where This Leaves Us** groups the terms
+by X.800 services, mechanisms, architecture, standards, policy, risk, and
+incidents/continuity. It is a reference and retrieval aid: use it to ask students
+to explain a term or distinguish a pair, rather than teach the lists again.
+Keep each definition short and keep the lecture 3 hand-off as the final slide.
 
 ## Cautions
 
