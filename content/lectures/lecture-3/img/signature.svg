@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 370">
+  <title>Signing and verifying</title>
+  <style>
+    text { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 20px; fill: #eeeeee; text-anchor: middle; dominant-baseline: middle; }
+    .small { font-size: 16px; fill: #b0b4bc; }
+    .title { font-size: 22px; font-weight: bold; }
+    .box { fill: rgba(255, 255, 255, 0.06); stroke: #cfd3da; stroke-width: 2; }
+    .line { fill: none; stroke: #cfd3da; stroke-width: 2; marker-end: url(#arrow); }
+    .dash { fill: none; stroke: #8d97a8; stroke-width: 2; stroke-dasharray: 6 5; }
+    .orange { fill: #ff9100; } .green { fill: #76ff03; } .cyan { fill: #00e5ff; }
+    .red { fill: #ff5252; } .violet { fill: #ee82ee; } .yellow { fill: #ffcc00; }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#cfd3da" />
+    </marker>
+  </defs>
+  <text class="orange title" x="40" y="80">Sign</text>
+  <rect class="box" x="90" y="50" width="130" height="60" rx="6" />
+  <text x="155" y="80">message</text>
+  <path class="line" d="M220,80 H266" />
+  <rect class="box" x="270" y="55" width="70" height="50" rx="6" />
+  <text x="305" y="80">H</text>
+  <path class="line" d="M340,80 H386" />
+  <rect class="box" x="390" y="50" width="110" height="60" rx="6" />
+  <text x="445" y="80">digest</text>
+  <path class="line" d="M500,80 H546" />
+  <rect class="box" x="550" y="50" width="120" height="60" rx="6" />
+  <text x="610" y="80">Sign</text>
+  <text class="red" x="610" y="18">Alice's private key</text>
+  <path class="line" d="M610,30 V48" />
+  <path class="line" d="M670,80 H716" />
+  <rect class="box" x="720" y="50" width="160" height="60" rx="6" style="stroke: #ee82ee" />
+  <text class="violet" x="800" y="80">signature</text>
+
+  <path class="dash" d="M155,110 V226" />
+  <text class="small" x="220" y="168">sent together</text>
+  <path class="line" d="M800,110 V180 H610 V228" />
+
+  <text class="cyan title" x="40" y="260">Verify</text>
+  <rect class="box" x="90" y="230" width="130" height="60" rx="6" />
+  <text x="155" y="260">message</text>
+  <path class="line" d="M220,260 H266" />
+  <rect class="box" x="270" y="235" width="70" height="50" rx="6" />
+  <text x="305" y="260">H</text>
+  <path class="line" d="M340,260 H386" />
+  <rect class="box" x="390" y="230" width="110" height="60" rx="6" />
+  <text x="445" y="260">digest</text>
+  <path class="line" d="M500,260 H546" />
+  <rect class="box" x="550" y="230" width="120" height="60" rx="6" />
+  <text x="610" y="260">Verify</text>
+  <text class="green" x="610" y="350">Alice's public key</text>
+  <path class="line" d="M610,336 V292" />
+  <path class="line" d="M670,260 H716" />
+  <rect class="box" x="720" y="230" width="160" height="60" rx="6" />
+  <text x="800" y="260"><tspan class="green">valid</tspan> / <tspan class="red">invalid</tspan></text>
+</svg>

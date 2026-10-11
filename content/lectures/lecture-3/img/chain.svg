@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 375">
+  <title>The certificate chain of trust</title>
+  <style>
+    text { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 20px; fill: #eeeeee; text-anchor: middle; dominant-baseline: middle; }
+    .small { font-size: 16px; fill: #b0b4bc; }
+    .title { font-size: 22px; font-weight: bold; }
+    .box { fill: rgba(255, 255, 255, 0.06); stroke: #cfd3da; stroke-width: 2; }
+    .line { fill: none; stroke: #cfd3da; stroke-width: 2; marker-end: url(#arrow); }
+    .dash { fill: none; stroke: #8d97a8; stroke-width: 2; stroke-dasharray: 6 5; }
+    .orange { fill: #ff9100; } .green { fill: #76ff03; } .cyan { fill: #00e5ff; }
+    .red { fill: #ff5252; } .violet { fill: #ee82ee; } .yellow { fill: #ffcc00; }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#cfd3da" />
+    </marker>
+  </defs>
+  <rect class="box" x="20" y="60" width="240" height="190" rx="8" />
+  <text class="cyan title" x="140" y="90">Root CA</text>
+  <path d="M35,110 H245" stroke="#8d97a8" stroke-width="1" />
+  <text class="small" x="140" y="135">Subject: Root CA</text>
+  <text class="small" x="140" y="163">Issuer: Root CA (itself)</text>
+  <text class="small" x="140" y="191">Key: root public key</text>
+  <text class="small" x="140" y="219">self-signed</text>
+  <rect class="box" x="330" y="60" width="240" height="190" rx="8" />
+  <text class="yellow title" x="450" y="90">Intermediate CA</text>
+  <path d="M345,110 H555" stroke="#8d97a8" stroke-width="1" />
+  <text class="small" x="450" y="135">Subject: Intermediate CA</text>
+  <text class="small" x="450" y="163">Issuer: Root CA</text>
+  <text class="small" x="450" y="191">Key: intermediate key</text>
+  <text class="small" x="450" y="219">signed by the root</text>
+  <rect class="box" x="640" y="60" width="240" height="190" rx="8" />
+  <text class="green title" x="760" y="90">example.com</text>
+  <path d="M655,110 H865" stroke="#8d97a8" stroke-width="1" />
+  <text class="small" x="760" y="135">Subject: example.com</text>
+  <text class="small" x="760" y="163">Issuer: Intermediate CA</text>
+  <text class="small" x="760" y="191">Key: the server's key</text>
+  <text class="small" x="760" y="219">signed by the intermediate</text>
+  <path class="line" d="M270,155 H326" />
+  <text class="small" x="300" y="135">signs</text>
+  <path class="line" d="M570,155 H636" />
+  <text class="small" x="605" y="135">signs</text>
+  <rect x="10" y="50" width="260" height="210" rx="12" class="dash" style="stroke: #00e5ff" />
+  <text class="cyan" x="140" y="290">preinstalled in your OS</text>
+  <text class="cyan" x="140" y="316">or browser</text>
+  <text class="small" x="605" y="290">both sent by the server</text>
+  <text class="small" x="605" y="316">in the TLS handshake</text>
+    <text class="yellow" x="450" y="356">the browser checks right to left, until it reaches a key it already trusts</text>
+</svg>

@@ -1,7 +1,7 @@
 # Lecture 3 — Cryptography
 
-The toolbox lecture, and the one the rest of the course spends. 43 slides,
-5 vertical stacks, 4 hands-on sections, 3 images. Topics (TOC indices):
+The toolbox lecture, and the one the rest of the course spends. 49 slides,
+5 vertical stacks, 4 hands-on sections, 3 images, 6 diagrams. Topics (TOC indices):
 `0` Foundations · `1` Symmetric Encryption · `2` Hashes & MACs ·
 `3` Public-Key Cryptography · `4` Signatures & PKI.
 
@@ -47,6 +47,19 @@ Everything in a `hands-on` section is a real run on the instructor's machine.
 
 If you re-capture any of these, re-capture the whole block. Half-updated
 transcripts are the failure mode this deck is most exposed to.
+
+## The diagrams
+
+Six hand-written SVGs in `img/`, each on its own slide straight after the slide
+it draws, so no existing slide got more crowded: `symmetric`, `modes` (CBC and
+CTR), `nonce-reuse`, `hybrid`, `signature`, `chain`. They are drawn for the
+league background (light strokes, transparent fill) with the `$highlights`
+colours as literal hex, because an `<img>` SVG cannot see the deck's CSS. Check
+one by rendering it (`rsvg-convert -b '#2b2b2b'`) before and after an edit;
+text that overflows a box is not reported anywhere.
+
+`modes.svg` is the tallest, which is why it is at `width="700"` — any wider and
+its caption runs into the bottom of the slide.
 
 ## Facts worth not re-deriving
 

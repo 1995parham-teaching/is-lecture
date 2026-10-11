@@ -222,6 +222,19 @@ draft: false
     </ul>
   </section>
   <section>
+    <h2>The Symmetric Setting</h2>
+    <img
+      src="img/symmetric.svg"
+      alt="Alice encrypts with key K, the ciphertext crosses an untrusted network that Eve reads, Bob decrypts with the same K"
+      width="860"
+    />
+    <p>
+      The channel can be as public as you like. Everything rests on the two
+      copies of <span class="hl-cyan">K</span> — and the diagram has no arrow
+      for how they got there.
+    </p>
+  </section>
+  <section>
     <h2>Block and Stream</h2>
     <ul>
       <li>
@@ -337,6 +350,20 @@ draft: false
     </p>
   </section>
   <section>
+    <h2>CBC and CTR, Drawn</h2>
+    <img
+      src="img/modes.svg"
+      alt="CBC: each plaintext block is XORed with the previous ciphertext before AES. CTR: AES encrypts nonce and counter, the output is XORed with the plaintext"
+      width="700"
+    />
+    <p>
+      CBC feeds each ciphertext block into the next, so equal blocks stop
+      looking equal. CTR never puts the data through AES at all — it makes a
+      <span class="hl-cyan">keystream</span> and XORs it in, which is a one-time
+      pad generated from <em>(key, nonce)</em>.
+    </p>
+  </section>
+  <section>
     <h2>Modes Worth Knowing</h2>
     <table style="font-size: 0.82em">
       <tr>
@@ -374,6 +401,19 @@ draft: false
         Two messages, one keystream, both readable
       </li>
     </ul>
+  </section>
+  <section>
+    <h2>Why the Nonce Must Not Repeat</h2>
+    <img
+      src="img/nonce-reuse.svg"
+      alt="Two plaintexts XORed with the same keystream; XORing the two ciphertexts cancels the keystream and leaves P1 XOR P2"
+      width="860"
+    />
+    <p>
+      No key recovery, no cryptanalysis — one XOR. This is the one-time pad used
+      twice, from the Foundations section, and it is why
+      <em class="hl-red">nonce reuse</em> is fatal rather than merely weak.
+    </p>
   </section>
 </section>
 <section>
@@ -726,6 +766,18 @@ open one bit flipped: "" err=cipher: message authentication failed
     </ul>
   </section>
   <section>
+    <h2>Hybrid Encryption, Drawn</h2>
+    <img
+      src="img/hybrid.svg"
+      alt="A fresh key k encrypts the message with AES-GCM; k itself is encrypted to the recipient public key; Bob unwraps k with his private key and decrypts"
+      width="860"
+    />
+    <p>
+      Two ciphertexts travel together. The slow public-key step only ever
+      touches a key; the fast symmetric step touches everything else.
+    </p>
+  </section>
+  <section>
     <h2>Forward Secrecy</h2>
     <ul>
       <li>
@@ -771,6 +823,19 @@ open one bit flipped: "" err=cipher: message authentication failed
     <p>
       A signature over a broken hash is a broken signature — which is precisely
       why SHA-1 mattered.
+    </p>
+  </section>
+  <section>
+    <h2>Sign and Verify, Drawn</h2>
+    <img
+      src="img/signature.svg"
+      alt="Sign: message, hash, digest, sign with the private key, signature. Verify: the receiver hashes the message and checks the signature with the public key"
+      width="860"
+    />
+    <p>
+      Only the top row needs a secret. The bottom row can be run by
+      <span class="hl-green">anyone</span> — which is exactly what a MAC cannot
+      offer.
     </p>
   </section>
   <section class="hands-on">
@@ -874,6 +939,20 @@ Signature Verification Failure
         <strong>preinstalled</strong> in your OS or browser
       </li>
     </ul>
+  </section>
+  <section>
+    <h2>The Chain of Trust</h2>
+    <img
+      src="img/chain.svg"
+      alt="Root CA signs the intermediate CA certificate, which signs the example.com certificate; the root is preinstalled, the other two are sent by the server"
+      width="860"
+    />
+    <p>
+      Each signature is checked with the key one step to the left. If the server
+      forgets to send the intermediate, there is a gap: unless the client
+      fetches the missing certificate itself, it holds a leaf it cannot connect
+      to any root.
+    </p>
   </section>
   <section>
     <h2>The Chain Has Consequences</h2>

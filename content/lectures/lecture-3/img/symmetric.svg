@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 330">
+  <title>Symmetric encryption: one shared key</title>
+  <style>
+    text { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 20px; fill: #eeeeee; text-anchor: middle; dominant-baseline: middle; }
+    .small { font-size: 16px; fill: #b0b4bc; }
+    .title { font-size: 22px; font-weight: bold; }
+    .box { fill: rgba(255, 255, 255, 0.06); stroke: #cfd3da; stroke-width: 2; }
+    .line { fill: none; stroke: #cfd3da; stroke-width: 2; marker-end: url(#arrow); }
+    .dash { fill: none; stroke: #8d97a8; stroke-width: 2; stroke-dasharray: 6 5; }
+    .orange { fill: #ff9100; } .green { fill: #76ff03; } .cyan { fill: #00e5ff; }
+    .red { fill: #ff5252; } .violet { fill: #ee82ee; } .yellow { fill: #ffcc00; }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#cfd3da" />
+    </marker>
+  </defs>
+  <path class="dash" d="M265,62 Q450,0 635,62" style="stroke: #ffcc00" />
+  <text class="yellow" x="450" y="16">the same K on both sides — how did it get there?</text>
+
+  <text x="75" y="105">Alice</text>
+  <rect class="box" x="20" y="130" width="110" height="60" rx="6" style="stroke: #ff9100" />
+  <text class="orange" x="75" y="160">plaintext</text>
+  <path class="line" d="M130,160 H186" />
+
+  <text class="cyan title" x="265" y="78">K</text>
+  <path class="line" d="M265,92 V122" />
+  <rect class="box" x="190" y="125" width="150" height="70" rx="6" />
+  <text x="265" y="160">Encrypt</text>
+
+  <path class="line" d="M340,160 H556" />
+  <text class="green" x="448" y="142">ciphertext</text>
+  <text class="small" x="448" y="182">untrusted network</text>
+
+  <path class="dash" d="M448,195 V250" style="stroke: #ff5252" />
+  <text class="red" x="448" y="272">Eve sees every byte of it</text>
+  <text class="small" x="448" y="302">and learns nothing without K</text>
+
+  <text class="cyan title" x="635" y="78">K</text>
+  <path class="line" d="M635,92 V122" />
+  <rect class="box" x="560" y="125" width="150" height="70" rx="6" />
+  <text x="635" y="160">Decrypt</text>
+  <path class="line" d="M710,160 H766" />
+
+  <text x="825" y="105">Bob</text>
+  <rect class="box" x="770" y="130" width="110" height="60" rx="6" style="stroke: #ff9100" />
+  <text class="orange" x="825" y="160">plaintext</text>
+</svg>
