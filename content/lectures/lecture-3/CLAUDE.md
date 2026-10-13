@@ -1,7 +1,7 @@
 # Lecture 3 — Cryptography
 
-The toolbox lecture, and the one the rest of the course spends. 49 slides,
-5 vertical stacks, 4 hands-on sections, 3 images, 6 diagrams. Topics (TOC indices):
+The toolbox lecture, and the one the rest of the course spends. 56 slides,
+5 vertical stacks, 4 hands-on sections, 3 images, 13 diagrams. Topics (TOC indices):
 `0` Foundations · `1` Symmetric Encryption · `2` Hashes & MACs ·
 `3` Public-Key Cryptography · `4` Signatures & PKI.
 
@@ -50,16 +50,55 @@ transcripts are the failure mode this deck is most exposed to.
 
 ## The diagrams
 
-Six hand-written SVGs in `img/`, each on its own slide straight after the slide
-it draws, so no existing slide got more crowded: `symmetric`, `modes` (CBC and
-CTR), `nonce-reuse`, `hybrid`, `signature`, `chain`. They are drawn for the
-league background (light strokes, transparent fill) with the `$highlights`
-colours as literal hex, because an `<img>` SVG cannot see the deck's CSS. Check
-one by rendering it (`rsvg-convert -b '#2b2b2b'`) before and after an edit;
-text that overflows a box is not reported anywhere.
+Thirteen hand-written SVGs in `img/`, each on its own slide (titled "…, Drawn"
+or "…, Counted") straight after the slide it draws, so no existing slide got
+more crowded. In deck order:
 
-`modes.svg` is the tallest, which is why it is at `width="700"` — any wider and
-its caption runs into the bottom of the slide.
+| Diagram            | Draws                                                 |
+| ------------------ | ----------------------------------------------------- |
+| `symmetric`        | Alice, Bob, one K, Eve on the wire                    |
+| `pairwise-keys`    | 5 people, 10 keys; the n(n−1)/2 table                 |
+| `modes`            | CBC and CTR                                           |
+| `nonce-reuse`      | one keystream twice → P1 ⊕ P2                         |
+| `hash-properties`  | preimage / second preimage / collision, and the costs |
+| `avalanche`        | the 256 output bits that differ, from the hands-on    |
+| `length-extension` | resuming SHA-256 from a published `H(K ‖ m)`          |
+| `ctr-bitflip`      | `pay 100` → `pay 900` without the key                 |
+| `hybrid`           | public key moves the key, AES-GCM moves the data      |
+| `diffie-hellman`   | toy exchange, p = 23, g = 5                           |
+| `forward-secrecy`  | static RSA vs ephemeral DH against one later leak     |
+| `signature`        | sign and verify                                       |
+| `chain`            | root → intermediate → leaf                            |
+
+They are drawn for the league background (light strokes, transparent fill)
+with the `$highlights` colours as literal hex, because an `<img>` SVG cannot see
+the deck's CSS. Check one by rendering it (`rsvg-convert -b '#2b2b2b'`) before
+and after an edit; text that overflows a box is not reported anywhere.
+
+Widths: `modes.svg` is the tallest, which is why it is at `width="700"` — any
+wider and its caption runs into the bottom of the slide. `length-extension`,
+`ctr-bitflip` and `diffie-hellman` are at `760` for the same reason (their
+captions are two or three lines); the rest are at `820`–`860`.
+
+Four of the diagrams carry real data. Change the input and you must recompute,
+not edit, the drawing:
+
+- **`avalanche`** is the XOR of the two SHA-256 digests on the hands-on slide
+  before it: **122 of 256** bits differ. If the hands-on is re-captured, redraw
+  this from the new digests.
+- **`ctr-bitflip`** is one run of a small Go program — AES-128-CTR, random key
+  and IV from `crypto/rand`, then `ct[4] ^= '1' ^ '9'` and decrypt. The program
+  is not committed; the hex is that run's output (`dd` → `d5`). A new run gives
+  different hex, so re-capture all four rows together.
+- **`diffie-hellman`**: 5⁶ mod 23 = 8, 5¹⁵ mod 23 = 19, and both sides get 2.
+  Check with `pow()` if you change a number.
+- **`pairwise-keys`**: 2 → 1, 5 → 10, 100 → 4,950, 1,000 → 499,500. The 499,500
+  also appears on the Symmetric Encryption slide; keep them equal.
+
+The Diffie–Hellman slide is also the deck's only explanation of _how_ DH works.
+Lecture 6's handshake slide says "that is Diffie–Hellman from lecture 3", so do
+not drop it. Its caption — DH alone does not say who is on the other end — is
+what sets up "sign the exchange" on the Forward Secrecy slide after it.
 
 ## Facts worth not re-deriving
 

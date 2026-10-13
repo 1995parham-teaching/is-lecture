@@ -235,6 +235,19 @@ draft: false
     </p>
   </section>
   <section>
+    <h2>The Key Count, Drawn</h2>
+    <img
+      src="img/pairwise-keys.svg"
+      alt="Five people, every pair joined by a line: ten shared keys. A table shows 2 people need 1 key, 5 need 10, 100 need 4,950 and 1,000 need 499,500"
+      width="820"
+    />
+    <p>
+      Each line must be set up over a channel that is <em>already</em> secure.
+      The count grows with the square of the group — this is the wall public-key
+      cryptography was invented to climb.
+    </p>
+  </section>
+  <section>
     <h2>Block and Stream</h2>
     <ul>
       <li>
@@ -451,6 +464,19 @@ draft: false
       </li>
     </ul>
   </section>
+  <section>
+    <h2>The Three Properties, Drawn</h2>
+    <img
+      src="img/hash-properties.svg"
+      alt="Preimage: given h, find m. Second preimage: given m, find another m prime with the same hash. Collision: find any two messages with the same hash, which costs only 2 to the n over 2"
+      width="860"
+    />
+    <p>
+      Read left to right, the attacker is handed less and allowed to choose
+      more. That is why collisions fall first: SHA-1 lost collision resistance
+      and is still not preimage-broken.
+    </p>
+  </section>
   <section class="hands-on">
     <h2>The Avalanche</h2>
     <pre><code class="lang-sh">
@@ -469,6 +495,19 @@ fa18fd7fe735f03b5dcce3556a08491555cee1fe4b0a86c509aa693a4eb707dc
         similar inputs would be a foothold
       </li>
     </ul>
+  </section>
+  <section>
+    <h2>The Avalanche, Counted</h2>
+    <img
+      src="img/avalanche.svg"
+      alt="A grid of the 256 output bits of SHA-256; the 122 bits that differ between security and securitz are red, scattered with no pattern"
+      width="860"
+    />
+    <p>
+      The two digests from the previous slide, XORed. About half the bits flip,
+      and <em class="hl-cyan">which</em> half looks random — there is no
+      gradient for an attacker to follow back to the input.
+    </p>
   </section>
   <section class="hands-on">
     <h2>A Collision You Can Download</h2>
@@ -548,6 +587,18 @@ HMAC(K, m) = H( (K ⊕ opad) ‖ H( (K ⊕ ipad) ‖ m ) )
     </p>
   </section>
   <section>
+    <h2>Length Extension, Drawn</h2>
+    <img
+      src="img/length-extension.svg"
+      alt="The server computes the tag H of K and m from the IV. The attacker starts from that tag as the internal state, feeds padding and extra data, and gets a valid tag for the longer message without the key"
+      width="760"
+    />
+    <p>
+      SHA-256 publishes its whole internal state as the digest, so anyone can
+      pick up where the server stopped. HMAC's outer hash is what stops this.
+    </p>
+  </section>
+  <section>
     <h2>Encryption Alone Is Not Integrity</h2>
     <ul>
       <li>
@@ -576,6 +627,19 @@ HMAC(K, m) = H( (K ⊕ opad) ‖ H( (K ⊕ ipad) ‖ m ) )
         </ul>
       </li>
     </ul>
+  </section>
+  <section>
+    <h2>The Bit Flip, Drawn</h2>
+    <img
+      src="img/ctr-bitflip.svg"
+      alt="pay 100 to alice encrypted with AES-CTR; the attacker XORs the fifth ciphertext byte with 08, turning dd into d5; the receiver decrypts pay 900 to alice"
+      width="760"
+    />
+    <p>
+      A real AES-CTR run. The attacker never saw the key — knowing the plaintext
+      said <code>1</code> was enough to make it say <code>9</code>. The next
+      slide is the fix.
+    </p>
   </section>
   <section class="hands-on">
     <h2>AES-GCM, and One Flipped Bit</h2>
@@ -778,6 +842,20 @@ open one bit flipped: "" err=cipher: message authentication failed
     </p>
   </section>
   <section>
+    <h2>Diffie–Hellman, Drawn</h2>
+    <img
+      src="img/diffie-hellman.svg"
+      alt="Alice and Bob agree p 23 and g 5 in public. Alice keeps a 6 secret and sends 8; Bob keeps b 15 secret and sends 19. Both compute the shared secret 2, which never crosses the network; Eve sees 23, 5, 8 and 19"
+      width="760"
+    />
+    <p>
+      Two strangers agree on a key over a public channel. It does not say
+      <em>who</em> is on the other end — Eve in the middle could run it with
+      each of them — so the exchange must be
+      <span class="hl-orange">signed</span>, as the next slide says.
+    </p>
+  </section>
+  <section>
     <h2>Forward Secrecy</h2>
     <ul>
       <li>
@@ -799,6 +877,18 @@ open one bit flipped: "" err=cipher: message authentication failed
         forward secrecy non-optional
       </li>
     </ul>
+  </section>
+  <section>
+    <h2>Forward Secrecy, Drawn</h2>
+    <img
+      src="img/forward-secrecy.svg"
+      alt="Two timelines of three recorded sessions and a later private key leak. With static RSA key exchange every recorded session decrypts; with ephemeral Diffie-Hellman the session keys were deleted and nothing decrypts"
+      width="860"
+    />
+    <p>
+      Same recording, same leak. The difference is whether the leaked key ever
+      <em>encrypted</em> anything.
+    </p>
   </section>
 </section>
 <section>

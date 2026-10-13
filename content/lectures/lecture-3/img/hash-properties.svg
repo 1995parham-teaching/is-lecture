@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 400">
+  <title>Hash properties: preimage, second preimage, collision</title>
+  <style>
+    text { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 20px; fill: #eeeeee; text-anchor: middle; dominant-baseline: middle; }
+    .small { font-size: 16px; fill: #b0b4bc; }
+    .label { font-size: 16px; fill: #b0b4bc; text-anchor: start; }
+    .title { font-size: 22px; font-weight: bold; }
+    .mono { font-family: Menlo, Consolas, "DejaVu Sans Mono", monospace; }
+    .box { fill: rgba(255, 255, 255, 0.06); stroke: #cfd3da; stroke-width: 2; }
+    .cell { fill: none; stroke: #5d6573; stroke-width: 1; }
+    .line { fill: none; stroke: #cfd3da; stroke-width: 2; marker-end: url(#arrow); }
+    .plain { fill: none; stroke: #cfd3da; stroke-width: 2; }
+    .dash { fill: none; stroke: #8d97a8; stroke-width: 2; stroke-dasharray: 6 5; }
+    .orange { fill: #ff9100; } .green { fill: #76ff03; } .cyan { fill: #00e5ff; }
+    .red { fill: #ff5252; } .violet { fill: #ee82ee; } .yellow { fill: #ffcc00; }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#cfd3da" />
+    </marker>
+  </defs>
+  <text class="green title" x="150" y="40">Preimage</text>
+  <text class="small" x="150" y="74">given h, find any m</text>
+  <rect class="box" x="95" y="115" width="110" height="48" rx="6" style="stroke: #ff5252; stroke-dasharray: 6 5" />
+  <text class="red mono" x="150" y="139">m = ?</text>
+  <path class="line" d="M150,165 V229" />
+  <text class="small" x="172" y="197">H</text>
+  <rect class="box" x="95" y="232" width="110" height="48" rx="6" style="stroke: #cfd3da" />
+  <text class="mono" x="150" y="256">h</text>
+  <text class="green" x="150" y="315">≈ 2ⁿ tries</text>
+  <text class="cyan title" x="450" y="40">Second preimage</text>
+  <text class="small" x="450" y="74">given m, find another m′</text>
+  <rect class="box" x="325" y="115" width="110" height="48" rx="6" style="stroke: #cfd3da" />
+  <text class="mono" x="380" y="139">m</text>
+  <rect class="box" x="465" y="115" width="110" height="48" rx="6" style="stroke: #ff5252; stroke-dasharray: 6 5" />
+  <text class="red mono" x="520" y="139">m′ = ?</text>
+  <path class="line" d="M380,165 L438,229" />
+  <path class="line" d="M520,165 L462,229" />
+  <rect class="box" x="395" y="232" width="110" height="48" rx="6" style="stroke: #cfd3da" />
+  <text class="mono" x="450" y="256">h</text>
+  <text class="cyan" x="450" y="315">≈ 2ⁿ tries</text>
+  <text class="violet title" x="750" y="40">Collision</text>
+  <text class="small" x="750" y="74">find any m, m′ at all</text>
+  <rect class="box" x="625" y="115" width="110" height="48" rx="6" style="stroke: #ff5252; stroke-dasharray: 6 5" />
+  <text class="mono red" x="680" y="139">m = ?</text>
+  <rect class="box" x="765" y="115" width="110" height="48" rx="6" style="stroke: #ff5252; stroke-dasharray: 6 5" />
+  <text class="red mono" x="820" y="139">m′ = ?</text>
+  <path class="line" d="M680,165 L738,229" />
+  <path class="line" d="M820,165 L762,229" />
+  <rect class="box" x="695" y="232" width="110" height="48" rx="6" style="stroke: #ff5252; stroke-dasharray: 6 5" />
+  <text class="mono red" x="750" y="256">h = ?</text>
+  <text class="violet" x="750" y="315">≈ 2ⁿᐟ² tries</text>
+  <line x1="300" y1="30" x2="300" y2="330" style="stroke: #5d6573; stroke-width: 1" />
+  <line x1="600" y1="30" x2="600" y2="330" style="stroke: #5d6573; stroke-width: 1" />
+  <text class="yellow" x="450" y="370">the more the attacker may choose, the easier it gets — red is what they choose</text>
+</svg>

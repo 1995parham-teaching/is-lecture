@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420">
+  <title>Pairwise symmetric keys grow as n(n-1)/2</title>
+  <style>
+    text { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 20px; fill: #eeeeee; text-anchor: middle; dominant-baseline: middle; }
+    .small { font-size: 16px; fill: #b0b4bc; }
+    .label { font-size: 16px; fill: #b0b4bc; text-anchor: start; }
+    .title { font-size: 22px; font-weight: bold; }
+    .mono { font-family: Menlo, Consolas, "DejaVu Sans Mono", monospace; }
+    .box { fill: rgba(255, 255, 255, 0.06); stroke: #cfd3da; stroke-width: 2; }
+    .cell { fill: none; stroke: #5d6573; stroke-width: 1; }
+    .line { fill: none; stroke: #cfd3da; stroke-width: 2; marker-end: url(#arrow); }
+    .plain { fill: none; stroke: #cfd3da; stroke-width: 2; }
+    .dash { fill: none; stroke: #8d97a8; stroke-width: 2; stroke-dasharray: 6 5; }
+    .orange { fill: #ff9100; } .green { fill: #76ff03; } .cyan { fill: #00e5ff; }
+    .red { fill: #ff5252; } .violet { fill: #ee82ee; } .yellow { fill: #ffcc00; }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#cfd3da" />
+    </marker>
+  </defs>
+  <line x1="250.0" y1="55.0" x2="373.6" y2="144.8" style="stroke: #00e5ff; stroke-width: 2" />
+  <line x1="250.0" y1="55.0" x2="326.4" y2="290.2" style="stroke: #00e5ff; stroke-width: 2" />
+  <line x1="250.0" y1="55.0" x2="173.6" y2="290.2" style="stroke: #00e5ff; stroke-width: 2" />
+  <line x1="250.0" y1="55.0" x2="126.4" y2="144.8" style="stroke: #00e5ff; stroke-width: 2" />
+  <line x1="373.6" y1="144.8" x2="326.4" y2="290.2" style="stroke: #00e5ff; stroke-width: 2" />
+  <line x1="373.6" y1="144.8" x2="173.6" y2="290.2" style="stroke: #00e5ff; stroke-width: 2" />
+  <line x1="373.6" y1="144.8" x2="126.4" y2="144.8" style="stroke: #00e5ff; stroke-width: 2" />
+  <line x1="326.4" y1="290.2" x2="173.6" y2="290.2" style="stroke: #00e5ff; stroke-width: 2" />
+  <line x1="326.4" y1="290.2" x2="126.4" y2="144.8" style="stroke: #00e5ff; stroke-width: 2" />
+  <line x1="173.6" y1="290.2" x2="126.4" y2="144.8" style="stroke: #00e5ff; stroke-width: 2" />
+  <circle cx="250.0" cy="55.0" r="26" style="fill: #2b2b2b; stroke: #ff9100; stroke-width: 2" />
+  <text class="orange" x="250.0" y="55.0">A</text>
+  <circle cx="373.6" cy="144.8" r="26" style="fill: #2b2b2b; stroke: #ff9100; stroke-width: 2" />
+  <text class="orange" x="373.6" y="144.8">B</text>
+  <circle cx="326.4" cy="290.2" r="26" style="fill: #2b2b2b; stroke: #ff9100; stroke-width: 2" />
+  <text class="orange" x="326.4" y="290.2">C</text>
+  <circle cx="173.6" cy="290.2" r="26" style="fill: #2b2b2b; stroke: #ff9100; stroke-width: 2" />
+  <text class="orange" x="173.6" y="290.2">D</text>
+  <circle cx="126.4" cy="144.8" r="26" style="fill: #2b2b2b; stroke: #ff9100; stroke-width: 2" />
+  <text class="orange" x="126.4" y="144.8">E</text>
+  <text class="small" x="250" y="345">5 people · each line is one shared key · 10 keys</text>
+  <text class="cyan title" x="700" y="50">n(n−1)/2</text>
+  <text class="small" x="630" y="110">people</text>
+  <text class="small" x="780" y="110">keys</text>
+  <text class="mono" x="630" y="156">2</text>
+  <text class="mono cyan" x="780" y="156">1</text>
+  <text class="mono" x="630" y="202">5</text>
+  <text class="mono cyan" x="780" y="202">10</text>
+  <text class="mono" x="630" y="248">100</text>
+  <text class="mono cyan" x="780" y="248">4,950</text>
+  <text class="mono" x="630" y="294">1,000</text>
+  <text class="mono cyan" x="780" y="294">499,500</text>
+  <line x1="560" y1="132" x2="850" y2="132" style="stroke: #5d6573; stroke-width: 1" />
+  <text class="yellow" x="450" y="392">every newcomer needs a key with everyone already there</text>
+</svg>

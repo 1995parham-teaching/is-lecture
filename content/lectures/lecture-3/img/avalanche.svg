@@ -1,0 +1,282 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 400">
+  <title>Avalanche: 122 of 256 SHA-256 output bits differ</title>
+  <style>
+    text { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 20px; fill: #eeeeee; text-anchor: middle; dominant-baseline: middle; }
+    .small { font-size: 16px; fill: #b0b4bc; }
+    .label { font-size: 16px; fill: #b0b4bc; text-anchor: start; }
+    .title { font-size: 22px; font-weight: bold; }
+    .mono { font-family: Menlo, Consolas, "DejaVu Sans Mono", monospace; }
+    .box { fill: rgba(255, 255, 255, 0.06); stroke: #cfd3da; stroke-width: 2; }
+    .cell { fill: none; stroke: #5d6573; stroke-width: 1; }
+    .line { fill: none; stroke: #cfd3da; stroke-width: 2; marker-end: url(#arrow); }
+    .plain { fill: none; stroke: #cfd3da; stroke-width: 2; }
+    .dash { fill: none; stroke: #8d97a8; stroke-width: 2; stroke-dasharray: 6 5; }
+    .orange { fill: #ff9100; } .green { fill: #76ff03; } .cyan { fill: #00e5ff; }
+    .red { fill: #ff5252; } .violet { fill: #ee82ee; } .yellow { fill: #ffcc00; }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#cfd3da" />
+    </marker>
+  </defs>
+  <text x="450" y="36">SHA-256 of <tspan class="orange">security</tspan> vs <tspan class="orange">securit<tspan class="red">z</tspan></tspan> — one letter apart</text>
+  <rect x="98" y="80" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="120" y="80" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="142" y="80" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="164" y="80" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="186" y="80" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="208" y="80" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="230" y="80" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="252" y="80" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="274" y="80" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="296" y="80" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="318" y="80" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="340" y="80" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="362" y="80" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="384" y="80" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="406" y="80" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="428" y="80" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="450" y="80" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="472" y="80" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="494" y="80" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="516" y="80" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="538" y="80" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="560" y="80" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="582" y="80" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="604" y="80" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="626" y="80" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="648" y="80" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="670" y="80" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="692" y="80" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="714" y="80" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="736" y="80" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="758" y="80" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="780" y="80" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="98" y="102" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="120" y="102" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="142" y="102" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="164" y="102" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="186" y="102" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="208" y="102" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="230" y="102" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="252" y="102" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="274" y="102" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="296" y="102" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="318" y="102" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="340" y="102" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="362" y="102" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="384" y="102" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="406" y="102" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="428" y="102" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="450" y="102" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="472" y="102" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="494" y="102" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="516" y="102" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="538" y="102" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="560" y="102" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="582" y="102" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="604" y="102" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="626" y="102" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="648" y="102" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="670" y="102" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="692" y="102" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="714" y="102" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="736" y="102" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="758" y="102" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="780" y="102" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="98" y="124" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="120" y="124" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="142" y="124" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="164" y="124" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="186" y="124" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="208" y="124" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="230" y="124" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="252" y="124" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="274" y="124" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="296" y="124" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="318" y="124" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="340" y="124" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="362" y="124" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="384" y="124" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="406" y="124" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="428" y="124" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="450" y="124" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="472" y="124" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="494" y="124" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="516" y="124" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="538" y="124" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="560" y="124" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="582" y="124" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="604" y="124" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="626" y="124" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="648" y="124" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="670" y="124" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="692" y="124" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="714" y="124" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="736" y="124" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="758" y="124" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="780" y="124" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="98" y="146" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="120" y="146" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="142" y="146" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="164" y="146" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="186" y="146" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="208" y="146" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="230" y="146" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="252" y="146" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="274" y="146" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="296" y="146" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="318" y="146" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="340" y="146" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="362" y="146" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="384" y="146" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="406" y="146" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="428" y="146" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="450" y="146" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="472" y="146" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="494" y="146" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="516" y="146" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="538" y="146" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="560" y="146" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="582" y="146" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="604" y="146" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="626" y="146" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="648" y="146" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="670" y="146" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="692" y="146" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="714" y="146" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="736" y="146" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="758" y="146" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="780" y="146" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="98" y="168" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="120" y="168" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="142" y="168" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="164" y="168" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="186" y="168" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="208" y="168" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="230" y="168" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="252" y="168" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="274" y="168" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="296" y="168" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="318" y="168" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="340" y="168" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="362" y="168" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="384" y="168" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="406" y="168" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="428" y="168" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="450" y="168" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="472" y="168" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="494" y="168" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="516" y="168" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="538" y="168" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="560" y="168" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="582" y="168" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="604" y="168" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="626" y="168" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="648" y="168" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="670" y="168" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="692" y="168" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="714" y="168" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="736" y="168" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="758" y="168" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="780" y="168" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="98" y="190" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="120" y="190" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="142" y="190" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="164" y="190" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="186" y="190" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="208" y="190" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="230" y="190" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="252" y="190" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="274" y="190" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="296" y="190" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="318" y="190" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="340" y="190" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="362" y="190" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="384" y="190" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="406" y="190" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="428" y="190" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="450" y="190" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="472" y="190" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="494" y="190" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="516" y="190" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="538" y="190" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="560" y="190" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="582" y="190" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="604" y="190" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="626" y="190" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="648" y="190" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="670" y="190" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="692" y="190" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="714" y="190" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="736" y="190" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="758" y="190" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="780" y="190" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="98" y="212" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="120" y="212" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="142" y="212" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="164" y="212" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="186" y="212" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="208" y="212" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="230" y="212" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="252" y="212" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="274" y="212" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="296" y="212" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="318" y="212" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="340" y="212" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="362" y="212" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="384" y="212" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="406" y="212" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="428" y="212" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="450" y="212" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="472" y="212" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="494" y="212" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="516" y="212" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="538" y="212" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="560" y="212" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="582" y="212" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="604" y="212" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="626" y="212" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="648" y="212" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="670" y="212" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="692" y="212" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="714" y="212" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="736" y="212" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="758" y="212" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="780" y="212" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="98" y="234" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="120" y="234" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="142" y="234" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="164" y="234" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="186" y="234" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="208" y="234" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="230" y="234" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="252" y="234" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="274" y="234" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="296" y="234" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="318" y="234" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="340" y="234" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="362" y="234" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="384" y="234" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="406" y="234" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="428" y="234" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="450" y="234" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="472" y="234" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="494" y="234" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="516" y="234" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="538" y="234" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="560" y="234" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="582" y="234" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="604" y="234" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="626" y="234" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="648" y="234" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="670" y="234" width="19" height="19" rx="2" style="fill: rgba(255, 255, 255, 0.06)" />
+  <rect x="692" y="234" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="714" y="234" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="736" y="234" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="758" y="234" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <rect x="780" y="234" width="19" height="19" rx="2" style="fill: #ff5252" />
+  <text class="small" x="450" y="286">each square is one output bit · red = the bit flipped</text>
+  <text class="title" x="450" y="336"><tspan class="red">122</tspan> of 256 bits differ — 48%</text>
+  <text class="yellow" x="450" y="376">a coin toss per bit would give 128: no pattern to follow back</text>
+</svg>

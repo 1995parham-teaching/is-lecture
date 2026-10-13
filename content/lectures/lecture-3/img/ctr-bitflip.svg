@@ -1,0 +1,159 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 460">
+  <title>CTR malleability: flipping ciphertext bits flips the same plaintext bits</title>
+  <style>
+    text { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 20px; fill: #eeeeee; text-anchor: middle; dominant-baseline: middle; }
+    .small { font-size: 16px; fill: #b0b4bc; }
+    .label { font-size: 16px; fill: #b0b4bc; text-anchor: start; }
+    .title { font-size: 22px; font-weight: bold; }
+    .mono { font-family: Menlo, Consolas, "DejaVu Sans Mono", monospace; }
+    .box { fill: rgba(255, 255, 255, 0.06); stroke: #cfd3da; stroke-width: 2; }
+    .cell { fill: none; stroke: #5d6573; stroke-width: 1; }
+    .line { fill: none; stroke: #cfd3da; stroke-width: 2; marker-end: url(#arrow); }
+    .plain { fill: none; stroke: #cfd3da; stroke-width: 2; }
+    .dash { fill: none; stroke: #8d97a8; stroke-width: 2; stroke-dasharray: 6 5; }
+    .orange { fill: #ff9100; } .green { fill: #76ff03; } .cyan { fill: #00e5ff; }
+    .red { fill: #ff5252; } .violet { fill: #ee82ee; } .yellow { fill: #ffcc00; }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#cfd3da" />
+    </marker>
+  </defs>
+  <text class="label" x="20" y="60">plaintext</text>
+  <rect class="cell" x="150" y="40" width="45" height="40" />
+  <text class="mono orange" x="172.5" y="60" style="font-size: 22px">p</text>
+  <rect class="cell" x="195" y="40" width="45" height="40" />
+  <text class="mono orange" x="217.5" y="60" style="font-size: 22px">a</text>
+  <rect class="cell" x="240" y="40" width="45" height="40" />
+  <text class="mono orange" x="262.5" y="60" style="font-size: 22px">y</text>
+  <rect class="cell" x="285" y="40" width="45" height="40" />
+  <text class="mono small" x="307.5" y="60" style="font-size: 22px">␣</text>
+  <rect class="cell" x="330" y="40" width="45" height="40" />
+  <text class="mono orange" x="352.5" y="60" style="font-size: 22px">1</text>
+  <rect class="cell" x="375" y="40" width="45" height="40" />
+  <text class="mono orange" x="397.5" y="60" style="font-size: 22px">0</text>
+  <rect class="cell" x="420" y="40" width="45" height="40" />
+  <text class="mono orange" x="442.5" y="60" style="font-size: 22px">0</text>
+  <rect class="cell" x="465" y="40" width="45" height="40" />
+  <text class="mono small" x="487.5" y="60" style="font-size: 22px">␣</text>
+  <rect class="cell" x="510" y="40" width="45" height="40" />
+  <text class="mono orange" x="532.5" y="60" style="font-size: 22px">t</text>
+  <rect class="cell" x="555" y="40" width="45" height="40" />
+  <text class="mono orange" x="577.5" y="60" style="font-size: 22px">o</text>
+  <rect class="cell" x="600" y="40" width="45" height="40" />
+  <text class="mono small" x="622.5" y="60" style="font-size: 22px">␣</text>
+  <rect class="cell" x="645" y="40" width="45" height="40" />
+  <text class="mono orange" x="667.5" y="60" style="font-size: 22px">a</text>
+  <rect class="cell" x="690" y="40" width="45" height="40" />
+  <text class="mono orange" x="712.5" y="60" style="font-size: 22px">l</text>
+  <rect class="cell" x="735" y="40" width="45" height="40" />
+  <text class="mono orange" x="757.5" y="60" style="font-size: 22px">i</text>
+  <rect class="cell" x="780" y="40" width="45" height="40" />
+  <text class="mono orange" x="802.5" y="60" style="font-size: 22px">c</text>
+  <rect class="cell" x="825" y="40" width="45" height="40" />
+  <text class="mono orange" x="847.5" y="60" style="font-size: 22px">e</text>
+  <text class="label" x="20" y="150">ciphertext</text>
+  <rect class="cell" x="150" y="130" width="45" height="40" />
+  <text class="mono" x="172.5" y="150" style="font-size: 18px">ae</text>
+  <rect class="cell" x="195" y="130" width="45" height="40" />
+  <text class="mono" x="217.5" y="150" style="font-size: 18px">f6</text>
+  <rect class="cell" x="240" y="130" width="45" height="40" />
+  <text class="mono" x="262.5" y="150" style="font-size: 18px">de</text>
+  <rect class="cell" x="285" y="130" width="45" height="40" />
+  <text class="mono" x="307.5" y="150" style="font-size: 18px">bb</text>
+  <rect class="cell" x="330" y="130" width="45" height="40" />
+  <text class="mono" x="352.5" y="150" style="font-size: 18px">dd</text>
+  <rect class="cell" x="375" y="130" width="45" height="40" />
+  <text class="mono" x="397.5" y="150" style="font-size: 18px">a5</text>
+  <rect class="cell" x="420" y="130" width="45" height="40" />
+  <text class="mono" x="442.5" y="150" style="font-size: 18px">95</text>
+  <rect class="cell" x="465" y="130" width="45" height="40" />
+  <text class="mono" x="487.5" y="150" style="font-size: 18px">74</text>
+  <rect class="cell" x="510" y="130" width="45" height="40" />
+  <text class="mono" x="532.5" y="150" style="font-size: 18px">e8</text>
+  <rect class="cell" x="555" y="130" width="45" height="40" />
+  <text class="mono" x="577.5" y="150" style="font-size: 18px">b8</text>
+  <rect class="cell" x="600" y="130" width="45" height="40" />
+  <text class="mono" x="622.5" y="150" style="font-size: 18px">64</text>
+  <rect class="cell" x="645" y="130" width="45" height="40" />
+  <text class="mono" x="667.5" y="150" style="font-size: 18px">c0</text>
+  <rect class="cell" x="690" y="130" width="45" height="40" />
+  <text class="mono" x="712.5" y="150" style="font-size: 18px">86</text>
+  <rect class="cell" x="735" y="130" width="45" height="40" />
+  <text class="mono" x="757.5" y="150" style="font-size: 18px">02</text>
+  <rect class="cell" x="780" y="130" width="45" height="40" />
+  <text class="mono" x="802.5" y="150" style="font-size: 18px">f5</text>
+  <rect class="cell" x="825" y="130" width="45" height="40" />
+  <text class="mono" x="847.5" y="150" style="font-size: 18px">87</text>
+  <text class="label" x="20" y="260">attacker</text>
+  <rect class="cell" x="150" y="240" width="45" height="40" />
+  <text class="mono" x="172.5" y="260" style="font-size: 18px">ae</text>
+  <rect class="cell" x="195" y="240" width="45" height="40" />
+  <text class="mono" x="217.5" y="260" style="font-size: 18px">f6</text>
+  <rect class="cell" x="240" y="240" width="45" height="40" />
+  <text class="mono" x="262.5" y="260" style="font-size: 18px">de</text>
+  <rect class="cell" x="285" y="240" width="45" height="40" />
+  <text class="mono" x="307.5" y="260" style="font-size: 18px">bb</text>
+  <rect class="cell" x="330" y="240" width="45" height="40" style="stroke: #ff5252; stroke-width: 2" />
+  <text class="mono red" x="352.5" y="260" style="font-size: 18px">d5</text>
+  <rect class="cell" x="375" y="240" width="45" height="40" />
+  <text class="mono" x="397.5" y="260" style="font-size: 18px">a5</text>
+  <rect class="cell" x="420" y="240" width="45" height="40" />
+  <text class="mono" x="442.5" y="260" style="font-size: 18px">95</text>
+  <rect class="cell" x="465" y="240" width="45" height="40" />
+  <text class="mono" x="487.5" y="260" style="font-size: 18px">74</text>
+  <rect class="cell" x="510" y="240" width="45" height="40" />
+  <text class="mono" x="532.5" y="260" style="font-size: 18px">e8</text>
+  <rect class="cell" x="555" y="240" width="45" height="40" />
+  <text class="mono" x="577.5" y="260" style="font-size: 18px">b8</text>
+  <rect class="cell" x="600" y="240" width="45" height="40" />
+  <text class="mono" x="622.5" y="260" style="font-size: 18px">64</text>
+  <rect class="cell" x="645" y="240" width="45" height="40" />
+  <text class="mono" x="667.5" y="260" style="font-size: 18px">c0</text>
+  <rect class="cell" x="690" y="240" width="45" height="40" />
+  <text class="mono" x="712.5" y="260" style="font-size: 18px">86</text>
+  <rect class="cell" x="735" y="240" width="45" height="40" />
+  <text class="mono" x="757.5" y="260" style="font-size: 18px">02</text>
+  <rect class="cell" x="780" y="240" width="45" height="40" />
+  <text class="mono" x="802.5" y="260" style="font-size: 18px">f5</text>
+  <rect class="cell" x="825" y="240" width="45" height="40" />
+  <text class="mono" x="847.5" y="260" style="font-size: 18px">87</text>
+  <text class="label" x="20" y="370">decrypted</text>
+  <rect class="cell" x="150" y="350" width="45" height="40" />
+  <text class="mono orange" x="172.5" y="370" style="font-size: 22px">p</text>
+  <rect class="cell" x="195" y="350" width="45" height="40" />
+  <text class="mono orange" x="217.5" y="370" style="font-size: 22px">a</text>
+  <rect class="cell" x="240" y="350" width="45" height="40" />
+  <text class="mono orange" x="262.5" y="370" style="font-size: 22px">y</text>
+  <rect class="cell" x="285" y="350" width="45" height="40" />
+  <text class="mono small" x="307.5" y="370" style="font-size: 22px">␣</text>
+  <rect class="cell" x="330" y="350" width="45" height="40" style="stroke: #ff5252; stroke-width: 2" />
+  <text class="mono red" x="352.5" y="370" style="font-size: 22px">9</text>
+  <rect class="cell" x="375" y="350" width="45" height="40" />
+  <text class="mono orange" x="397.5" y="370" style="font-size: 22px">0</text>
+  <rect class="cell" x="420" y="350" width="45" height="40" />
+  <text class="mono orange" x="442.5" y="370" style="font-size: 22px">0</text>
+  <rect class="cell" x="465" y="350" width="45" height="40" />
+  <text class="mono small" x="487.5" y="370" style="font-size: 22px">␣</text>
+  <rect class="cell" x="510" y="350" width="45" height="40" />
+  <text class="mono orange" x="532.5" y="370" style="font-size: 22px">t</text>
+  <rect class="cell" x="555" y="350" width="45" height="40" />
+  <text class="mono orange" x="577.5" y="370" style="font-size: 22px">o</text>
+  <rect class="cell" x="600" y="350" width="45" height="40" />
+  <text class="mono small" x="622.5" y="370" style="font-size: 22px">␣</text>
+  <rect class="cell" x="645" y="350" width="45" height="40" />
+  <text class="mono orange" x="667.5" y="370" style="font-size: 22px">a</text>
+  <rect class="cell" x="690" y="350" width="45" height="40" />
+  <text class="mono orange" x="712.5" y="370" style="font-size: 22px">l</text>
+  <rect class="cell" x="735" y="350" width="45" height="40" />
+  <text class="mono orange" x="757.5" y="370" style="font-size: 22px">i</text>
+  <rect class="cell" x="780" y="350" width="45" height="40" />
+  <text class="mono orange" x="802.5" y="370" style="font-size: 22px">c</text>
+  <rect class="cell" x="825" y="350" width="45" height="40" />
+  <text class="mono orange" x="847.5" y="370" style="font-size: 22px">e</text>
+  <text class="small" x="450" y="105">AES-CTR under a key the attacker never sees</text>
+  <path class="line" d="M352.5,172 V238" style="stroke: #ff5252" />
+  <text class="red mono" x="366.5" y="205" style="text-anchor: start; font-size: 18px">⊕ 08   ( '1' ⊕ '9' )</text>
+  <text class="small" x="560" y="318">the receiver decrypts with the real key</text>
+  <text class="yellow" x="450" y="430">one known byte of plaintext is enough to choose a new one</text>
+</svg>
