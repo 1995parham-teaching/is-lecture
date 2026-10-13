@@ -107,6 +107,18 @@ on a child `<ul>` breaks any slide that ends with a code block.
 **Code blocks** are `<pre><code class="lang-go">`. Escape `<`, `>` and `&` inside
 them — the HTML, JavaScript and bitwise-operator samples are where this bites.
 
+**Reach for a diagram.** This material is taught from, and a drawing is easier
+to teach from than a paragraph. Whenever a slide explains a process, a data
+layout, a protocol exchange or anything with steps, draw it — and keep the
+prose next to it to a sentence or two. When editing an existing text-heavy
+slide, consider whether a diagram should replace the text.
+
+**Diagrams** are hand-written SVGs in the deck's `img/`. Draw them for the
+league background — light strokes, transparent fill — with the
+`$highlights` colours as literal hex, because an `<img>` SVG cannot see the
+deck's CSS. Render one (`rsvg-convert -b '#2b2b2b'`) before and after an edit:
+text that overflows a box is not reported anywhere.
+
 ## Things that fail silently
 
 - **Overflow.** The slide is 960×700 logical px at `--r-main-font-size: 24px`.
