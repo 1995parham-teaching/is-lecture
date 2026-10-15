@@ -19,6 +19,10 @@ draft: false
 <section>
   <section>
     <h2>The Toolbox</h2>
+    <p>
+      Lecture 2 ended here: encipherment, signatures, data integrity — most
+      X.800 mechanisms are cryptography. This lecture opens that box.
+    </p>
     <ul>
       <li>
         Cryptography turns a
@@ -370,10 +374,10 @@ draft: false
       width="700"
     />
     <p>
-      CBC feeds each ciphertext block into the next, so equal blocks stop
-      looking equal. CTR never puts the data through AES at all — it makes a
-      <span class="hl-cyan">keystream</span> and XORs it in, which is a one-time
-      pad generated from <em>(key, nonce)</em>.
+      CBC chains each block into the next, from a random
+      <span class="hl-orange">IV</span>. CTR XORs in a
+      <span class="hl-cyan">keystream</span> made from <em>(key, nonce)</em> — a
+      <span class="hl-orange">nonce</span> is a public number used once.
     </p>
   </section>
   <section>
@@ -435,6 +439,9 @@ draft: false
 <section>
   <section>
     <h2>Hash Functions</h2>
+    <p>
+      You ran one in lecture 1: <code>shasum</code>. Here is what it promises.
+    </p>
     <ul>
       <li>
         Any input, fixed-size output. No key.
@@ -459,7 +466,7 @@ draft: false
         </ul>
       </li>
       <li>
-        Collisions are the easiest to attack — the birthday bound puts an
+        Collisions are the easiest to attack — the birthday paradox puts an
         <em>n</em>-bit hash at only <em>n</em>/2 bits of collision resistance
       </li>
     </ul>
@@ -679,6 +686,12 @@ open one bit flipped: "" err=cipher: message authentication failed
         hands you unverified plaintext is an API that will be misused
       </li>
     </ul>
+    <div class="box">
+      <p>
+        Every tool so far assumes both sides already share a key. How did they
+        get it?
+      </p>
+    </div>
   </section>
 </section>
 <section>
@@ -799,7 +812,7 @@ open one bit flipped: "" err=cipher: message authentication failed
       </tr>
     </table>
     <p>
-      NIST SP 800-57. A 256-bit ECC key and a 3072-bit RSA key are
+      NIST SP 800-57. A 256-bit elliptic-curve key and a 3072-bit RSA key are
       <em class="hl-cyan">the same strength</em> — which is why everything new
       uses curves.
     </p>
@@ -850,9 +863,9 @@ open one bit flipped: "" err=cipher: message authentication failed
     />
     <p>
       Two strangers agree on a key over a public channel. It does not say
-      <em>who</em> is on the other end — Eve in the middle could run it with
-      each of them — so the exchange must be
-      <span class="hl-orange">signed</span>, as the next slide says.
+      <em>who</em> is on the other end. Eve only listens, and learns nothing;
+      Mallory in the middle could run it with each of them — so the exchange
+      must be <span class="hl-orange">signed</span>, as the next slide says.
     </p>
   </section>
   <section>
@@ -887,7 +900,8 @@ open one bit flipped: "" err=cipher: message authentication failed
     />
     <p>
       Same recording, same leak. The difference is whether the leaked key ever
-      <em>encrypted</em> anything.
+      <em>encrypted</em> anything. What it does instead is
+      <span class="hl-orange">sign</span> — the next section.
     </p>
   </section>
 </section>
@@ -1122,6 +1136,38 @@ Signature Verification Failure
     </p>
   </section>
   <section>
+    <h2>The Grade Service, With This Toolbox</h2>
+    <p>Lecture 1's threats, and which tool answers each one:</p>
+    <table style="font-size: 0.8em">
+      <tr>
+        <td class="hl-orange"><strong>A reader on the lab wifi</strong></td>
+        <td>Authenticated encryption — inside TLS, lecture 6</td>
+      </tr>
+      <tr>
+        <td class="hl-orange"><strong>12 changed to 20 on the wire</strong></td>
+        <td>The same tag: a flipped bit fails to open</td>
+      </tr>
+      <tr>
+        <td class="hl-orange"><strong>"I never entered that grade"</strong></td>
+        <td>A signature by the instructor. A MAC cannot settle it</td>
+      </tr>
+      <tr>
+        <td class="hl-orange">
+          <strong>Is this really the grade server?</strong>
+        </td>
+        <td>A certificate, checked up to a root</td>
+      </tr>
+      <tr>
+        <td class="hl-red"><strong>A student sends X-User: parham</strong></td>
+        <td class="hl-red">Nothing in this lecture</td>
+      </tr>
+    </table>
+    <p>
+      The last row is not a cryptography problem. The request is perfectly
+      intact — it is just a lie.
+    </p>
+  </section>
+  <section>
     <h2>Rules That Will Serve You</h2>
     <ul>
       <li>
@@ -1145,6 +1191,48 @@ Signature Verification Failure
     </ul>
     <div class="box">
       <p>The cipher is almost never what fails. The way it was used is.</p>
+    </div>
+  </section>
+  <section>
+    <h2>Check Yourself</h2>
+    <ol>
+      <li>
+        The ECB picture was encrypted with AES, a strong cipher. Why could you
+        still read it?
+      </li>
+      <li>
+        The grade upload is AES-CTR with no tag. Without the key, what can a
+        student on the wire do to their grade?
+      </li>
+      <li>Why does a MAC not give non-repudiation, when a signature does?</li>
+      <li>
+        The server's private key leaks next year. Which recordings of today's
+        traffic can be read — with static RSA, and with ephemeral
+        Diffie–Hellman?
+      </li>
+    </ol>
+  </section>
+  <section>
+    <h2>Where This Leaves Us</h2>
+    <ul>
+      <li>
+        We can now keep a secret, notice a change, and prove who signed — and
+        every one of those reduces to <em class="hl-orange">who holds a key</em>
+      </li>
+      <li>
+        The grade service's last row still stands: a header that says
+        <code>X-User: parham</code>. No cipher fixes that
+      </li>
+      <li>
+        A key proves possession. It does not say what its holder is
+        <em class="hl-green">allowed to do</em>
+      </li>
+    </ul>
+    <div class="box">
+      <p>
+        Next: access control. Who you are, how you prove it, and what that lets
+        you touch.
+      </p>
     </div>
   </section>
 </section>

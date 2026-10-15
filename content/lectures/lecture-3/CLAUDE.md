@@ -1,22 +1,25 @@
 # Lecture 3 — Cryptography
 
-The toolbox lecture, and the one the rest of the course spends. 56 slides,
+The toolbox lecture, and the one the rest of the course spends. 59 slides,
 5 vertical stacks, 4 hands-on sections, 3 images, 13 diagrams. Topics (TOC indices):
 `0` Foundations · `1` Symmetric Encryption · `2` Hashes & MACs ·
 `3` Public-Key Cryptography · `4` Signatures & PKI.
 
 ## The organising idea
 
+The first slide opens by recalling lecture 2's last claim — most X.800
+mechanisms are cryptography — so the deck starts where lecture 2 stopped.
+
 Every section ends by naming what it **cannot** do, and the next section is the
 answer:
 
-| Section                  | The gap it ends on                        |
-| ------------------------ | ----------------------------------------- |
-| Symmetric                | how do both sides get the key?            |
-| Hashes                   | a bare hash does not survive an adversary |
-| Authenticated encryption | who is the key shared with?               |
-| Public key               | whose public key is it?                   |
-| PKI                      | and who watches the CA?                   |
+| Section                  | The gap it ends on                                                 |
+| ------------------------ | ------------------------------------------------------------------ |
+| Symmetric                | how do both sides get the key?                                     |
+| Hashes                   | a bare hash does not survive an adversary                          |
+| Authenticated encryption | how did both sides get the key? (box on **Read the Output Again**) |
+| Public key               | whose public key is it?                                            |
+| PKI                      | and who watches the CA?                                            |
 
 Do not reorder the stacks. Each one is the previous one's unanswered question.
 
@@ -127,6 +130,32 @@ what sets up "sign the exchange" on the Forward Secrecy slide after it.
   render; leave them alone rather than "fixing" them to entities.
 - Six tables carry an explicit `font-size`. The key-size table has four columns
   and is the one most likely to overflow if a row grows.
-- The closing slide is the deck's take-away and is deliberately a list of rules
-  rather than a summary of the maths. Students will not remember GCM's internals;
-  they can remember "never reuse a nonce".
+- **Rules That Will Serve You** is the deck's take-away and is deliberately a
+  list of rules rather than a summary of the maths. Students will not remember
+  GCM's internals; they can remember "never reuse a nonce".
+- **The Grade Service, With This Toolbox** sits just before the rules. It
+  maps lecture 1's grade-service threats to this deck's tools, and its last
+  row (a forged `X-User` header) has no cryptographic answer on purpose: that
+  row is the reason lecture 4 exists. TLS and certificates are pointed at
+  lecture 6, where they are used on the same program.
+- **Check Yourself** follows the rules. Answers, for the instructor:
+  1. ECB encrypts equal 16-byte blocks to equal ciphertext blocks, so the
+     picture's structure survives. The mode failed, not AES.
+  2. Flip bits: CTR XORs a keystream, so XORing the ciphertext byte with
+     `'1' ^ '2'` turns a `12` into a `22` (the `pay 100` → `pay 900` slide).
+     A tag (AES-GCM) makes the change fail to open.
+  3. Both parties hold the MAC key, so either could have made the tag. Only
+     the signer holds a private key.
+  4. Static RSA: every recording, because the leaked key unwraps each session
+     key. Ephemeral DH: none — the session keys were deleted.
+- **Where This Leaves Us** follows it and is the 3 → 4 hand-off: a key proves
+  possession, not permission. It names the grade service's `X-User` header,
+  which lecture 4 replaces with a real login. Keep both in step with lecture 4.
+
+## Terms and where they are defined
+
+Every term is defined on or before the slide that first uses it. Keep that
+when you move a slide: IV and nonce are defined in the caption of **CBC and
+CTR, Drawn**, one slide before the **Modes Worth Knowing** table uses them.
+The Hash Functions slide opens with lecture 1's `shasum`, so the section
+starts from a tool students already ran.
