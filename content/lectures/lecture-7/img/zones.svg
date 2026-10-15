@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 490">
+  <title>The classic zone layout, with the grade service in the DMZ</title>
+  <style>
+    text { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 20px; fill: #eeeeee; text-anchor: middle; dominant-baseline: middle; }
+    .small { font-size: 16px; fill: #b0b4bc; }
+    .mono { font-family: Menlo, Consolas, monospace; font-size: 16px; }
+    .title { font-size: 22px; font-weight: bold; }
+    .left { text-anchor: start; }
+    .box { fill: rgba(255, 255, 255, 0.06); stroke: #cfd3da; stroke-width: 2; }
+    .line { fill: none; stroke: #cfd3da; stroke-width: 2; marker-end: url(#arrow); }
+    .dash { fill: none; stroke: #8d97a8; stroke-width: 2; stroke-dasharray: 6 5; }
+    .orange { fill: #ff9100; } .green { fill: #76ff03; } .cyan { fill: #00e5ff; }
+    .red { fill: #ff5252; } .violet { fill: #ee82ee; } .yellow { fill: #ffcc00; }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#cfd3da" />
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#76ff03" />
+    </marker>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#ff5252" />
+    </marker>
+  </defs>
+  <!-- allowed flows: who may start a connection -->
+  <path class="line" d="M105,146 Q220,70 330,146" style="stroke: #76ff03; marker-end: url(#arrow-green)" />
+  <text class="green small" x="218" y="88">:8080 only</text>
+  <path class="line" d="M560,146 Q450,70 360,146" style="stroke: #76ff03; marker-end: url(#arrow-green)" />
+  <text class="green small" x="460" y="88">instructor</text>
+  <path class="line" d="M590,146 Q680,70 790,146" style="stroke: #76ff03; marker-end: url(#arrow-green)" />
+  <text class="green small" x="690" y="88">one named port</text>
+  <text class="small" x="450" y="24">arrows start at the side that opens the connection · <tspan class="yellow">yellow: the firewall</tspan></text>
+
+  <!-- boundaries -->
+  <line x1="220" y1="140" x2="220" y2="340" stroke="#ffcc00" stroke-width="5" />
+  <line x1="450" y1="140" x2="450" y2="340" stroke="#ffcc00" stroke-width="5" />
+  <line x1="680" y1="140" x2="680" y2="340" stroke="#ffcc00" stroke-width="5" />
+
+  <rect class="box" x="20" y="150" width="170" height="180" rx="6" style="stroke: #ff5252" />
+  <text class="red title" x="105" y="176">Internet</text>
+  <text x="105" y="235">anyone</text>
+  <text class="small" x="105" y="265">assume hostile</text>
+
+  <rect class="box" x="250" y="150" width="170" height="180" rx="6" style="stroke: #ff9100" />
+  <text class="orange title" x="335" y="176">DMZ</text>
+  <text x="335" y="230">grade service</text>
+  <text class="small mono" x="335" y="262">192.0.2.10:8080</text>
+  <text class="small" x="335" y="290">HTTPS · grades.db</text>
+
+  <rect class="box" x="480" y="150" width="170" height="180" rx="6" style="stroke: #76ff03" />
+  <text class="green title" x="565" y="176">Internal</text>
+  <text x="565" y="225">instructor's</text>
+  <text x="565" y="250">workstation</text>
+  <text class="small" x="565" y="280">staff laptops</text>
+
+  <rect class="box" x="710" y="150" width="170" height="180" rx="6" style="stroke: #00e5ff" />
+  <text class="cyan title" x="795" y="176">Restricted</text>
+  <text x="795" y="225">registrar</text>
+  <text x="795" y="250">database</text>
+  <text class="small" x="795" y="280">key material</text>
+
+  <!-- denied flows -->
+  <path class="dash" d="M310,334 Q218,400 120,334" style="stroke: #ff5252; marker-end: url(#arrow-red)" />
+  <text class="red title" x="216" y="367">✗</text>
+  <text class="red small" x="216" y="395">no egress</text>
+  <path class="dash" d="M360,334 Q450,400 545,334" style="stroke: #ff5252; marker-end: url(#arrow-red)" />
+  <text class="red title" x="452" y="367">✗</text>
+  <text class="red small" x="452" y="395">nothing inward</text>
+
+  <rect class="box" x="20" y="420" width="860" height="56" rx="6" style="stroke: #ee82ee" />
+  <text class="violet" x="450" y="448">Management — switch and hypervisor consoles, reached out of band</text>
+</svg>

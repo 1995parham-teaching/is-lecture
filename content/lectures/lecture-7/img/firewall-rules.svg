@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 470">
+  <title>First match wins: a temporary rule at the top shadows the deny rule below it</title>
+  <style>
+    text { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 20px; fill: #eeeeee; text-anchor: middle; dominant-baseline: middle; }
+    .small { font-size: 16px; fill: #b0b4bc; }
+    .mono { font-family: Menlo, Consolas, monospace; font-size: 16px; }
+    .title { font-size: 22px; font-weight: bold; }
+    .rule { font-size: 15px; }
+    .left { text-anchor: start; }
+    .box { fill: rgba(255, 255, 255, 0.06); stroke: #cfd3da; stroke-width: 2; }
+    .line { fill: none; stroke: #cfd3da; stroke-width: 2; marker-end: url(#arrow); }
+    .dash { fill: none; stroke: #8d97a8; stroke-width: 2; stroke-dasharray: 6 5; }
+    .orange { fill: #ff9100; } .green { fill: #76ff03; } .cyan { fill: #00e5ff; }
+    .red { fill: #ff5252; } .violet { fill: #ee82ee; } .yellow { fill: #ffcc00; }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#cfd3da" />
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#76ff03" />
+    </marker>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#ff5252" />
+    </marker>
+  </defs>
+  <text class="small" x="590" y="30">read top to bottom; the first rule that matches decides</text>
+  <rect class="box" x="20" y="60" width="200" height="100" rx="6" style="stroke: #00e5ff" />
+  <text class="cyan" x="120" y="84">packet</text>
+  <text class="small" x="120" y="110">from the DMZ</text>
+  <text class="small mono" x="120" y="134">→ 203.0.113.10:5432</text>
+  <path class="line" d="M220,83 H296" style="stroke: #ff9100" />
+  <text class="orange small" x="258" y="68">match</text>
+  <rect class="box" x="300" y="60" width="580" height="46" rx="5" style="stroke: #ff9100" />
+  <text class="small" x="322" y="83">1</text>
+  <text class="mono left rule" x="344" y="83" style="fill: #eeeeee">iifname &quot;dmz&quot; accept   # temporary</text>
+  <rect class="box" x="300" y="116" width="580" height="46" rx="5" style="stroke: #8d97a8" />
+  <text class="small" x="322" y="139">2</text>
+  <text class="mono left rule" x="344" y="139" style="fill: #8d97a8">ct state established,related accept</text>
+  <rect class="box" x="300" y="172" width="580" height="46" rx="5" style="stroke: #8d97a8" />
+  <text class="small" x="322" y="195">3</text>
+  <text class="mono left rule" x="344" y="195" style="fill: #8d97a8">iifname &quot;out&quot; ip daddr 192.0.2.10 tcp dport 8080 accept</text>
+  <rect class="box" x="300" y="228" width="580" height="46" rx="5" style="stroke: #8d97a8" />
+  <text class="small" x="322" y="251">4</text>
+  <text class="mono left rule" x="344" y="251" style="fill: #8d97a8">iifname &quot;lan&quot; oifname &quot;dmz&quot; accept</text>
+  <rect class="box" x="300" y="284" width="580" height="46" rx="5" style="stroke: #ff5252" />
+  <text class="small" x="322" y="307">5</text>
+  <text class="mono left rule" x="344" y="307" style="fill: #8d97a8">iifname &quot;dmz&quot; drop</text>
+  <rect class="box" x="300" y="340" width="580" height="46" rx="5" style="stroke: #8d97a8" />
+  <text class="small" x="322" y="363">6</text>
+  <text class="mono left rule" x="344" y="363" style="fill: #8d97a8">drop   # default deny</text>
+  <text class="red small left" x="545" y="307">← shadowed: written, never reached</text>
+  <path class="dash" d="M120,160 V250" />
+  <text class="red" x="120" y="275">accepted</text>
+  <text class="small" x="120" y="300">rules 2–6 are</text>
+  <text class="small" x="120" y="322">never read</text>
+  <text x="450" y="420">The deny rule is still there, still correct, and does nothing.</text>
+  <text class="small" x="450" y="446">In a long rule base nobody spots this by eye. Rule 5's counter does: it stays at zero.</text>
+</svg>

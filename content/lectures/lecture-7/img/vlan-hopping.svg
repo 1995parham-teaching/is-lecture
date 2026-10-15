@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 50 900 380">
+  <title>VLAN hopping by double tagging: one-way delivery into another VLAN</title>
+  <style>
+    text { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 20px; fill: #eeeeee; text-anchor: middle; dominant-baseline: middle; }
+    .small { font-size: 16px; fill: #b0b4bc; }
+    .mono { font-family: Menlo, Consolas, monospace; font-size: 16px; }
+    .title { font-size: 22px; font-weight: bold; }
+    .left { text-anchor: start; }
+    .box { fill: rgba(255, 255, 255, 0.06); stroke: #cfd3da; stroke-width: 2; }
+    .line { fill: none; stroke: #cfd3da; stroke-width: 2; marker-end: url(#arrow); }
+    .dash { fill: none; stroke: #8d97a8; stroke-width: 2; stroke-dasharray: 6 5; }
+    .orange { fill: #ff9100; } .green { fill: #76ff03; } .cyan { fill: #00e5ff; }
+    .red { fill: #ff5252; } .violet { fill: #ee82ee; } .yellow { fill: #ffcc00; }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#cfd3da" />
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#76ff03" />
+    </marker>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#ff5252" />
+    </marker>
+  </defs>
+  <rect x="122" y="110" width="55" height="36" fill="rgba(255, 255, 255, 0.06)" stroke="#ff9100" stroke-width="2" />
+  <text class="small" x="149" y="128" style="fill: #ff9100">tag 1</text>
+  <rect x="176" y="110" width="62" height="36" fill="rgba(255, 255, 255, 0.06)" stroke="#ff5252" stroke-width="2" />
+  <text class="small" x="208" y="128" style="fill: #ff5252">tag 20</text>
+  <rect x="238" y="110" width="60" height="36" fill="rgba(255, 255, 255, 0.06)" stroke="#cfd3da" stroke-width="2" />
+  <text class="small" x="268" y="128" style="fill: #eeeeee">data</text>
+  <rect x="404" y="110" width="62" height="36" fill="rgba(255, 255, 255, 0.06)" stroke="#ff5252" stroke-width="2" />
+  <text class="small" x="435" y="128" style="fill: #ff5252">tag 20</text>
+  <rect x="466" y="110" width="60" height="36" fill="rgba(255, 255, 255, 0.06)" stroke="#cfd3da" stroke-width="2" />
+  <text class="small" x="496" y="128" style="fill: #eeeeee">data</text>
+  <rect x="690" y="110" width="60" height="36" fill="rgba(255, 255, 255, 0.06)" stroke="#cfd3da" stroke-width="2" />
+  <text class="small" x="720" y="128" style="fill: #eeeeee">data</text>
+  <text class="orange small" x="210" y="76">two tags, outer = native</text>
+  <text class="small" x="465" y="76">outer stripped: native</text>
+  <text class="small" x="465" y="94">VLANs cross untagged</text>
+  <text class="red small" x="720" y="76">inner tag read: VLAN 20</text>
+  <rect class="box" x="20" y="200" width="130" height="64" rx="6" style="stroke: #ff5252" />
+  <text x="85" y="222">attacker</text>
+  <text class="small" x="85" y="246">VLAN 1</text>
+  <rect class="box" x="270" y="200" width="130" height="64" rx="6" style="stroke: #cfd3da" />
+  <text x="335" y="232">switch A</text>
+  <rect class="box" x="530" y="200" width="130" height="64" rx="6" style="stroke: #cfd3da" />
+  <text x="595" y="232">switch B</text>
+  <rect class="box" x="780" y="200" width="100" height="64" rx="6" style="stroke: #00e5ff" />
+  <text x="830" y="222">victim</text>
+  <text class="small" x="830" y="246">VLAN 20</text>
+  <path class="line" d="M150,232 H266" style="stroke: #ff5252; marker-end: url(#arrow-red)" />
+  <path class="line" d="M400,232 H526" style="stroke: #ff5252; marker-end: url(#arrow-red)" />
+  <path class="line" d="M660,232 H776" style="stroke: #ff5252; marker-end: url(#arrow-red)" />
+  <text class="small" x="210" y="290">access port</text>
+  <text class="small" x="465" y="290">trunk, native VLAN 1</text>
+  <text class="small" x="720" y="290">access port</text>
+  <path class="dash" d="M830,264 Q830,345 450,345 Q85,345 85,268" style="stroke: #8d97a8" />
+  <text class="red title" x="450" y="345">✗</text>
+  <text class="small" x="450" y="370">no way back: the victim's reply stays in VLAN 20</text>
+  <text x="450" y="410">Fix: set the native VLAN to an unused one, and tag it.</text>
+</svg>

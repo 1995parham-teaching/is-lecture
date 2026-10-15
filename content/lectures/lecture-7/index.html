@@ -19,6 +19,10 @@ draft: false
 <section>
   <section>
     <h2>The Network Was Built on Trust</h2>
+    <p>
+      Lecture 6 ended on TLS protecting the channel. This lecture is the channel
+      itself: what the network believes, and who can lie to it.
+    </p>
     <ul>
       <li>
         TCP/IP was designed for a small research network where every operator
@@ -33,7 +37,7 @@ draft: false
           </li>
           <li>An ARP reply is believed by whoever hears it</li>
           <li>A DNS answer is accepted if it arrives first</li>
-          <li>A BGP announcement is accepted because a peer said so</li>
+          <li>A BGP route announcement is accepted because a peer said so</li>
         </ul>
       </li>
       <li>
@@ -70,9 +74,9 @@ draft: false
     <h2>Active: Lying</h2>
     <ul>
       <li>
-        <span class="hl-orange">ARP spoofing</span> — announce that
-        <em>your</em> MAC address owns the gateway's IP. Every host on the
-        segment believes you, and now you are the gateway
+        <span class="hl-orange">ARP spoofing</span> — ARP maps an IP address to
+        a MAC address on the local network, and hosts cache any reply. Announce
+        that <em>your</em> MAC owns the gateway's IP, and you are the gateway
 
         <ul>
           <li>ARP has no authentication at all. There is nothing to break</li>
@@ -90,6 +94,42 @@ draft: false
       <li>
         All three build the same thing: a
         <strong class="hl-red">machine in the middle</strong>
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>ARP Spoofing, Drawn</h2>
+    <img
+      src="img/arp-spoofing.svg"
+      alt="Before: the victim's ARP cache maps the gateway's address to the gateway's MAC. After one forged broadcast from the attacker it maps to the attacker's MAC, and the victim's traffic flows through the attacker to the gateway"
+      width="860"
+    />
+  </section>
+  <section class="hands-on">
+    <h2>ARP Spoofing, in One Broadcast</h2>
+    <p>
+      Three network namespaces on one bridge, inside a container with no network
+      attached — the lab rule from lecture 1, kept.
+    </p>
+    <pre><code class="lang-sh">
+$ victim ping -c 1 -q 192.0.2.1 &gt; /dev/null
+$ victim ip neigh show 192.0.2.1
+192.0.2.1 dev eth0 lladdr 02:00:00:00:00:01 REACHABLE
+$ attacker ip addr add 192.0.2.1/32 dev eth0
+$ attacker arping -U -c 1 -I eth0 192.0.2.1
+ARPING 192.0.2.1 from 192.0.2.1 eth0
+Sent 1 probes (1 broadcast(s))
+Received 0 response(s)
+$ victim ip neigh show 192.0.2.1
+192.0.2.1 dev eth0 lladdr 02:00:00:00:00:66 STALE
+$ victim ping -c 1 192.0.2.1 | tail -2
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.095/0.095/0.095/0.000 ms
+    </code></pre>
+    <ul>
+      <li>
+        One unauthenticated packet rewrote the victim's cache. The ping still
+        succeeds — it is the attacker answering, and nothing says so
       </li>
     </ul>
   </section>
@@ -128,7 +168,8 @@ draft: false
       <tr>
         <td class="hl-orange"><strong>Protocol</strong></td>
         <td>
-          Exhaust a state table — SYN flood. Measured in packets per second
+          Exhaust a state table — a SYN flood opens connections it never
+          finishes. Measured in packets per second
         </td>
       </tr>
       <tr>
@@ -232,9 +273,24 @@ draft: false
     <p>
       The rule that gives the DMZ its value:
       <strong class="hl-red"
-        >a DMZ host must not be able to initiate a connection inward.</strong
+        >a DMZ host initiates nothing inward, except flows written down by
+        name.</strong
       >
       Compromising the web server then buys the attacker one machine.
+    </p>
+  </section>
+  <section>
+    <h2>The Grade Service, Zoned</h2>
+    <img
+      src="img/zones.svg"
+      alt="Five zones in a row: Internet, DMZ holding the grade service over HTTPS at 192.0.2.10 port 8080 with its SQLite file grades.db, Internal with the instructor's workstation, Restricted with the registrar database, and Management below. Allowed: Internet to DMZ on 8080 only, Internal to DMZ, Internal to Restricted on one named port. Denied: DMZ to Internet and DMZ to Internal"
+      width="700"
+    />
+    <p>
+      The grade service faces the internet, so it lives in the DMZ. Its SQLite
+      file sits beside it, so it needs no inward flow — and whoever takes this
+      host takes every grade. A database server would go in Restricted, reached
+      by one named flow.
     </p>
   </section>
   <section>
@@ -254,15 +310,19 @@ draft: false
         compromised laptop and the domain controller
       </li>
       <li>
-        A flat internal network means one phished user is equivalent to all of
-        them
-      </li>
-      <li>
         <span class="hl-green">Microsegmentation</span> pushes policy down to
         the individual workload, so east-west traffic gets the same treatment
         north-south always had
       </li>
     </ul>
+  </section>
+  <section>
+    <h2>North-South and East-West, Drawn</h2>
+    <img
+      src="img/east-west.svg"
+      alt="Left: a flat network where the phished laptop reaches the file server, the grade service and the domain controller unchecked. Right: the same hosts each inside their own boundary, with every east-west path denied"
+      width="860"
+    />
   </section>
   <section>
     <h2>Zero Trust</h2>
@@ -292,6 +352,18 @@ draft: false
         the vendor says
       </li>
     </ul>
+  </section>
+  <section>
+    <h2>Zero Trust, Drawn</h2>
+    <img
+      src="img/zero-trust.svg"
+      alt="Left: one check at the perimeter gate, then every resource inside is reachable. Right: each request from user and device goes to an enforcement point, which asks a decision point who it is, whether the device is healthy, whether this action is allowed and whether it is unusual, and only then reaches one resource"
+      width="760"
+    />
+    <p>
+      The decision point and the enforcement point are NIST SP 800-207's own
+      names. Lecture 4's <code>allow(s, a, o)</code>, asked on every request.
+    </p>
   </section>
 </section>
 <section>
@@ -348,34 +420,9 @@ draft: false
         the ERP" rather than naming subnets
       </li>
       <li>
-        A <span class="hl-orange">WAF</span> is an application-layer firewall
-        for HTTP. It buys time to patch; it does not fix the code from lecture 6
-      </li>
-    </ul>
-  </section>
-  <section>
-    <h2>Rules, and How They Go Wrong</h2>
-    <ul>
-      <li>
-        Rules are evaluated <strong class="hl-orange">in order</strong>, first
-        match wins. A broad rule near the top silently shadows everything below
-        it
-      </li>
-      <li>
-        The final rule is <code class="hl-green">deny all</code>, and it should
-        log
-      </li>
-      <li>
-        <span class="hl-red">Rule rot</span> is the real failure: an "temporary"
-        any-any rule from a migration three years ago that nobody dares remove
-      </li>
-      <li>
-        Review the rule base on a schedule, with an owner and a justification
-        per rule
-      </li>
-      <li>
-        <span class="hl-cyan">NAT is not a firewall.</span> It hides addresses
-        as a side effect of running out of them, and it is not a policy
+        A <span class="hl-orange">WAF</span> (web application firewall) is an
+        application-layer firewall for HTTP. It buys time to patch; it does not
+        fix the code from lecture 6
       </li>
     </ul>
   </section>
@@ -402,17 +449,137 @@ draft: false
       </li>
     </ul>
   </section>
+  <section class="hands-on">
+    <h2>The Rule Base, Written</h2>
+    <p>
+      The zones of the grade service, as network namespaces in a container with
+      no network attached. The firewall's forward chain, loaded with
+      <code>nft -f</code> before each run:
+    </p>
+    <pre><code class="lang-text">
+table inet fw {
+  chain forward {
+    type filter hook forward priority 0; policy drop;
+    ct state established,related accept
+    # the internet may reach the grade service, and nothing else
+    iifname "out" ip daddr 192.0.2.10 tcp dport 8080 counter accept
+    # the internal zone may reach the DMZ
+    iifname "lan" oifname "dmz" counter accept
+    # the DMZ initiates nothing: not inward, not outward
+    iifname "dmz" counter drop
+    counter drop
+  }
+}
+    </code></pre>
+    <p>
+      Default deny is the policy; the last rule only counts what it drops. The
+      DMZ rule above it is the egress filter from the slide before.
+    </p>
+  </section>
+  <section class="hands-on">
+    <h2>Five Connections, Five Answers</h2>
+    <pre><code class="lang-sh">
+$ internet curl --cacert cert.pem -c jar -d name=4001 \
+       -d password=tulip-river-42 https://192.0.2.10:8080/login
+hello 4001
+$ internet curl --cacert cert.pem -b jar 'https://192.0.2.10:8080/grades?course=IS'
+4001 IS 12
+$ dmz nc -zv -w 2 203.0.113.10 5432
+nc: connect to 203.0.113.10 port 5432 (tcp) timed out: Operation now in progress
+$ dmz nc -zv -w 2 198.51.100.20 443
+nc: connect to 198.51.100.20 port 443 (tcp) timed out: Operation now in progress
+$ internet nc -zv -w 2 203.0.113.10 5432
+nc: connect to 203.0.113.10 port 5432 (tcp) timed out: Operation now in progress
+$ fw nft list chain inet fw forward | grep -o 'iifname.*\|counter.*'
+iifname "out" ip daddr 192.0.2.10 tcp dport 8080 counter packets 2 bytes 120 accept
+iifname "lan" oifname "dmz" counter packets 0 bytes 0 accept
+iifname "dmz" counter packets 4 bytes 240 drop
+counter packets 2 bytes 120 drop
+    </code></pre>
+    <ul>
+      <li>
+        <code>internet</code>, <code>dmz</code>, <code>fw</code> run the command
+        in that zone. The grade service is lecture 6's, over HTTPS with a
+        certificate for <code>192.0.2.10</code>; <code>nc</code> on
+        <code>:5432</code> stands in for an internal database
+      </li>
+      <li>
+        The DMZ rule counted <strong class="hl-green">4</strong> packets: two
+        tries, each sent twice. A DMZ host that tries at all is news — that
+        counter is the alarm
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Rules, and How They Go Wrong</h2>
+    <ul>
+      <li>
+        Rules are evaluated <strong class="hl-orange">in order</strong>, first
+        match wins. A broad rule near the top silently shadows everything below
+        it
+      </li>
+      <li>
+        The final rule is <code class="hl-green">deny all</code>, and it should
+        log
+      </li>
+      <li>
+        <span class="hl-red">Rule rot</span> is the real failure: a "temporary"
+        any-any rule from a migration three years ago that nobody dares remove
+      </li>
+      <li>
+        Review the rule base on a schedule, with an owner and a justification
+        per rule
+      </li>
+      <li>
+        <span class="hl-cyan">NAT is not a firewall.</span> It hides addresses
+        as a side effect of running out of them, and it is not a policy
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>First Match Wins, Drawn</h2>
+    <img
+      src="img/firewall-rules.svg"
+      alt="A packet from the DMZ to an internal database meets a six-rule list. Rule 1, a temporary accept for anything from the DMZ, matches first, so rule 5, the DMZ deny rule, is never reached"
+      width="860"
+    />
+  </section>
+  <section class="hands-on">
+    <h2>One Temporary Rule</h2>
+    <p>The same rule base, plus one line from a migration:</p>
+    <pre><code class="lang-sh">
+$ fw nft insert rule inet fw forward iifname dmz counter accept comment temporary
+$ dmz nc -zv -w 2 203.0.113.10 5432
+Connection to 203.0.113.10 5432 port [tcp/*] succeeded!
+$ fw nft list chain inet fw forward | grep -o 'iifname.*'
+iifname "dmz" counter packets 4 bytes 216 accept comment "temporary"
+iifname "out" ip daddr 192.0.2.10 tcp dport 8080 counter packets 0 bytes 0 accept
+iifname "lan" oifname "dmz" counter packets 0 bytes 0 accept
+iifname "dmz" counter packets 0 bytes 0 drop
+    </code></pre>
+    <ul>
+      <li>
+        The DMZ reaches the database. The deny rule is still there, still
+        correct, and its counter says <strong class="hl-red">0</strong>
+      </li>
+      <li>
+        A rule that never matches is a finding. Review the counters, not just
+        the text
+      </li>
+    </ul>
+  </section>
   <section>
     <h2>Where Detection Sits</h2>
     <ul>
       <li>
-        <span class="hl-orange">IDS</span> observes a copy of the traffic and
-        alerts. It cannot be a bottleneck and cannot stop anything
+        <span class="hl-orange">IDS</span> (intrusion detection system) observes
+        a copy of the traffic and alerts. It cannot be a bottleneck and cannot
+        stop anything
       </li>
       <li>
-        <span class="hl-green">IPS</span> sits inline and can drop. Which means
-        a false positive is now an outage, and the device is a single point of
-        failure
+        <span class="hl-green">IPS</span> (intrusion prevention system) sits
+        inline and can drop. Which means a false alarm is now an outage, and the
+        device is a single point of failure
       </li>
       <li>
         Placement decides what you see: outside the firewall shows you the
@@ -454,9 +621,9 @@ draft: false
         </ul>
       </li>
       <li>
-        <span class="hl-green">NAC</span> adds a posture check — patched,
-        encrypted, running the agent — and can drop a failing device into a
-        remediation VLAN
+        <span class="hl-green">NAC</span> (network access control) adds a
+        posture check — patched, encrypted, running the agent — and can drop a
+        failing device into a remediation VLAN
       </li>
       <li>
         <span class="hl-cyan">Port security</span> on the switch limits how many
@@ -527,10 +694,22 @@ draft: false
         </ul>
       </li>
       <li>
-        <span class="hl-orange">IKEv2</span> does the authentication and key
-        agreement, and rekeys on a timer
+        <span class="hl-orange">IKEv2</span> (Internet Key Exchange) does the
+        authentication and key agreement, and rekeys on a timer
       </li>
     </ul>
+  </section>
+  <section>
+    <h2>Transport and Tunnel, Drawn</h2>
+    <img
+      src="img/ipsec-modes.svg"
+      alt="An IP packet, then the same packet under ESP transport mode with the original IP header in clear and TCP and data encrypted, then under tunnel mode with a new outer IP header and the whole original packet encrypted"
+      width="680"
+    />
+    <p>
+      Both modes encrypt the payload. Only tunnel mode hides who is talking to
+      whom — which is why site-to-site VPNs use it.
+    </p>
   </section>
   <section>
     <h2>The Other Options</h2>
@@ -596,8 +775,9 @@ draft: false
             a host plugs in
           </li>
           <li>
-            <span class="hl-cyan">Trunk port</span> — many VLANs, tagged.
-            Between switches
+            <span class="hl-cyan">Trunk port</span> — many VLANs, tagged, except
+            one untagged <em class="hl-orange">native VLAN</em>. Between
+            switches
           </li>
         </ul>
       </li>
@@ -624,9 +804,8 @@ draft: false
 
         <ul>
           <li>
-            It works because the <em class="hl-orange">native VLAN</em> is
-            carried untagged. Fix: make the native VLAN an unused one, and tag
-            it
+            It works because the native VLAN is carried untagged. Fix: make the
+            native VLAN an unused one, and tag it
           </li>
         </ul>
       </li>
@@ -635,6 +814,14 @@ draft: false
         converse
       </li>
     </ul>
+  </section>
+  <section>
+    <h2>Double Tagging, Drawn</h2>
+    <img
+      src="img/vlan-hopping.svg"
+      alt="The attacker in VLAN 1 sends a frame tagged 1 then 20. Switch A strips the outer native tag and forwards it over the trunk; switch B reads tag 20 and delivers it to the victim in VLAN 20. The reply has no way back"
+      width="860"
+    />
   </section>
   <section>
     <h2>What a VLAN Is Not</h2>
@@ -662,6 +849,28 @@ draft: false
         reason to talk to each other at all
       </li>
     </ul>
+  </section>
+  <section>
+    <h2>Check Yourself</h2>
+    <ol>
+      <li>
+        After one forged ARP broadcast, the victim's ping still succeeds. Why is
+        that worse than a failed ping?
+      </li>
+      <li>
+        The grade service sits in the DMZ with <code>grades.db</code> beside it.
+        Name one flow the firewall allows, one it denies, and what an attacker
+        gets by taking that host
+      </li>
+      <li>
+        In <em>One Temporary Rule</em>, the deny rule was still in the list. Why
+        did it not stop the connection, and how would a review notice?
+      </li>
+      <li>
+        A laptop with malware connects over the VPN. Which services does the
+        tunnel still give, and what does it not protect?
+      </li>
+    </ol>
   </section>
   <section>
     <h2>Putting the Course Together</h2>
