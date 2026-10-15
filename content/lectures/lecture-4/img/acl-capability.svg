@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 340">
+  <title>The access matrix stored by column (ACL) or by row (capability)</title>
+  <style>
+    text { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 20px; fill: #eeeeee; text-anchor: middle; dominant-baseline: middle; }
+    .small { font-size: 16px; fill: #b0b4bc; }
+    .mono { font-family: Menlo, Monaco, "Courier New", monospace; font-size: 17px; }
+    .title { font-size: 22px; font-weight: bold; }
+    .box { fill: rgba(255, 255, 255, 0.06); stroke: #cfd3da; stroke-width: 2; }
+    .line { fill: none; stroke: #cfd3da; stroke-width: 2; marker-end: url(#arrow); }
+    .dash { fill: none; stroke: #8d97a8; stroke-width: 2; stroke-dasharray: 6 5; }
+    .orange { fill: #ff9100; } .green { fill: #76ff03; } .cyan { fill: #00e5ff; }
+    .red { fill: #ff5252; } .violet { fill: #ee82ee; } .yellow { fill: #ffcc00; }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#cfd3da" />
+    </marker>
+  </defs>
+  <text class="orange title" x="300" y="60">grades.db</text>
+  <text class="orange title" x="460" y="60">report.pdf</text>
+  <text class="orange title" x="620" y="60">/etc/shadow</text>
+
+  <text class="cyan title" x="120" y="110">parham</text>
+  <text x="300" y="110">read, write</text>
+  <text x="460" y="110">read</text>
+  <text x="620" y="110">—</text>
+
+  <text class="cyan title" x="120" y="160">student</text>
+  <text x="300" y="160">—</text>
+  <text x="460" y="160">read</text>
+  <text x="620" y="160">—</text>
+
+  <text class="cyan title" x="120" y="210">root</text>
+  <text x="300" y="210">read, write</text>
+  <text x="460" y="210">read, write</text>
+  <text x="620" y="210">read, write</text>
+
+  <rect class="box" x="225" y="36" width="150" height="200" rx="8" style="fill: none; stroke: #ff9100; stroke-width: 3" />
+  <rect class="box" x="50" y="137" width="660" height="46" rx="8" style="fill: none; stroke: #76ff03; stroke-width: 3" />
+
+  <text class="orange" x="300" y="266">ACL: one column,</text>
+  <text class="orange" x="300" y="290">kept with the object</text>
+  <path class="line" d="M710,160 H746" style="stroke: #76ff03" />
+  <text class="green" x="815" y="136">capability:</text>
+  <text class="green" x="815" y="160">one row, held</text>
+  <text class="green" x="815" y="184">by the subject</text>
+
+  <text class="small" x="610" y="266">"Who may touch grades.db?" — read one column</text>
+  <text class="small" x="610" y="290">"What may student touch?" — read one row</text>
+</svg>

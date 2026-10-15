@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 370">
+  <title>One grade request through identify, authenticate, authorize and audit</title>
+  <style>
+    text { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 20px; fill: #eeeeee; text-anchor: middle; dominant-baseline: middle; }
+    .small { font-size: 16px; fill: #b0b4bc; }
+    .mono { font-family: Menlo, Monaco, "Courier New", monospace; font-size: 17px; }
+    .title { font-size: 22px; font-weight: bold; }
+    .box { fill: rgba(255, 255, 255, 0.06); stroke: #cfd3da; stroke-width: 2; }
+    .line { fill: none; stroke: #cfd3da; stroke-width: 2; marker-end: url(#arrow); }
+    .dash { fill: none; stroke: #8d97a8; stroke-width: 2; stroke-dasharray: 6 5; }
+    .orange { fill: #ff9100; } .green { fill: #76ff03; } .cyan { fill: #00e5ff; }
+    .red { fill: #ff5252; } .violet { fill: #ee82ee; } .yellow { fill: #ffcc00; }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#cfd3da" />
+    </marker>
+  </defs>
+  <text class="mono" x="450" y="22">curl -u 4001:•••••••• -d 'id=4001&amp;grade=20' localhost:8080/grade</text>
+  <path class="line" d="M112,40 V96" />
+
+  <rect class="box" x="20" y="100" width="185" height="100" rx="6" style="stroke: #ff9100" />
+  <text class="orange title" x="112" y="128">Identify</text>
+  <text x="112" y="160">name = 4001</text>
+  <text class="small" x="112" y="184">a claim, not a proof</text>
+  <path class="line" d="M205,150 H241" />
+
+  <rect class="box" x="245" y="100" width="185" height="100" rx="6" style="stroke: #76ff03" />
+  <text class="green title" x="337" y="128">Authenticate</text>
+  <text x="337" y="160">bcrypt matches?</text>
+  <text class="small" x="337" y="184">users[name]</text>
+  <path class="line" d="M430,150 H466" />
+  <text class="small" x="448" y="136">yes</text>
+
+  <rect class="box" x="470" y="100" width="185" height="100" rx="6" style="stroke: #00e5ff" />
+  <text class="cyan title" x="562" y="128">Authorize</text>
+  <text x="562" y="160">instructor?</text>
+  <text class="small" x="562" y="184">roles[name]</text>
+  <path class="line" d="M655,150 H691" />
+  <text class="small" x="673" y="136">yes</text>
+
+  <rect class="box" x="695" y="100" width="185" height="100" rx="6" style="stroke: #ee82ee" />
+  <text class="violet title" x="787" y="128">Audit</text>
+  <text x="787" y="160">log.Printf</text>
+  <text class="small" x="787" y="184">every exit</text>
+
+  <path class="line" d="M337,200 V236" />
+  <text class="small" x="360" y="218" style="text-anchor: start">no</text>
+  <text class="red" x="337" y="256">401 login first</text>
+  <path class="line" d="M562,200 V236" />
+  <text class="small" x="585" y="218" style="text-anchor: start">no</text>
+  <text class="red" x="562" y="256">403 forbidden</text>
+  <text class="green" x="787" y="256">200 grade changed</text>
+
+  <path class="dash" d="M337,272 V300 H892 V150" style="stroke: #ee82ee" />
+  <path class="dash" d="M562,272 V300" style="stroke: #ee82ee" />
+  <path class="line" d="M892,150 H884" style="stroke: #ee82ee" />
+  <text class="small" x="450" y="340">The two failures are logged as well: FAILED login, DENIED grade</text>
+</svg>

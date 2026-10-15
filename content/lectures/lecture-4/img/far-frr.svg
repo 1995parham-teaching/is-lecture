@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 390">
+  <title>FAR falls and FRR rises as the threshold gets stricter; they cross at the EER</title>
+  <style>
+    text { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 20px; fill: #eeeeee; text-anchor: middle; dominant-baseline: middle; }
+    .small { font-size: 16px; fill: #b0b4bc; }
+    .mono { font-family: Menlo, Monaco, "Courier New", monospace; font-size: 17px; }
+    .title { font-size: 22px; font-weight: bold; }
+    .box { fill: rgba(255, 255, 255, 0.06); stroke: #cfd3da; stroke-width: 2; }
+    .line { fill: none; stroke: #cfd3da; stroke-width: 2; marker-end: url(#arrow); }
+    .dash { fill: none; stroke: #8d97a8; stroke-width: 2; stroke-dasharray: 6 5; }
+    .orange { fill: #ff9100; } .green { fill: #76ff03; } .cyan { fill: #00e5ff; }
+    .red { fill: #ff5252; } .violet { fill: #ee82ee; } .yellow { fill: #ffcc00; }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#cfd3da" />
+    </marker>
+  </defs>
+  <path class="line" d="M100,300 V30" />
+  <path class="line" d="M100,300 H800" />
+  <text class="small" x="60" y="165" transform="rotate(-90 60 165)">error rate</text>
+  <text class="small" x="450" y="325">threshold: lenient → strict</text>
+
+  <path d="M100,60 C250,220 450,270 760,290" style="fill: none; stroke: #ff5252; stroke-width: 3" />
+  <path d="M100,290 C410,270 610,220 760,60" style="fill: none; stroke: #ffcc00; stroke-width: 3" />
+  <text class="red" x="135" y="40" style="text-anchor: start">FAR — an impostor let in</text>
+  <text class="yellow" x="740" y="40" style="text-anchor: end">FRR — the owner turned away</text>
+
+  <circle cx="430" cy="245" r="7" style="fill: #00e5ff" />
+  <text class="cyan" x="430" y="212">EER</text>
+
+  <path class="dash" d="M230,300 V110" style="stroke: #76ff03" />
+  <text class="green" x="230" y="350">phone unlock</text>
+  <text class="small" x="230" y="372">keep FRR low</text>
+  <path class="dash" d="M650,300 V110" style="stroke: #ee82ee" />
+  <text class="violet" x="650" y="350">vault door</text>
+  <text class="small" x="650" y="372">keep FAR low</text>
+</svg>

@@ -4,8 +4,8 @@ title: Access Control
 topics:
   - The Four A's
   - Access Control Models
-  - Authentication
   - Passwords
+  - Second Factors
   - Biometrics
 draft: false
 ---
@@ -21,8 +21,9 @@ draft: false
     <h2>The Most-Used Service</h2>
     <ul>
       <li>
-        Of X.800's five services, this is the one every system implements, and
-        the one most often implemented badly
+        Lecture 3 ended on a key that proves <em>possession</em>, not
+        <em>permission</em>. Permission is X.800's
+        <span class="hl-yellow">access control</span> service
       </li>
       <li>
         The question is always the same shape: may
@@ -40,6 +41,11 @@ draft: false
         Everything in this lecture is one function: <code>allow(s, a, o)</code>
       </p>
     </div>
+    <p>
+      Lecture 1's grade service answered half of it: it checked the role, but
+      took the name from an <code>X-User</code> header that anyone can type.
+      This lecture builds the other half.
+    </p>
   </section>
   <section>
     <h2>The Four A's</h2>
@@ -95,8 +101,20 @@ draft: false
     </p>
     <p>
       That bug has a name — <em class="hl-yellow">broken access control</em> —
-      and it has been number one in the OWASP Top Ten since 2021. Lecture 6
-      returns to it.
+      and it has been number one in the OWASP Top Ten, the industry's list of
+      web-application risks, since 2021. Lecture 6 returns to it.
+    </p>
+  </section>
+  <section>
+    <h2>The Four Steps, Drawn</h2>
+    <img
+      src="img/four-as.svg"
+      alt="A grade request passes identify, authenticate and authorize; a failed login exits with 401, a failed role check with 403, and every exit is written to the audit log"
+      width="860"
+    />
+    <p>
+      By the end of this lecture each box is one line of the grade service.
+      Lecture 1 had only the last two.
     </p>
   </section>
   <section>
@@ -132,32 +150,11 @@ draft: false
   <section>
     <h2>The Access Matrix</h2>
     <p>The abstract model: subjects down the side, objects across the top.</p>
-    <table style="font-size: 0.85em">
-      <tr>
-        <td></td>
-        <td class="hl-orange"><strong>grades.db</strong></td>
-        <td class="hl-orange"><strong>report.pdf</strong></td>
-        <td class="hl-orange"><strong>/etc/shadow</strong></td>
-      </tr>
-      <tr>
-        <td class="hl-cyan"><strong>parham</strong></td>
-        <td>read, write</td>
-        <td>read</td>
-        <td>—</td>
-      </tr>
-      <tr>
-        <td class="hl-cyan"><strong>student</strong></td>
-        <td>—</td>
-        <td>read</td>
-        <td>—</td>
-      </tr>
-      <tr>
-        <td class="hl-cyan"><strong>root</strong></td>
-        <td>read, write</td>
-        <td>read, write</td>
-        <td>read, write</td>
-      </tr>
-    </table>
+    <img
+      src="img/acl-capability.svg"
+      alt="An access matrix of parham, student and root against grades.db, report.pdf and /etc/shadow; the grades.db column is marked as an ACL kept with the object, the student row as a capability held by the subject"
+      width="820"
+    />
     <p>
       Nobody stores it as a matrix — it is enormous and mostly empty. You store
       it by <em>column</em> or by <em>row</em>, and that choice has
@@ -186,8 +183,8 @@ draft: false
         <ul>
           <li>Fast to check, easy to delegate — and hard to revoke</li>
           <li>
-            A bearer token is a capability, which is exactly why lecture 6
-            worries about where it is stored
+            A bearer token — whoever holds it may use it — is a capability.
+            Lecture 6 worries about where it is stored
           </li>
         </ul>
       </li>
@@ -292,6 +289,10 @@ drwxrwxrwt  110 root  wheel  3520 Aug 18 00:51 /private/tmp
       </li>
       <li>SELinux, AppArmor, iOS and Android sandboxes are all MAC</li>
     </ul>
+    <p>
+      Same three letters, different idea: lecture 3's MAC is a
+      <em>message authentication code</em>.
+    </p>
   </section>
   <section>
     <h2>RBAC — the Role Decides</h2>
@@ -321,6 +322,34 @@ drwxrwxrwt  110 root  wheel  3520 Aug 18 00:51 /private/tmp
             hold both <em>request payment</em> and <em>approve payment</em>
           </li>
         </ul>
+      </li>
+    </ul>
+  </section>
+  <section class="hands-on">
+    <h2>You Already Wrote One</h2>
+    <p>Lecture 1's fix, read with this lecture's eyes:</p>
+    <pre><code class="lang-go">
+var roles = map[string]string{"parham": "instructor", "4001": "student"}
+
+if roles[user] != "instructor" {
+	log.Printf("DENIED grade %s=%d by %s", id, grade, user)
+	http.Error(w, "forbidden", http.StatusForbidden)
+	return
+}
+    </code></pre>
+    <ul>
+      <li>
+        The map is the <span class="hl-orange">user → role</span> assignment.
+        The <code>if</code> is the <span class="hl-green">role → right</span>
+        rule. That is RBAC
+      </li>
+      <li>
+        A new teaching assistant is one line in the map, not a new
+        <code>if</code>
+      </li>
+      <li>
+        It is only as good as <code>user</code>, and <code>user</code> still
+        comes from a header. The rest of this lecture fixes that
       </li>
     </ul>
   </section>
@@ -380,6 +409,10 @@ drwxrwxrwt  110 root  wheel  3520 Aug 18 00:51 /private/tmp
       outcome: <strong class="hl-green">least privilege</strong> and
       <strong class="hl-green">deny by default</strong>.
     </p>
+    <p>
+      Every model trusts the subject's name. The rest of the lecture is how the
+      system knows that name is true.
+    </p>
   </section>
 </section>
 <section>
@@ -412,10 +445,282 @@ drwxrwxrwt  110 root  wheel  3520 Aug 18 00:51 /private/tmp
         MFA is the single highest-value control on this slide, because it breaks
         the attack that scales: stolen passwords
       </li>
+      <li>The next three sections take the rows in order: know, have, are</li>
     </ul>
   </section>
   <section>
+    <h2>Passwords Are Still Here</h2>
+    <ul>
+      <li>
+        Cheap, universal, need no hardware, and everyone already knows how they
+        work
+      </li>
+      <li>
+        And they are <em>reused</em>, guessable, phishable, and shared over chat
+      </li>
+      <li>
+        Two problems that need separating:
+        <ul>
+          <li>
+            <span class="hl-orange">How the user chooses one</span> — a
+            human-factors problem
+          </li>
+          <li>
+            <span class="hl-green">How you store it</span> — an engineering
+            problem, and entirely your fault when it goes wrong
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </section>
+  <section class="hands-on">
+    <h2>Never Store It Twice the Same</h2>
+    <pre><code class="lang-sh">
+$ printf 'hunter2' | shasum -a 256
+f52fbd32b2b3b86ff88ef6c490628285f482af15ddcb29541f94bcf526a3f6c7
+$ printf 'hunter2' | shasum -a 256
+f52fbd32b2b3b86ff88ef6c490628285f482af15ddcb29541f94bcf526a3f6c7
+
+$ openssl passwd -6 hunter2
+$6$MrTqQCcVCjfH/jFG$rM65BZ4dxysbt8.J82C6D8e5IW8sC.3Ufq...
+$ openssl passwd -6 hunter2
+$6$9kSX7tN9L2s6M5N.$g.pyl63tv1ad97rS8/Il3yZSEaZ34j25vs...
+    </code></pre>
+    <ul>
+      <li>
+        Unsalted: the same digest, on every machine, forever. Precompute it once
+        and it is broken everywhere — a
+        <span class="hl-red">rainbow table</span>
+      </li>
+      <li>
+        Salted: a random value per password, stored beside it. Two identical
+        passwords now look nothing alike, and every attack must be redone
+        <em class="hl-green">per user</em>
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>The Salt, Drawn</h2>
+    <img
+      src="img/salt.svg"
+      alt="hunter2 hashed twice with SHA-256 gives the same digest f52fbd32 both times; hunter2 with salt MrTqQCcV and with salt 9kSX7tN9 gives two unrelated SHA-512 crypt hashes"
+      width="860"
+    />
+    <p>
+      The values are the ones from the run on the previous slide. The salt is
+      not a secret; its only job is to make every user a separate attack.
+    </p>
+  </section>
+  <section>
+    <h2>Salt Is Not Enough</h2>
+    <p>
+      A salt stops precomputation. It does nothing about
+      <em>speed</em> — and speed is what an
+      <em class="hl-red">offline</em> attacker has: one who stole the hash file
+      and guesses on their own hardware, with no login form to slow them.
+    </p>
+    <pre><code class="lang-text">
+sha256(password)                      0.000 ms/hash    3,682,588 guesses/sec
+pbkdf2-hmac-sha256, 600k iter        57.918 ms/hash           17 guesses/sec
+scrypt, N=2^17 r=8 p=1              198.368 ms/hash            5 guesses/sec
+    </code></pre>
+    <ul>
+      <li>
+        On one laptop core. A password hashed with SHA-256 falls
+        <strong class="hl-red">200,000 times faster</strong> than the same
+        password behind PBKDF2, and 700,000 times faster than behind scrypt
+      </li>
+      <li>
+        A password hash is supposed to be <em class="hl-green">slow</em>. It is
+        the only place in this course where slow is the requirement
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>What To Actually Use</h2>
+    <p>
+      A <em>password hash</em> (or KDF, key derivation function) is a hash built
+      to be slow:
+    </p>
+    <ul>
+      <li>
+        <span class="hl-green">Argon2id</span> — the current recommendation.
+        Tunable in time, memory and parallelism
+      </li>
+      <li>
+        <span class="hl-cyan">scrypt</span> ·
+        <span class="hl-cyan">bcrypt</span>
+        — both fine, both still widely deployed
+      </li>
+      <li>
+        <span class="hl-yellow">PBKDF2</span> — acceptable, and often the only
+        option in a certified environment
+      </li>
+      <li>
+        <strong class="hl-red">Never</strong> a bare MD5, SHA-1 or SHA-256
+      </li>
+      <li>
+        <em>Memory-hard</em> ones need RAM per guess, which takes away the GPU's
+        thousands of cores
+      </li>
+      <li>
+        Tune the cost so verification takes a few hundred milliseconds
+        <em>on your hardware</em>, and revisit it as hardware improves
+      </li>
+    </ul>
+  </section>
+  <section class="hands-on">
+    <h2>The Grade Service Gets a Login</h2>
+    <pre><code class="lang-go">
+// bcrypt, cost 12: the salt and the cost are stored inside each hash
+var users = map[string]string{
+	"parham": "$2a$12$PED31kv6I3xrnjq.XvRgN.q5BIlLvFA6Ae2BklreAvhrgcLO/RZz6",
+	"4001":   "$2a$12$fHdcH0q0mpgv4UNlutXXQuEmZDZ2eAqQ5tPaTvGd9DIH9XMtbSUmy",
+}
+
+func login(r *http.Request) (string, bool) {
+	name, pass, ok := r.BasicAuth()
+	if !ok {
+		return name, false
+	}
+	err := bcrypt.CompareHashAndPassword([]byte(users[name]), []byte(pass))
+	return name, err == nil
+}
+
+	user, ok := login(r)
+	if !ok {
+		log.Printf("FAILED login as %q", user) // the name, never the password
+		http.Error(w, "login first", http.StatusUnauthorized)
+		return
+	}
+    </code></pre>
+    <p>
+      The last block replaces <code>r.Header.Get("X-User")</code>. The role
+      check from lecture 1 stays exactly as it was.
+    </p>
+  </section>
+  <section class="hands-on">
+    <h2>Three Requests, Three Answers</h2>
+    <pre><code class="lang-sh">
+$ curl -u parham:guess -d 'id=4002&amp;grade=18' localhost:8080/grade
+login first
+$ curl -u 4001:tulip-river-42 -d 'id=4001&amp;grade=20' localhost:8080/grade
+forbidden
+$ curl -u 'parham:correct horse battery staple' \
+       -d 'id=4002&amp;grade=18' localhost:8080/grade
+4002 is now 18
+
+$ cat server.log
+2026/10/14 09:49:04 FAILED login as "parham"
+2026/10/14 09:49:04 DENIED grade 4001=20 by 4001
+2026/10/14 09:49:05 grade 4002=18 by parham
+    </code></pre>
+    <ul>
+      <li>
+        <span class="hl-red">401</span> is authentication failing.
+        <span class="hl-red">403</span> is authorization failing. Two different
+        bugs, two different codes
+      </li>
+      <li>Every exit is in the log, and no password is</li>
+    </ul>
+  </section>
+  <section class="hands-on">
+    <h2>What the Clock and the Wire Say</h2>
+    <pre><code class="lang-sh">
+$ curl -s -o /dev/null -w '%{http_code} in %{time_total}s\n' \
+       -u parham:guess -d 'id=4002&amp;grade=18' localhost:8080/grade
+401 in 0.184779s
+$ curl -s -o /dev/null -w '%{http_code} in %{time_total}s\n' \
+       -u nobody:guess -d 'id=4002&amp;grade=18' localhost:8080/grade
+401 in 0.000426s
+
+$ echo NDAwMTp0dWxpcC1yaXZlci00Mg== | base64 -d
+4001:tulip-river-42
+    </code></pre>
+    <ul>
+      <li>
+        <span class="hl-green">0.19 s</span> is the KDF doing its job: about
+        five guesses a second, per core
+      </li>
+      <li>
+        <span class="hl-red">0.0004 s</span> says <code>nobody</code> is not an
+        account. The clock leaks which names exist. Exercise: fix it
+      </li>
+      <li>
+        The header is <em>base64</em>, not encryption, and it is sent on every
+        request. Sessions and TLS are lecture 6
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>The Rules Changed</h2>
+    <p>NIST SP 800-63B says most of the old advice was counterproductive:</p>
+    <ul>
+      <li>
+        <span class="hl-red">No forced periodic rotation</span> — it produces
+        <code>Summer2026!</code> then <code>Autumn2026!</code>. Rotate on
+        evidence of compromise
+      </li>
+      <li>
+        <span class="hl-red">No composition rules</span> — demanding a symbol
+        and a digit adds almost no entropy and a great deal of annoyance
+      </li>
+      <li>
+        <span class="hl-green">Length over complexity</span> — allow long
+        passphrases, and allow every character including spaces
+      </li>
+      <li>
+        <span class="hl-green">Check against known-breached lists</span> — this
+        is the change that actually removes weak passwords
+      </li>
+      <li>
+        <span class="hl-cyan">Allow paste</span>, so password managers work.
+        Blocking it drives people to worse passwords
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Attacks on Passwords</h2>
+    <table style="font-size: 0.8em">
+      <tr>
+        <td class="hl-orange"><strong>Online guessing</strong></td>
+        <td>Against your login form. Rate limit, lock out, add delay</td>
+      </tr>
+      <tr>
+        <td class="hl-red"><strong>Offline cracking</strong></td>
+        <td>Against a stolen database. Only the KDF slows it down</td>
+      </tr>
+      <tr>
+        <td class="hl-yellow"><strong>Credential stuffing</strong></td>
+        <td>
+          Reusing another site's breach. Nothing you do to your own hashing
+          helps
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-violet"><strong>Password spraying</strong></td>
+        <td>
+          One common password against every account, to stay under the lockout
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>Phishing</strong></td>
+        <td>The user types it in for you. Beats every storage decision</td>
+      </tr>
+    </table>
+    <p>
+      Only two of the five depend on how you hash. The other three need a
+      <strong class="hl-green">second factor</strong> — the next section.
+    </p>
+  </section>
+</section>
+<section>
+  <div class="toc" data-selected="3"></div>
+</section>
+<section>
+  <section>
     <h2>Something You Have</h2>
+    <p>The factor a stolen password does not bring with it:</p>
     <ul>
       <li>
         <span class="hl-orange">OTP over SMS</span> — better than nothing, and
@@ -489,176 +794,6 @@ T=2000000000   code=69279037
   </section>
 </section>
 <section>
-  <div class="toc" data-selected="3"></div>
-</section>
-<section>
-  <section>
-    <h2>Passwords Are Still Here</h2>
-    <ul>
-      <li>
-        Cheap, universal, need no hardware, and everyone already knows how they
-        work
-      </li>
-      <li>
-        And they are <em>reused</em>, guessable, phishable, and shared over chat
-      </li>
-      <li>
-        Two problems that need separating:
-        <ul>
-          <li>
-            <span class="hl-orange">How the user chooses one</span> — a
-            human-factors problem
-          </li>
-          <li>
-            <span class="hl-green">How you store it</span> — an engineering
-            problem, and entirely your fault when it goes wrong
-          </li>
-        </ul>
-      </li>
-    </ul>
-  </section>
-  <section class="hands-on">
-    <h2>Never Store It Twice the Same</h2>
-    <pre><code class="lang-sh">
-$ printf 'hunter2' | shasum -a 256
-f52fbd32b2b3b86ff88ef6c490628285f482af15ddcb29541f94bcf526a3f6c7
-$ printf 'hunter2' | shasum -a 256
-f52fbd32b2b3b86ff88ef6c490628285f482af15ddcb29541f94bcf526a3f6c7
-
-$ openssl passwd -6 hunter2
-$6$MrTqQCcVCjfH/jFG$rM65BZ4dxysbt8.J82C6D8e5IW8sC.3Ufq...
-$ openssl passwd -6 hunter2
-$6$9kSX7tN9L2s6M5N.$g.pyl63tv1ad97rS8/Il3yZSEaZ34j25vs...
-    </code></pre>
-    <ul>
-      <li>
-        Unsalted: the same digest, on every machine, forever. Precompute it once
-        and it is broken everywhere — a
-        <span class="hl-red">rainbow table</span>
-      </li>
-      <li>
-        Salted: a random value per password, stored beside it. Two identical
-        passwords now look nothing alike, and every attack must be redone
-        <em class="hl-green">per user</em>
-      </li>
-    </ul>
-  </section>
-  <section>
-    <h2>Salt Is Not Enough</h2>
-    <p>
-      A salt stops precomputation. It does nothing about
-      <em>speed</em> — and speed is what an offline attacker has.
-    </p>
-    <pre><code class="lang-text">
-sha256(password)                      0.000 ms/hash    3,682,588 guesses/sec
-pbkdf2-hmac-sha256, 600k iter        57.918 ms/hash           17 guesses/sec
-scrypt, N=2^17 r=8 p=1              198.368 ms/hash            5 guesses/sec
-    </code></pre>
-    <ul>
-      <li>
-        On one laptop core. A password hashed with SHA-256 falls
-        <strong class="hl-red">200,000 times faster</strong> than the same
-        password behind scrypt
-      </li>
-      <li>
-        A password hash is supposed to be <em class="hl-green">slow</em>. It is
-        the only place in this course where slow is the requirement
-      </li>
-    </ul>
-  </section>
-  <section>
-    <h2>What To Actually Use</h2>
-    <ul>
-      <li>
-        <span class="hl-green">Argon2id</span> — the current recommendation.
-        Tunable in time, memory and parallelism
-      </li>
-      <li>
-        <span class="hl-cyan">scrypt</span> ·
-        <span class="hl-cyan">bcrypt</span>
-        — both fine, both still widely deployed
-      </li>
-      <li>
-        <span class="hl-yellow">PBKDF2</span> — acceptable, and often the only
-        option in a certified environment
-      </li>
-      <li>
-        <strong class="hl-red">Never</strong> a bare MD5, SHA-1 or SHA-256
-      </li>
-      <li>
-        Memory-hard is the point of the modern ones: GPUs have thousands of
-        cores and not much memory per core, so requiring memory takes the
-        attacker's advantage away
-      </li>
-      <li>
-        Tune the cost so verification takes a few hundred milliseconds
-        <em>on your hardware</em>, and revisit it as hardware improves
-      </li>
-    </ul>
-  </section>
-  <section>
-    <h2>Attacks on Passwords</h2>
-    <table style="font-size: 0.8em">
-      <tr>
-        <td class="hl-orange"><strong>Online guessing</strong></td>
-        <td>Against your login form. Rate limit, lock out, add delay</td>
-      </tr>
-      <tr>
-        <td class="hl-red"><strong>Offline cracking</strong></td>
-        <td>Against a stolen database. Only the KDF slows it down</td>
-      </tr>
-      <tr>
-        <td class="hl-yellow"><strong>Credential stuffing</strong></td>
-        <td>
-          Reusing another site's breach. Nothing you do to your own hashing
-          helps
-        </td>
-      </tr>
-      <tr>
-        <td class="hl-violet"><strong>Password spraying</strong></td>
-        <td>
-          One common password against every account, to stay under the lockout
-        </td>
-      </tr>
-      <tr>
-        <td class="hl-cyan"><strong>Phishing</strong></td>
-        <td>The user types it in for you. Beats every storage decision</td>
-      </tr>
-    </table>
-    <p>
-      Note that only two of the five are affected by how you hash. The other
-      three need <strong class="hl-green">MFA</strong>.
-    </p>
-  </section>
-  <section>
-    <h2>The Rules Changed</h2>
-    <p>NIST SP 800-63B says most of the old advice was counterproductive:</p>
-    <ul>
-      <li>
-        <span class="hl-red">No forced periodic rotation</span> — it produces
-        <code>Summer2026!</code> then <code>Autumn2026!</code>. Rotate on
-        evidence of compromise
-      </li>
-      <li>
-        <span class="hl-red">No composition rules</span> — demanding a symbol
-        and a digit adds almost no entropy and a great deal of annoyance
-      </li>
-      <li>
-        <span class="hl-green">Length over complexity</span> — allow long
-        passphrases, and allow every character including spaces
-      </li>
-      <li>
-        <span class="hl-green">Check against known-breached lists</span> — this
-        is the change that actually removes weak passwords
-      </li>
-      <li>
-        <span class="hl-cyan">Allow paste</span>, so password managers work.
-        Blocking it drives people to worse passwords
-      </li>
-    </ul>
-  </section>
-</section>
-<section>
   <div class="toc" data-selected="4"></div>
 </section>
 <section>
@@ -683,33 +818,17 @@ scrypt, N=2^17 r=8 p=1              198.368 ms/hash            5 guesses/sec
   </section>
   <section>
     <h2>FAR, FRR and the Threshold</h2>
-    <ul>
-      <li>
-        <span class="hl-red">FAR</span> — false acceptance rate. An impostor is
-        let in
-      </li>
-      <li>
-        <span class="hl-yellow">FRR</span> — false rejection rate. The right
-        person is turned away
-      </li>
-      <li>
-        One knob moves both, in opposite directions. Tighten the threshold and
-        FAR falls while FRR rises
-      </li>
-      <li>
-        <span class="hl-cyan">EER</span> — the crossover, where the two are
-        equal. A single number for comparing systems, and rarely the setting you
-        want
-      </li>
-      <li>
-        Pick by consequence: a phone unlock tolerates FAR to keep FRR low; a
-        vault does the opposite
-      </li>
-      <li>
-        A high FRR has a security cost too — it is what makes staff prop the
-        door open
-      </li>
-    </ul>
+    <img
+      src="img/far-frr.svg"
+      alt="As the threshold moves from lenient to strict, the false acceptance rate falls and the false rejection rate rises; they cross at the equal error rate; a phone unlock sits on the lenient side, a vault door on the strict side"
+      width="780"
+    />
+    <p>
+      One knob moves both. The <span class="hl-cyan">equal error rate</span>
+      (EER) compares systems; the setting you deploy is chosen by consequence. A
+      high FRR has a security cost too — it is what makes staff prop the door
+      open.
+    </p>
   </section>
   <section>
     <h2>The Two Facts People Forget</h2>
@@ -772,29 +891,49 @@ scrypt, N=2^17 r=8 p=1              198.368 ms/hash            5 guesses/sec
     </ul>
   </section>
   <section>
-    <h2>Putting It Together</h2>
-    <ul>
+    <h2>Check Yourself</h2>
+    <ol>
       <li>
-        Authenticate with <span class="hl-green">MFA</span>, preferring
-        phishing-resistant factors
+        A student logs in with the right password and changes another student's
+        grade. Which step failed — identify, authenticate or authorize? Which
+        status code should the grade service have sent?
       </li>
       <li>
-        Authorize with <span class="hl-cyan">roles</span>, default deny, least
-        privilege
+        An ACL and a capability store the same matrix. Which one answers "what
+        may this user touch?" quickly, and which one is hard to revoke?
+      </li>
+      <li>
+        Two users choose <code>hunter2</code>. Why do their stored hashes
+        differ, and why is a salt alone still not enough?
+      </li>
+      <li>
+        A fake site asks for your six-digit code. Why does that work against
+        TOTP but not against WebAuthn?
+      </li>
+    </ol>
+  </section>
+  <section>
+    <h2>Where This Leaves Us</h2>
+    <ul>
+      <li>
+        <span class="hl-green">Authenticate</span> and
+        <span class="hl-cyan">authorize</span> are two checks with two failures:
+        401 and 403. Authorize with roles, default deny, least privilege
       </li>
       <li>
         Store passwords with a <span class="hl-orange">slow, salted KDF</span>,
-        and check them against breach lists
-      </li>
-      <li>
-        Use biometrics <em>locally</em>, to unlock a key — never as the
-        credential on the wire
+        add a second factor that resists phishing, and keep biometrics local
       </li>
       <li>
         Log every decision, including the denials, somewhere the subject cannot
         reach
       </li>
     </ul>
+    <p>
+      The grade service now has a slow, salted hash, a role check and a log. It
+      has no second factor, and it sends the password in the clear on every
+      request — lecture 6 fixes that.
+    </p>
     <div class="box">
       <p>
         Next: the same questions, one layer down — where the subject is a
