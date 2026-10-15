@@ -20,6 +20,11 @@ draft: false
 <section>
   <section>
     <h2>One Machine, Many Tenants</h2>
+    <p>
+      Lecture 4 asked <code>allow(s, a, o)</code> about a person. Here the
+      subject is a <em>process</em>, the object is a file, a device or memory —
+      and the kernel answers.
+    </p>
     <ul>
       <li>
         An operating system exists to let mutually distrusting programs share
@@ -48,7 +53,10 @@ draft: false
         The <span class="hl-orange">TCB</span> is everything that has to be
         correct for the security policy to hold
       </li>
-      <li>Kernel, drivers, firmware, the bootloader, every setuid binary</li>
+      <li>
+        Kernel, drivers, firmware, the bootloader, every setuid binary (lecture
+        4's <code>s</code> bit)
+      </li>
       <li>
         A bug <em>inside</em> the TCB defeats the policy. A bug outside it does
         not — that is the entire reason for drawing the line
@@ -72,8 +80,8 @@ draft: false
         The idealised access-control enforcer. Three requirements:
         <ul>
           <li>
-            <span class="hl-orange">Complete mediation</span> — every access
-            goes through it, with no side door
+            <span class="hl-orange">Complete mediation</span> — lecture 1's
+            principle: every access goes through it, with no side door
           </li>
           <li>
             <span class="hl-green">Tamper-proof</span> — nothing it governs can
@@ -90,6 +98,18 @@ draft: false
         why the rest of this lecture exists
       </li>
     </ul>
+  </section>
+  <section>
+    <h2>The Boundary, Drawn</h2>
+    <img
+      src="img/syscall.svg"
+      alt="Two user-mode processes ask the kernel through system calls; the reference monitor in kernel mode decides each request before it reaches files, devices or process memory; there is no direct path from a process to another process's memory"
+      width="820"
+    />
+    <p>
+      When the grade service opens its log, the decision is made here — not in a
+      line of Go.
+    </p>
   </section>
   <section>
     <h2>Hardening</h2>
@@ -115,7 +135,12 @@ draft: false
         CIS Benchmarks exist for exactly this
       </li>
     </ul>
-    <p>Unglamorous, and it beats every product you could buy instead.</p>
+    <div class="box">
+      <p>
+        Ask it of the grade service: which account runs <code>./grades</code>,
+        and what else can that account touch? Mostly, the answer is files.
+      </p>
+    </div>
   </section>
 </section>
 <section>
@@ -185,13 +210,75 @@ draft: false
       <li>Binaries, configuration, cron jobs, startup scripts, the web root</li>
       <li>
         The baseline has to be stored where the attacker cannot reach it, or
-        they will update it along with the file — the lecture 1 problem again
+        they will update it along with the file — lecture 1's "Who guards the
+        digest?" again
       </li>
       <li>
         Tripwire and AIDE do this. So does a package manager verifying its own
         database, which most systems already have
       </li>
     </ul>
+  </section>
+  <section class="hands-on">
+    <h2>The Service Can Rewrite Its Own Log</h2>
+    <p>
+      Lecture 1's grade service, first version, running as
+      <code>./grades 2&gt;&gt; server.log</code>:
+    </p>
+    <pre><code class="lang-text">
+$ curl -s -H 'X-User: 4001' -d 'id=4001&amp;grade=20' localhost:8080/grade
+4001 is now 20
+$ cat server.log
+2026/10/14 09:50:41 grade 4001=20 by 4001
+$ sed -i '' '/by 4001/d' server.log
+$ wc -l &lt; server.log
+0
+    </code></pre>
+    <ul>
+      <li>
+        Whoever runs as the service's account — through a bug, or a stolen shell
+        — owns the log too
+      </li>
+      <li>
+        Lecture 2's "The Day It Happens" reads exactly this line. After the
+        <code>sed</code>, there is <em class="hl-red">nothing to read</em>
+      </li>
+    </ul>
+  </section>
+  <section class="hands-on">
+    <h2>Append-Only, and Who Can Lift It</h2>
+    <pre><code class="lang-text">
+$ chflags uappnd server.log
+$ curl -s -H 'X-User: 4001' -d 'id=4001&amp;grade=20' localhost:8080/grade
+4001 is now 20
+$ sed -i '' '/by 4001/d' server.log
+sed: rename(): Operation not permitted
+$ cat server.log
+2026/10/14 09:50:50 grade 4001=20 by 4001
+$ chflags nouappnd server.log
+    </code></pre>
+    <ul>
+      <li>
+        The service can still <span class="hl-green">append</span>. It can no
+        longer rewrite or delete
+      </li>
+      <li>
+        But <code>uappnd</code> is the owner's flag — the last line removes it,
+        with no error
+      </li>
+      <li>
+        The wall that holds is a <em class="hl-orange">different owner</em>:
+        root sets <code>sappnd</code> (<code>chattr +a</code> on Linux), or the
+        log leaves for another host as it is written
+      </li>
+    </ul>
+    <div class="box">
+      <p>The process that writes the record must not own it.</p>
+    </div>
+    <p>
+      Every check here trusts the program that runs as you. Next: the program
+      that does not deserve it.
+    </p>
   </section>
 </section>
 <section>
@@ -310,6 +397,10 @@ draft: false
         first. Malware checks whether it is in one, so this is an arms race
       </li>
     </ul>
+    <p>
+      Detection waits for the malware to arrive. How does it arrive? Mostly
+      through a bug in a program you trusted.
+    </p>
   </section>
 </section>
 <section>
@@ -329,8 +420,8 @@ draft: false
       </li>
       <li>
         So the attacker's input stops being data and starts being
-        <em class="hl-orange">state</em> — which is lecture 6's rule, one layer
-        down
+        <em class="hl-orange">state</em>. Data crossed into control — keep that
+        sentence; lecture 6 meets the same bug on the web
       </li>
     </ul>
     <pre><code class="lang-c">
@@ -382,8 +473,25 @@ name=AAAAAAAAAAAAAAAA        is_admin=1
       </li>
     </ul>
   </section>
+  <section>
+    <h2>The Overflow, Drawn</h2>
+    <img
+      src="img/overflow.svg"
+      alt="The 20 bytes of struct session for the three runs: parham leaves is_admin at 00 00 00 00; twenty A characters fill is_admin with 41 41 41 41 and the terminating zero lands past the struct; sixteen A characters and 01 make is_admin 01 00 00 00, which is 1"
+      width="860"
+    />
+    <p>
+      The dots are bytes nobody set. <code>strcpy</code> never asks where
+      <code>name</code> ends.
+    </p>
+  </section>
   <section class="hands-on">
     <h2>The Same Source, Compiled Defensively</h2>
+    <p>
+      Two checks the compiler adds: <em>FORTIFY</em> gives
+      <code>strcpy</code> the buffer size; a <em>canary</em> is a random value
+      beside the return address, checked before the function returns.
+    </p>
     <pre><code class="lang-sh">
 $ cc -O0 -o login-hardened login.c        # the defaults
 $ ./login-hardened AAAAAAAAAAAAAAAAAAAA
@@ -404,28 +512,11 @@ exit=134          # SIGABRT — the canary was overwritten
   </section>
   <section>
     <h2>Layers of Mitigation</h2>
-    <table style="font-size: 0.8em">
-      <tr>
-        <td class="hl-green"><strong>Stack canary</strong></td>
-        <td>A random value before the return address, checked on return</td>
-      </tr>
-      <tr>
-        <td class="hl-green"><strong>NX / DEP</strong></td>
-        <td>Writable memory is not executable, so injected bytes cannot run</td>
-      </tr>
-      <tr>
-        <td class="hl-cyan"><strong>ASLR</strong></td>
-        <td>Randomize the layout, so the attacker cannot name an address</td>
-      </tr>
-      <tr>
-        <td class="hl-cyan"><strong>FORTIFY_SOURCE</strong></td>
-        <td>The compiler knows the buffer size and checks at run time</td>
-      </tr>
-      <tr>
-        <td class="hl-violet"><strong>CFI</strong></td>
-        <td>Indirect calls must land on a legitimate target</td>
-      </tr>
-    </table>
+    <img
+      src="img/mitigations.svg"
+      alt="A stack frame from name and is_admin up through the canary, the saved frame pointer and the return address; FORTIFY guards name, the canary guards the return, ASLR and CFI guard the return address, NX covers the whole writable stack"
+      width="740"
+    />
     <ul>
       <li>
         Each raises the cost; none is a fix. NX produced
@@ -457,6 +548,10 @@ exit=134          # SIGABRT — the canary was overwritten
         length that came with the data
       </li>
     </ul>
+    <p>
+      Bugs will still ship. So the host must notice when one is used — and stop
+      what it does next.
+    </p>
   </section>
 </section>
 <section>
@@ -502,12 +597,13 @@ exit=134          # SIGABRT — the canary was overwritten
         Two detection strategies, with opposite failure modes:
         <ul>
           <li>
-            <span class="hl-green">Misuse</span> — match known-bad. Precise;
-            blind to the new
+            <span class="hl-green">Misuse</span> — match known-bad, the
+            signatures of the Malware section. Precise; blind to the new
           </li>
           <li>
             <span class="hl-violet">Anomaly</span> — model normal, alert on
-            deviation. Can catch the new; buries you in false alarms
+            deviation, like behavioural detection. Catches the new; buries you
+            in false alarms
           </li>
         </ul>
       </li>
@@ -533,6 +629,14 @@ P(attack | alarm)            9.01%
     </p>
   </section>
   <section>
+    <h2>The Base Rate, Counted</h2>
+    <img
+      src="img/base-rate.svg"
+      alt="One million events split into 100 attacks and 999,900 normal events; 99 attacks raise an alarm and about 1,000 normal events do too; drawn to scale, the 99 real alarms are a thin sliver beside the false ones; 99 of 1,099 is 9.01%"
+      width="820"
+    />
+  </section>
+  <section>
     <h2>The Base-Rate Fallacy</h2>
     <ul>
       <li>
@@ -552,7 +656,7 @@ P(attack | alarm)            9.01%
           </li>
           <li>
             <span class="hl-cyan">Correlate</span> — require two weak signals,
-            so the false-positive rates multiply
+            so the false-alarm rates multiply
           </li>
           <li>
             <span class="hl-orange">Drive the false-alarm rate down</span>, even
@@ -561,6 +665,10 @@ P(attack | alarm)            9.01%
         </ul>
       </li>
     </ul>
+    <p>
+      Detection will miss. So limit the damage: when this host falls, what else
+      falls with it?
+    </p>
   </section>
 </section>
 <section>
@@ -621,35 +729,90 @@ P(attack | alarm)            9.01%
     <h2>Containers Are Not Small VMs</h2>
     <ul>
       <li>
-        A container is <strong class="hl-orange">one kernel</strong>,
-        partitioned by namespaces and cgroups. There is no second operating
-        system
+        A container is a process on
+        <strong class="hl-orange">one kernel</strong>. <em>Namespaces</em> limit
+        what it sees; <em>cgroups</em>
+        limit how much it uses. There is no second operating system
       </li>
       <li>
-        So a kernel vulnerability is shared by every container on the host,
-        while a VM would still have a hypervisor between them
-      </li>
-      <li>
-        Weaker isolation, far lower cost. Both are correct answers to different
-        questions
+        So a kernel bug is shared by every container on the host; VMs still have
+        a hypervisor between them. Weaker isolation, far lower cost
       </li>
       <li>
         If you run them: non-root user, read-only root filesystem, dropped
-        capabilities, a seccomp profile, and
+        capabilities (root's rights, in pieces), a seccomp filter on system
+        calls, and
         <strong class="hl-red">never</strong> <code>--privileged</code>
       </li>
       <li>
-        Where the boundary must be strong, put a real one back: Firecracker,
-        Kata, gVisor
+        Where the boundary must be strong, put one back: a micro-VM
+        (Firecracker, Kata) or a user-space kernel (gVisor)
       </li>
     </ul>
+  </section>
+  <section>
+    <h2>Isolation, Drawn</h2>
+    <img
+      src="img/isolation.svg"
+      alt="Three stacks: Type 2 puts a hypervisor on a full host OS; Type 1 puts the hypervisor on the hardware; containers put namespaces and cgroups on one shared kernel; the wall between two tenants is the hypervisor in the first two and the kernel itself in the third"
+      width="860"
+    />
+    <p>Ask of each one: what stands between tenant A and tenant B?</p>
+  </section>
+  <section class="hands-on">
+    <h2>Two Distributions, One Kernel</h2>
+    <pre><code class="lang-text">
+$ uname -sr
+Darwin 27.0.0
+$ docker run --rm debian:bookworm uname -sr
+Linux 7.0.14-linuxkit
+$ docker run --rm quay.io/centos/centos:stream9 uname -sr
+Linux 7.0.14-linuxkit
+$ docker run --rm debian:bookworm sh -c 'ls /dev | wc -l'
+15
+$ docker run --rm --privileged debian:bookworm sh -c 'ls /dev | wc -l'
+169
+    </code></pre>
+    <ul>
+      <li>
+        Debian and CentOS, and <span class="hl-red">one kernel</span> under both
+        — and it is not the Mac's. Docker Desktop runs a Linux VM: a hypervisor
+        wall around the containers, and only a kernel between them
+      </li>
+      <li>
+        <code>--privileged</code> takes the container from 15 devices to 169:
+        the VM's hardware, handed over in one flag
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Check Yourself</h2>
+    <ol>
+      <li>
+        The grade service owns <code>server.log</code>. Why does
+        <code>uappnd</code> not protect it, and what does?
+      </li>
+      <li>
+        Why did twenty <code>A</code>s make <code>is_admin</code> 1094795585,
+        and why is the canary's crash an improvement?
+      </li>
+      <li>
+        A detector is 99% accurate, but 9 in 10 of its alarms are false. What
+        was rare, and what is one fix?
+      </li>
+      <li>
+        Two containers, then two VMs on a Type 1 hypervisor: what stands between
+        the tenants in each case?
+      </li>
+    </ol>
   </section>
   <section>
     <h2>Where This Leaves Us</h2>
     <ul>
       <li>
         The host is defended by the boring things:
-        <span class="hl-green">patch, minimise, separate, log</span>
+        <span class="hl-green">patch, minimise, separate, log</span> — and a log
+        the service cannot rewrite
       </li>
       <li>
         The bug classes that survive are the ones where

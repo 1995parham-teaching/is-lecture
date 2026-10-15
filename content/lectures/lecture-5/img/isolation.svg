@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420">
+  <title>Type 2 hypervisor, Type 1 hypervisor and containers: what separates two tenants</title>
+  <style>
+    text { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 18px; fill: #eeeeee; text-anchor: middle; dominant-baseline: middle; }
+    .small { font-size: 16px; fill: #b0b4bc; }
+    .title { font-size: 21px; font-weight: bold; }
+    .box { fill: rgba(255, 255, 255, 0.06); stroke: #cfd3da; stroke-width: 2; }
+    .orange { fill: #ff9100; } .green { fill: #76ff03; } .cyan { fill: #00e5ff; }
+    .red { fill: #ff5252; } .violet { fill: #ee82ee; } .yellow { fill: #ffcc00; }
+  </style>
+
+  <text class="title" x="140" y="22">Type 2</text>
+  <rect class="box" x="15" y="276" width="250" height="44" rx="5" />
+  <text class="small" x="140.0" y="299.0">hardware</text>
+  <rect class="box" x="15" y="226" width="250" height="44" rx="5" style="stroke: #ffcc00" />
+  <text class="yellow" x="140.0" y="249.0">host OS, all of it</text>
+  <rect class="box" x="15" y="176" width="250" height="44" rx="5" style="stroke: #ff9100" />
+  <text class="orange" x="140.0" y="199.0">hypervisor</text>
+  <rect class="box" x="15" y="126" width="120" height="44" rx="5" />
+  <text x="75.0" y="149.0">kernel A</text>
+  <rect class="box" x="145" y="126" width="120" height="44" rx="5" />
+  <text x="205.0" y="149.0">kernel B</text>
+  <rect class="box" x="15" y="76" width="120" height="44" rx="5" style="stroke: #00e5ff" />
+  <text class="cyan" x="75.0" y="99.0">app A</text>
+  <rect class="box" x="145" y="76" width="120" height="44" rx="5" style="stroke: #00e5ff" />
+  <text class="cyan" x="205.0" y="99.0">app B</text>
+  <text class="title" x="450" y="22">Type 1</text>
+  <rect class="box" x="325" y="276" width="250" height="44" rx="5" />
+  <text class="small" x="450.0" y="299.0">hardware</text>
+  <rect class="box" x="325" y="226" width="250" height="44" rx="5" style="stroke: #ff9100" />
+  <text class="orange" x="450.0" y="249.0">hypervisor</text>
+  <rect class="box" x="325" y="176" width="120" height="44" rx="5" />
+  <text x="385.0" y="199.0">kernel A</text>
+  <rect class="box" x="455" y="176" width="120" height="44" rx="5" />
+  <text x="515.0" y="199.0">kernel B</text>
+  <rect class="box" x="325" y="126" width="120" height="44" rx="5" style="stroke: #00e5ff" />
+  <text class="cyan" x="385.0" y="149.0">app A</text>
+  <rect class="box" x="455" y="126" width="120" height="44" rx="5" style="stroke: #00e5ff" />
+  <text class="cyan" x="515.0" y="149.0">app B</text>
+  <text class="title" x="760" y="22">Containers</text>
+  <rect class="box" x="635" y="276" width="250" height="44" rx="5" />
+  <text class="small" x="760.0" y="299.0">hardware</text>
+  <rect class="box" x="635" y="226" width="250" height="44" rx="5" style="stroke: #ff5252" />
+  <text class="red" x="760.0" y="249.0">one kernel, shared</text>
+  <rect class="box" x="635" y="176" width="250" height="44" rx="5" style="stroke: #ff9100" />
+  <text class="orange" x="760.0" y="199.0">namespaces · cgroups</text>
+  <rect class="box" x="635" y="126" width="120" height="44" rx="5" style="stroke: #00e5ff" />
+  <text class="cyan" x="695.0" y="149.0">app A</text>
+  <rect class="box" x="765" y="126" width="120" height="44" rx="5" style="stroke: #00e5ff" />
+  <text class="cyan" x="825.0" y="149.0">app B</text>
+  <text class="orange" x="450" y="350">orange: the wall between tenant A and tenant B</text>
+  <text class="small" x="140" y="388">the whole host OS joins the TCB</text>
+  <text class="small" x="450" y="388">small TCB — what clouds run</text>
+  <text class="small" x="760" y="388">one kernel bug crosses the wall</text>
+</svg>

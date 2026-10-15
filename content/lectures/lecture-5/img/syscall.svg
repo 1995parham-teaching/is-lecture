@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 440">
+  <title>The system-call boundary and the reference monitor</title>
+  <style>
+    text { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 20px; fill: #eeeeee; text-anchor: middle; dominant-baseline: middle; }
+    .small { font-size: 16px; fill: #b0b4bc; }
+    .mono { font-family: Menlo, Consolas, monospace; font-size: 16px; }
+    .left { text-anchor: start; }
+    .box { fill: rgba(255, 255, 255, 0.06); stroke: #cfd3da; stroke-width: 2; }
+    .line { fill: none; stroke: #cfd3da; stroke-width: 2; marker-end: url(#arrow); }
+    .dash { fill: none; stroke: #8d97a8; stroke-width: 2; stroke-dasharray: 6 5; }
+    .orange { fill: #ff9100; } .green { fill: #76ff03; } .cyan { fill: #00e5ff; }
+    .red { fill: #ff5252; } .violet { fill: #ee82ee; } .yellow { fill: #ffcc00; }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#cfd3da" />
+    </marker>
+  </defs>
+
+  <text class="green left" x="10" y="20">user mode</text>
+  <rect class="box" x="60" y="40" width="240" height="60" rx="6" style="stroke: #76ff03" />
+  <text x="180" y="70">grades</text>
+  <rect class="box" x="560" y="40" width="240" height="60" rx="6" style="stroke: #76ff03" />
+  <text x="680" y="70">another process</text>
+
+  <path class="dash" d="M0,150 H900" style="stroke: #ffcc00" />
+  <text class="yellow" x="790" y="134">system-call boundary</text>
+  <text class="red left" x="10" y="172">kernel mode</text>
+
+  <path class="line" d="M262,100 L370,198" />
+  <text class="cyan mono left" x="14" y="125">open("server.log", O_TRUNC)</text>
+  <path class="line" d="M640,100 L540,198" />
+  <text class="cyan mono" x="645" y="172">read(fd)</text>
+
+  <rect class="box" x="300" y="200" width="300" height="76" rx="6" style="stroke: #ff9100" />
+  <text class="orange" x="450" y="226">reference monitor</text>
+  <text class="small" x="450" y="254">subject · action · object → allow / deny</text>
+
+  <path class="line" d="M370,276 L210,328" />
+  <path class="line" d="M450,276 V328" />
+  <path class="line" d="M530,276 L690,328" />
+  <rect class="box" x="110" y="330" width="200" height="50" rx="6" />
+  <text x="210" y="355">files</text>
+  <rect class="box" x="350" y="330" width="200" height="50" rx="6" />
+  <text x="450" y="355">devices</text>
+  <rect class="box" x="590" y="330" width="200" height="50" rx="6" />
+  <text x="690" y="355">process memory</text>
+
+  <path class="dash" d="M800,70 H860 V355 H790" style="stroke: #ff5252" />
+  <path d="M846,196 L874,224 M874,196 L846,224" stroke="#ff5252" stroke-width="3" />
+  <text class="red" x="760" y="250">no side door</text>
+
+  <text class="small" x="450" y="414">complete mediation: every arrow passes the monitor · tamper-proof: it sits below the line · verifiable: it is small</text>
+</svg>

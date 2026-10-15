@@ -1,0 +1,151 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 360">
+  <title>struct session in memory, before and after the overflow</title>
+  <style>
+    text { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 20px; fill: #eeeeee; text-anchor: middle; dominant-baseline: middle; }
+    .small { font-size: 16px; fill: #b0b4bc; }
+    .mono { font-family: Menlo, Consolas, monospace; font-size: 14px; }
+    .monob { font-family: Menlo, Consolas, monospace; font-size: 18px; }
+    .left { text-anchor: start; } .end { text-anchor: end; }
+    .cell { fill: rgba(255, 255, 255, 0.06); stroke: #cfd3da; stroke-width: 1.5; }
+    .orange { fill: #ff9100; } .green { fill: #76ff03; } .cyan { fill: #00e5ff; }
+    .red { fill: #ff5252; } .violet { fill: #ee82ee; } .yellow { fill: #ffcc00; }
+  </style>
+
+  <path d="M162,50 V40 H606 V50" fill="none" stroke="#00e5ff" stroke-width="2" />
+  <text x="384.0" y="26" style="fill: #00e5ff">name[16]</text>
+  <path d="M610,50 V40 H718 V50" fill="none" stroke="#ff9100" stroke-width="2" />
+  <text x="664.0" y="26" style="fill: #ff9100">is_admin</text>
+  <text class="red small" x="734.0" y="26">past</text>
+  <text class="end" x="148" y="90">parham</text>
+  <rect class="cell" x="160" y="70" width="28" height="40" />
+  <text class="mono" x="174.0" y="91">70</text>
+  <rect class="cell" x="188" y="70" width="28" height="40" />
+  <text class="mono" x="202.0" y="91">61</text>
+  <rect class="cell" x="216" y="70" width="28" height="40" />
+  <text class="mono" x="230.0" y="91">72</text>
+  <rect class="cell" x="244" y="70" width="28" height="40" />
+  <text class="mono" x="258.0" y="91">68</text>
+  <rect class="cell" x="272" y="70" width="28" height="40" />
+  <text class="mono" x="286.0" y="91">61</text>
+  <rect class="cell" x="300" y="70" width="28" height="40" />
+  <text class="mono" x="314.0" y="91">6d</text>
+  <rect class="cell" x="328" y="70" width="28" height="40" />
+  <text class="mono" x="342.0" y="91">00</text>
+  <rect class="cell" x="356" y="70" width="28" height="40" />
+  <text class="small" x="370.0" y="91">·</text>
+  <rect class="cell" x="384" y="70" width="28" height="40" />
+  <text class="small" x="398.0" y="91">·</text>
+  <rect class="cell" x="412" y="70" width="28" height="40" />
+  <text class="small" x="426.0" y="91">·</text>
+  <rect class="cell" x="440" y="70" width="28" height="40" />
+  <text class="small" x="454.0" y="91">·</text>
+  <rect class="cell" x="468" y="70" width="28" height="40" />
+  <text class="small" x="482.0" y="91">·</text>
+  <rect class="cell" x="496" y="70" width="28" height="40" />
+  <text class="small" x="510.0" y="91">·</text>
+  <rect class="cell" x="524" y="70" width="28" height="40" />
+  <text class="small" x="538.0" y="91">·</text>
+  <rect class="cell" x="552" y="70" width="28" height="40" />
+  <text class="small" x="566.0" y="91">·</text>
+  <rect class="cell" x="580" y="70" width="28" height="40" />
+  <text class="small" x="594.0" y="91">·</text>
+  <rect class="cell" x="608" y="70" width="28" height="40" style="stroke: #ff9100" />
+  <text class="mono" x="622.0" y="91">00</text>
+  <rect class="cell" x="636" y="70" width="28" height="40" style="stroke: #ff9100" />
+  <text class="mono" x="650.0" y="91">00</text>
+  <rect class="cell" x="664" y="70" width="28" height="40" style="stroke: #ff9100" />
+  <text class="mono" x="678.0" y="91">00</text>
+  <rect class="cell" x="692" y="70" width="28" height="40" style="stroke: #ff9100" />
+  <text class="mono" x="706.0" y="91">00</text>
+  <rect x="720" y="70" width="28" height="40" fill="none" stroke="#ff5252" stroke-width="1.5" stroke-dasharray="4 3" />
+  <text class="monob left" x="762" y="91" style="fill: #76ff03">= 0</text>
+  <text class="end" x="148" y="160">20 × A</text>
+  <rect class="cell" x="160" y="140" width="28" height="40" />
+  <text class="mono" x="174.0" y="161">41</text>
+  <rect class="cell" x="188" y="140" width="28" height="40" />
+  <text class="mono" x="202.0" y="161">41</text>
+  <rect class="cell" x="216" y="140" width="28" height="40" />
+  <text class="mono" x="230.0" y="161">41</text>
+  <rect class="cell" x="244" y="140" width="28" height="40" />
+  <text class="mono" x="258.0" y="161">41</text>
+  <rect class="cell" x="272" y="140" width="28" height="40" />
+  <text class="mono" x="286.0" y="161">41</text>
+  <rect class="cell" x="300" y="140" width="28" height="40" />
+  <text class="mono" x="314.0" y="161">41</text>
+  <rect class="cell" x="328" y="140" width="28" height="40" />
+  <text class="mono" x="342.0" y="161">41</text>
+  <rect class="cell" x="356" y="140" width="28" height="40" />
+  <text class="mono" x="370.0" y="161">41</text>
+  <rect class="cell" x="384" y="140" width="28" height="40" />
+  <text class="mono" x="398.0" y="161">41</text>
+  <rect class="cell" x="412" y="140" width="28" height="40" />
+  <text class="mono" x="426.0" y="161">41</text>
+  <rect class="cell" x="440" y="140" width="28" height="40" />
+  <text class="mono" x="454.0" y="161">41</text>
+  <rect class="cell" x="468" y="140" width="28" height="40" />
+  <text class="mono" x="482.0" y="161">41</text>
+  <rect class="cell" x="496" y="140" width="28" height="40" />
+  <text class="mono" x="510.0" y="161">41</text>
+  <rect class="cell" x="524" y="140" width="28" height="40" />
+  <text class="mono" x="538.0" y="161">41</text>
+  <rect class="cell" x="552" y="140" width="28" height="40" />
+  <text class="mono" x="566.0" y="161">41</text>
+  <rect class="cell" x="580" y="140" width="28" height="40" />
+  <text class="mono" x="594.0" y="161">41</text>
+  <rect class="cell" x="608" y="140" width="28" height="40" style="stroke: #ff9100" />
+  <text class="mono red" x="622.0" y="161">41</text>
+  <rect class="cell" x="636" y="140" width="28" height="40" style="stroke: #ff9100" />
+  <text class="mono red" x="650.0" y="161">41</text>
+  <rect class="cell" x="664" y="140" width="28" height="40" style="stroke: #ff9100" />
+  <text class="mono red" x="678.0" y="161">41</text>
+  <rect class="cell" x="692" y="140" width="28" height="40" style="stroke: #ff9100" />
+  <text class="mono red" x="706.0" y="161">41</text>
+  <rect x="720" y="140" width="28" height="40" fill="none" stroke="#ff5252" stroke-width="1.5" stroke-dasharray="4 3" />
+  <text class="mono red" x="734.0" y="161">00</text>
+  <text class="monob left" x="762" y="161" style="fill: #ff5252">= 1094795585</text>
+  <text class="end" x="148" y="230">16 × A + 01</text>
+  <rect class="cell" x="160" y="210" width="28" height="40" />
+  <text class="mono" x="174.0" y="231">41</text>
+  <rect class="cell" x="188" y="210" width="28" height="40" />
+  <text class="mono" x="202.0" y="231">41</text>
+  <rect class="cell" x="216" y="210" width="28" height="40" />
+  <text class="mono" x="230.0" y="231">41</text>
+  <rect class="cell" x="244" y="210" width="28" height="40" />
+  <text class="mono" x="258.0" y="231">41</text>
+  <rect class="cell" x="272" y="210" width="28" height="40" />
+  <text class="mono" x="286.0" y="231">41</text>
+  <rect class="cell" x="300" y="210" width="28" height="40" />
+  <text class="mono" x="314.0" y="231">41</text>
+  <rect class="cell" x="328" y="210" width="28" height="40" />
+  <text class="mono" x="342.0" y="231">41</text>
+  <rect class="cell" x="356" y="210" width="28" height="40" />
+  <text class="mono" x="370.0" y="231">41</text>
+  <rect class="cell" x="384" y="210" width="28" height="40" />
+  <text class="mono" x="398.0" y="231">41</text>
+  <rect class="cell" x="412" y="210" width="28" height="40" />
+  <text class="mono" x="426.0" y="231">41</text>
+  <rect class="cell" x="440" y="210" width="28" height="40" />
+  <text class="mono" x="454.0" y="231">41</text>
+  <rect class="cell" x="468" y="210" width="28" height="40" />
+  <text class="mono" x="482.0" y="231">41</text>
+  <rect class="cell" x="496" y="210" width="28" height="40" />
+  <text class="mono" x="510.0" y="231">41</text>
+  <rect class="cell" x="524" y="210" width="28" height="40" />
+  <text class="mono" x="538.0" y="231">41</text>
+  <rect class="cell" x="552" y="210" width="28" height="40" />
+  <text class="mono" x="566.0" y="231">41</text>
+  <rect class="cell" x="580" y="210" width="28" height="40" />
+  <text class="mono" x="594.0" y="231">41</text>
+  <rect class="cell" x="608" y="210" width="28" height="40" style="stroke: #ff9100" />
+  <text class="mono red" x="622.0" y="231">01</text>
+  <rect class="cell" x="636" y="210" width="28" height="40" style="stroke: #ff9100" />
+  <text class="mono" x="650.0" y="231">00</text>
+  <rect class="cell" x="664" y="210" width="28" height="40" style="stroke: #ff9100" />
+  <text class="mono" x="678.0" y="231">00</text>
+  <rect class="cell" x="692" y="210" width="28" height="40" style="stroke: #ff9100" />
+  <text class="mono" x="706.0" y="231">00</text>
+  <rect x="720" y="210" width="28" height="40" fill="none" stroke="#ff5252" stroke-width="1.5" stroke-dasharray="4 3" />
+  <text class="monob left" x="762" y="231" style="fill: #ff5252">= 1</text>
+  <text class="small" x="470" y="296">strcpy copies every byte, then a terminating 00 — in run two that 00 lands outside the struct</text>
+  <text class="small" x="470" y="326">is_admin is little-endian: 01 00 00 00 reads as 1, and 41 41 41 41 as 0x41414141</text>
+</svg>
