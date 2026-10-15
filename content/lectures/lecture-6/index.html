@@ -4,8 +4,8 @@ title: Web Security
 topics:
   - The Web Threat Model
   - Server-Side Attacks
-  - Client-Side Attacks
   - Sessions & Cookies
+  - Client-Side Attacks
   - TLS and HTTPS
 draft: false
 ---
@@ -40,31 +40,48 @@ draft: false
         It is not a control, because the attacker does not use your form
       </li>
     </ul>
+    <p>
+      Lecture 5 ended with data crossing into control on one host. Here the data
+      comes from every stranger on the internet. And lecture 4's grade service
+      still sends its password with every request: this lecture gives it a
+      database, a session and HTTPS.
+    </p>
   </section>
   <section>
     <h2>Two Different Victims</h2>
     <ul>
       <li>
         <span class="hl-orange">Server-side attacks</span> target
-        <strong>your machine</strong> — the database, the file system, the
-        internal network
+        <strong>your machine</strong> — the database, the files, the internal
+        network
       </li>
       <li>
         <span class="hl-cyan">Client-side attacks</span> target
-        <strong>your users</strong>, through the trust their browser places in
-        your origin
+        <strong>your users</strong>, through their browser's trust in your
+        <em>origin</em>: scheme, host and port, as in
+        <code>https://grades.example</code>
       </li>
       <li>
-        The second category is easy to under-weight, because nothing on your
-        server is damaged. Your users are still the ones who were robbed, and it
-        is still your bug
+        The second is easy to under-weight: nothing on your server is damaged.
+        Your users were still robbed, and it is still your bug
       </li>
       <li>
-        The browser's own defences — the
-        <span class="hl-green">same-origin policy</span> and CORS — protect the
-        <em>browser</em>, not your server
+        The browser's <span class="hl-green">same-origin policy</span>: a page
+        from one origin cannot <em>read</em> another origin's responses. It can
+        still <em>send</em> requests to it — keep that for CSRF
       </li>
     </ul>
+  </section>
+  <section>
+    <h2>Two Victims, Drawn</h2>
+    <img
+      src="img/web-threat-model.svg"
+      alt="An attacker sends any request to your web app. Server-side attacks reach your machine: database, files, internal network. Client-side attacks reach your users through their browsers, often by a link or a page on another site"
+      width="860"
+    />
+    <p>
+      The top branch breaks your server. The bottom one breaks nothing on it.
+    </p>
   </section>
   <section>
     <h2>The Golden Rule</h2>
@@ -99,55 +116,94 @@ draft: false
 <section>
   <section>
     <h2>SQL Injection</h2>
-    <p>A login handler that builds its query by concatenation:</p>
+    <p>
+      The grade service moves into SQLite and gets one new handler: a student
+      reads their own grade in one course. It builds the query by concatenation:
+    </p>
     <pre><code class="lang-go">
-query := "SELECT id FROM users WHERE name = '" + name + "'"
+	course := r.FormValue("course")
+	query := "SELECT student, course, grade FROM grades" +
+		" WHERE student = '" + user + "' AND course = '" + course + "'"
+	rows, err := db.Query(query)
     </code></pre>
     <p>
-      What happens when <code class="hl-yellow">name</code> is
-      <code class="hl-red">' OR '1'='1</code>?
+      <code class="hl-yellow">user</code> comes from the login, so it is safe.
+      What happens when <code class="hl-yellow">course</code> is
+      <code class="hl-red">x' OR '1'='1</code>?
     </p>
   </section>
-  <section>
-    <h2>The Query the Database Sees</h2>
-    <pre><code class="lang-sql">
-SELECT id FROM users WHERE name = '' OR '1'='1'
+  <section class="hands-on">
+    <h2>One Student, Every Grade</h2>
+    <pre><code class="lang-sh">
+$ curl -u 4001:tulip-river-42 'localhost:8080/grades?course=IS'
+4001 IS 12
+$ curl -u 4001:tulip-river-42 -G localhost:8080/grades \
+       --data-urlencode "course=x' OR '1'='1"
+4001 IS 12
+4002 IS 17
+4001 IE 15
+4002 IE 19
     </code></pre>
     <ul>
+      <li>A real student, a real password, and every grade in every course</li>
       <li>
-        The quote supplied by the user
-        <strong class="hl-red">ended the string</strong>, and everything after
-        it became SQL
-      </li>
-      <li>
-        The database behaved correctly. It cannot know which characters came
-        from you and which came from the attacker — by the time it sees the
-        query, that information is gone
+        The ownership check — <code>student = '4001'</code> — was in the query.
+        The input <strong class="hl-red">removed it</strong>
       </li>
     </ul>
   </section>
   <section>
+    <h2>The Query the Database Sees</h2>
+    <img
+      src="img/sql-boundary.svg"
+      alt="Glued: the code and the student's data become one string. Parsed: the student's quote ends the string literal and OR '1'='1' becomes SQL, so every row matches. Prepared: the query with two question marks and the two values travel separately, and no course has that name"
+      width="840"
+    />
+    <p>
+      The database behaved correctly. By the time it sees the string, nothing
+      records which characters came from you.
+    </p>
+  </section>
+  <section>
     <h2>Prepared Statements</h2>
     <pre><code class="lang-go">
-row := db.QueryRow("SELECT id FROM users WHERE name = $1", name)
+	rows, err := db.Query("SELECT student, course, grade FROM grades"+
+		" WHERE student = ? AND course = ?", user, course)
     </code></pre>
     <ul>
       <li>
-        The query goes to the server <em class="hl-green">once</em>, with holes
-        in it. The values travel <strong>separately</strong>
+        The query is parsed <em class="hl-green">once</em>, with holes in it.
+        The values are bound <strong>separately</strong>, after parsing
       </li>
       <li>
         The value can never become SQL, whatever characters it contains, so
         there is nothing left to escape
       </li>
       <li>
-        This is <span class="hl-cyan">protocol-level</span> separation, not
-        clever quoting. That distinction is the whole lesson
+        This is <span class="hl-cyan">structural</span> separation, not clever
+        quoting. That distinction is the whole lesson
       </li>
       <li>
         It also stops being your judgement call, which is why it holds up over
         years of maintenance
       </li>
+    </ul>
+  </section>
+  <section class="hands-on">
+    <h2>The Same Request, Prepared</h2>
+    <pre><code class="lang-sh">
+$ curl -u 4001:tulip-river-42 'localhost:8080/grades?course=IS'
+4001 IS 12
+$ curl -u 4001:tulip-river-42 -G localhost:8080/grades \
+       --data-urlencode "course=x' OR '1'='1"
+    </code></pre>
+    <ul>
+      <li>
+        The second request returns <strong class="hl-green">nothing</strong>: no
+        course is called <code>x' OR '1'='1</code>. The value was compared, not
+        parsed
+      </li>
+      <li>Two lines changed. Nothing was escaped, filtered or sanitized</li>
     </ul>
   </section>
   <section>
@@ -189,7 +245,7 @@ GET /api/invoices/1042     → someone else's invoice
     </code></pre>
     <ul>
       <li>
-        The session is valid, the user is authenticated. Nobody checked whether
+        The user is logged in. Nobody checked whether
         <em>this</em> user owns <em>that</em> object
       </li>
       <li>
@@ -198,8 +254,9 @@ GET /api/invoices/1042     → someone else's invoice
       </li>
       <li>
         The check belongs <strong class="hl-green">in the query</strong>:
-        <code>WHERE id = $1 AND owner_id = $2</code>. Then forgetting it returns
-        nothing instead of returning someone's data
+        <code>WHERE id = ? AND owner_id = ?</code>. Then forgetting it returns
+        nothing instead of returning someone's data. The grade service did this
+        — and injection deleted it, so it needs both fixes
       </li>
     </ul>
   </section>
@@ -241,11 +298,234 @@ GET /api/invoices/1042     → someone else's invoice
 </section>
 <section>
   <section>
+    <h2>HTTP Has No Memory</h2>
+    <ul>
+      <li>
+        Every request stands alone. The protocol has no idea the last one came
+        from the same person
+      </li>
+      <li>
+        So we check the password <strong class="hl-green">once</strong>, and
+        hand out a <span class="hl-orange">session identifier</span> the browser
+        returns automatically
+      </li>
+      <li>
+        Which makes that identifier
+        <em class="hl-red">as good as the password</em>, for as long as it lives
+      </li>
+      <li>
+        Lecture 4's grade service did the opposite: the password itself, on
+        every request
+      </li>
+    </ul>
+  </section>
+  <section class="hands-on">
+    <h2>Guessing the Session</h2>
+    <pre><code class="lang-sh">
+### three logins against a hand-rolled generator ###
+Set-Cookie: session=sess-1; Path=/
+Set-Cookie: session=sess-2; Path=/
+Set-Cookie: session=sess-3; Path=/
+
+### three logins against crypto/rand ###
+Set-Cookie: session=o2d9gnBGHyvvd0vFCQYvVA; Path=/; HttpOnly; Secure; SameSite=Lax
+Set-Cookie: session=YDmu9RDLwkgzBI8l3LxmWA; Path=/; HttpOnly; Secure; SameSite=Lax
+Set-Cookie: session=1nEDix88iEUq4gQ16crT6A; Path=/; HttpOnly; Secure; SameSite=Lax
+    </code></pre>
+    <ul>
+      <li>
+        Log in once as yourself, get <code>sess-4</code>, and now try
+        <code>sess-3</code>
+      </li>
+      <li>
+        A session identifier needs
+        <strong class="hl-green">128 bits from a CSPRNG</strong>. Not a counter,
+        not a timestamp, not a hash of the username
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Attacks on Sessions</h2>
+    <ul>
+      <li>
+        <span class="hl-red">Hijacking</span> — steal the identifier by
+        sniffing, by injected script (XSS, next section), or from a log file
+        that recorded the URL
+      </li>
+      <li>
+        <span class="hl-orange">Fixation</span> — the attacker plants a session
+        identifier <em>before</em> you log in and waits for you to authenticate
+        it
+
+        <ul>
+          <li>
+            Fix in one line:
+            <strong class="hl-green">issue a new identifier at login</strong>,
+            and again at any privilege change
+          </li>
+        </ul>
+      </li>
+      <li>
+        <span class="hl-yellow">Never in the URL.</span> URLs end up in browser
+        history, server logs, and the <code>Referer</code> header sent to other
+        sites
+      </li>
+      <li>
+        <span class="hl-cyan">Expire them</span> — idle timeout and an absolute
+        lifetime, both
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>The Cookie Attributes</h2>
+    <table style="font-size: 0.82em">
+      <tr>
+        <td class="hl-orange"><strong>HttpOnly</strong></td>
+        <td>
+          Script on the page cannot read it — XSS, next section, cannot simply
+          steal it
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-green"><strong>Secure</strong></td>
+        <td>Sent over HTTPS only — never in the clear, not even once</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>SameSite</strong></td>
+        <td>
+          Not attached to requests another site starts — the CSRF defence, next
+          section
+        </td>
+      </tr>
+      <tr>
+        <td class="hl-violet"><strong>Path / Domain</strong></td>
+        <td>Narrow the scope. Do not widen it to the parent domain casually</td>
+      </tr>
+      <tr>
+        <td class="hl-yellow"><strong>__Host- prefix</strong></td>
+        <td>
+          The browser enforces Secure, no Domain, and Path=/ — a subdomain
+          cannot overwrite it
+        </td>
+      </tr>
+    </table>
+    <p>
+      <code>HttpOnly</code> blocks <em>script access</em>. It does nothing about
+      the network — that is what <code>Secure</code> is for.
+    </p>
+  </section>
+  <section class="hands-on">
+    <h2>The Grade Service Gets a Session</h2>
+    <pre><code class="lang-go">
+// POST /login checks the password once and hands out a session
+func newSession(w http.ResponseWriter, r *http.Request) {
+	name, pass := r.FormValue("name"), r.FormValue("password")
+	err := bcrypt.CompareHashAndPassword([]byte(users[name]), []byte(pass))
+	if err != nil {
+		log.Printf("FAILED login as %q", name) // the name, never the password
+		http.Error(w, "login first", http.StatusUnauthorized)
+		return
+	}
+	id := rand.Text() // at least 128 bits from the OS, new at every login
+	sessions.Store(id, name)
+	http.SetCookie(w, &amp;http.Cookie{Name: "__Host-session", Value: id, Path: "/",
+		HttpOnly: true, Secure: true, SameSite: http.SameSiteLaxMode})
+	fmt.Fprintf(w, "hello %s\n", name)
+}
+    </code></pre>
+    <p>
+      <code>login</code> now looks the cookie up in <code>sessions</code>; the
+      role check from lecture 1 is unchanged.
+    </p>
+  </section>
+  <section class="hands-on">
+    <h2>Log In Once, Then Only the Cookie</h2>
+    <pre><code class="lang-sh">
+$ curl -c cookies.txt -D - -d name=parham \
+       -d 'password=correct horse battery staple' localhost:8080/login
+HTTP/1.1 200 OK
+Set-Cookie: __Host-session=ZPZEYLRFJ3QRO2ZSQBGLV33BOF; Path=/; HttpOnly; Secure; SameSite=Lax
+Date: Wed, 14 Oct 2026 07:59:04 GMT
+Content-Length: 13
+Content-Type: text/plain; charset=utf-8
+
+hello parham
+$ curl -b cookies.txt -d 'id=4002&amp;grade=18' localhost:8080/grade
+4002 is now 18
+    </code></pre>
+    <ul>
+      <li>
+        Every attribute from the table, on one header — and a new identifier at
+        every login, which is the fixation fix
+      </li>
+      <li>
+        curl treats <code>localhost</code> as a secure origin, so
+        <code>Secure</code> works here without TLS. Anywhere else it needs HTTPS
+        — the last section
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Logging Out Is a Server-Side Delete</h2>
+    <ul>
+      <li>
+        Clearing the cookie asks the <em>browser</em> to forget. It does nothing
+        to a copy the attacker already has
+      </li>
+      <li>
+        Log out by
+        <strong class="hl-green">deleting the session from the store</strong>.
+        Then the stolen identifier refers to nothing
+      </li>
+      <li>
+        A <span class="hl-orange">JWT</span> — a signed token that carries the
+        user's name itself — cannot be deleted: nothing is consulted, so it is
+        valid until it expires. Revoking one needs a deny-list, which is a
+        session store again
+      </li>
+      <li>
+        And a JWT is <em class="hl-red">signed, not encrypted</em>. Anyone can
+        read the payload; do not put secrets in it
+      </li>
+    </ul>
+  </section>
+  <section class="hands-on">
+    <h2>Log Out, Then Replay</h2>
+    <pre><code class="lang-sh">
+$ cp cookies.txt stolen.txt
+$ curl -b cookies.txt -c cookies.txt -X POST localhost:8080/logout
+$ curl -b stolen.txt -d 'id=4002&amp;grade=20' localhost:8080/grade
+login first
+$ cat server.log
+2026/10/14 09:59:04 grade 4002=18 by parham
+    </code></pre>
+    <ul>
+      <li>
+        The copy in <code>stolen.txt</code> still holds the identifier. The
+        server deleted what it pointed to, so it is
+        <strong class="hl-green">worth nothing</strong>
+      </li>
+      <li>
+        The replay is not in the log: an unknown session is not a failed
+        password. Should it be? That is lecture 4's audit question
+      </li>
+    </ul>
+    <p>
+      The browser now sends this cookie on every request to the grade service —
+      including requests that another site starts.
+    </p>
+  </section>
+</section>
+<section>
+  <div class="toc" data-selected="3"></div>
+</section>
+<section>
+  <section>
     <h2>Cross-Site Scripting</h2>
     <p>
-      The same bug, but the interpreter is the
-      <strong class="hl-cyan">browser</strong> and the injected code is
-      JavaScript.
+      The Golden Rule again, in the user's browser: the interpreter is the
+      <strong class="hl-cyan">browser</strong>, and the injected code is
+      JavaScript running on your origin, next to the session.
     </p>
     <pre><code class="lang-javascript">
 // a comment box that renders whatever was posted
@@ -261,29 +541,16 @@ element.innerHTML = "&lt;p&gt;" + comment + "&lt;/p&gt;";
   </section>
   <section>
     <h2>Three Kinds</h2>
-    <table style="font-size: 0.82em">
-      <tr>
-        <td class="hl-red"><strong>Stored</strong></td>
-        <td>
-          Saved on the server, served to everyone. The worst — it needs no lure
-        </td>
-      </tr>
-      <tr>
-        <td class="hl-orange"><strong>Reflected</strong></td>
-        <td>Echoed back from the request. Needs the victim to follow a link</td>
-      </tr>
-      <tr>
-        <td class="hl-yellow"><strong>DOM-based</strong></td>
-        <td>
-          Never reaches the server at all — client-side code reads the URL and
-          writes it into the page
-        </td>
-      </tr>
-    </table>
+    <img
+      src="img/xss-kinds.svg"
+      alt="Stored: the attacker posts a comment, the server stores it, every visitor loads it and the script runs in each session. Reflected: the attacker sends a link, the victim clicks, the server echoes the parameter back and the script runs for that victim. DOM: the same link, but page script writes the URL fragment into innerHTML and the server never sees it"
+      width="820"
+    />
     <ul>
       <li>
-        Script running on your origin <em>is</em> your user: it can read the
-        page, submit forms, and reach any authenticated endpoint
+        <span class="hl-red">Stored</span> is the worst: it needs no lure. And
+        script on your origin <em>is</em> your user — it can read the page,
+        submit forms, and call any authenticated endpoint
       </li>
       <li>
         Which is why XSS defeats CSRF tokens — the script simply reads the token
@@ -342,12 +609,25 @@ element.innerHTML = "&lt;p&gt;" + comment + "&lt;/p&gt;";
     </p>
   </section>
   <section>
+    <h2>CSRF on the Grade Service, Drawn</h2>
+    <img
+      src="img/csrf.svg"
+      alt="The instructor's browser is logged in to grades.example. A tab on evil.example submits a form that posts id=4001 and grade=20 to the grade service; the browser attaches the session cookie, which has no SameSite attribute; the server sees parham's session, the instructor role passes, and 4001 is now 20"
+      width="840"
+    />
+    <p>
+      Drawn without <code>SameSite</code>. Every check passes: the request
+      really carries the instructor's session — only the intent is forged.
+    </p>
+  </section>
+  <section>
     <h2>Stopping CSRF</h2>
     <ul>
       <li>
         <span class="hl-green">SameSite cookies</span> — the browser will not
-        attach the cookie to a cross-site request. <code>Lax</code> is now the
-        default in current browsers, which killed most of this class outright
+        attach the cookie to a cross-site request. Chromium treats a cookie with
+        no attribute as <code>Lax</code>; not every browser does, so
+        <strong>set it yourself</strong>
       </li>
       <li>
         <span class="hl-cyan">CSRF token</span> — a per-session random value in
@@ -364,6 +644,14 @@ element.innerHTML = "&lt;p&gt;" + comment + "&lt;/p&gt;";
         an <code>&lt;img&gt;</code> tag is an attack
       </li>
     </ul>
+  </section>
+  <section>
+    <h2>SameSite, Drawn</h2>
+    <img
+      src="img/samesite.svg"
+      alt="A same-site request always carries the cookie. A cross-site request depends on SameSite: Strict never sends it, Lax sends it only for a top-level GET such as a clicked link, None always sends it and must be Secure. The CSRF form is a cross-site POST, so Strict and Lax block it and None lets the grade change"
+      width="860"
+    />
   </section>
   <section>
     <h2>The Rest of the Client Side</h2>
@@ -389,151 +677,10 @@ element.innerHTML = "&lt;p&gt;" + comment + "&lt;/p&gt;";
         deliberately
       </li>
     </ul>
-  </section>
-</section>
-<section>
-  <div class="toc" data-selected="3"></div>
-</section>
-<section>
-  <section>
-    <h2>HTTP Has No Memory</h2>
-    <ul>
-      <li>
-        Every request stands alone. The protocol has no idea the last one came
-        from the same person
-      </li>
-      <li>
-        So we check the password <strong class="hl-green">once</strong>, and
-        hand out a <span class="hl-orange">session identifier</span> the browser
-        returns automatically
-      </li>
-      <li>
-        Which makes that identifier
-        <em class="hl-red">as good as the password</em>, for as long as it lives
-      </li>
-      <li>Everything below follows from that one sentence</li>
-    </ul>
-  </section>
-  <section class="hands-on">
-    <h2>Guessing the Session</h2>
-    <pre><code class="lang-sh">
-### three logins against a hand-rolled generator ###
-Set-Cookie: session=sess-1; Path=/
-Set-Cookie: session=sess-2; Path=/
-Set-Cookie: session=sess-3; Path=/
-
-### three logins against crypto/rand ###
-Set-Cookie: session=o2d9gnBGHyvvd0vFCQYvVA; Path=/; HttpOnly; Secure; SameSite=Lax
-Set-Cookie: session=YDmu9RDLwkgzBI8l3LxmWA; Path=/; HttpOnly; Secure; SameSite=Lax
-Set-Cookie: session=1nEDix88iEUq4gQ16crT6A; Path=/; HttpOnly; Secure; SameSite=Lax
-    </code></pre>
-    <ul>
-      <li>
-        Log in once as yourself, get <code>sess-4</code>, and now try
-        <code>sess-3</code>
-      </li>
-      <li>
-        A session identifier needs
-        <strong class="hl-green">128 bits from a CSPRNG</strong>. Not a counter,
-        not a timestamp, not a hash of the username
-      </li>
-    </ul>
-  </section>
-  <section>
-    <h2>The Cookie Attributes</h2>
-    <table style="font-size: 0.82em">
-      <tr>
-        <td class="hl-orange"><strong>HttpOnly</strong></td>
-        <td>JavaScript cannot read it, so an XSS bug cannot simply steal it</td>
-      </tr>
-      <tr>
-        <td class="hl-green"><strong>Secure</strong></td>
-        <td>Sent over HTTPS only — never in the clear, not even once</td>
-      </tr>
-      <tr>
-        <td class="hl-cyan"><strong>SameSite</strong></td>
-        <td>Not attached to cross-site requests. The CSRF defence</td>
-      </tr>
-      <tr>
-        <td class="hl-violet"><strong>Path / Domain</strong></td>
-        <td>Narrow the scope. Do not widen it to the parent domain casually</td>
-      </tr>
-      <tr>
-        <td class="hl-yellow"><strong>__Host- prefix</strong></td>
-        <td>
-          The browser enforces Secure, no Domain, and Path=/ — a subdomain
-          cannot overwrite it
-        </td>
-      </tr>
-    </table>
     <p>
-      <code>HttpOnly</code> blocks <em>script access</em>. It does nothing about
-      the network — that is what <code>Secure</code> is for.
+      Every defence so far assumes nobody reads the cookie on its way. On the
+      lab wifi, somebody does.
     </p>
-  </section>
-  <section>
-    <h2>Attacks on Sessions</h2>
-    <ul>
-      <li>
-        <span class="hl-red">Hijacking</span> — steal the identifier by
-        sniffing, by XSS, or from a log file that recorded the URL
-      </li>
-      <li>
-        <span class="hl-orange">Fixation</span> — the attacker plants a session
-        identifier <em>before</em> you log in and waits for you to authenticate
-        it
-
-        <ul>
-          <li>
-            Fix in one line:
-            <strong class="hl-green">issue a new identifier at login</strong>,
-            and again at any privilege change
-          </li>
-        </ul>
-      </li>
-      <li>
-        <span class="hl-yellow">Never in the URL.</span> URLs end up in browser
-        history, server logs, and the <code>Referer</code> header sent to other
-        sites
-      </li>
-      <li>
-        <span class="hl-cyan">Expire them</span> — idle timeout and an absolute
-        lifetime, both
-      </li>
-    </ul>
-  </section>
-  <section>
-    <h2>Logging Out Is a Server-Side Delete</h2>
-    <ul>
-      <li>
-        Clearing the cookie asks the <em>browser</em> to forget. It does nothing
-        to a copy the attacker already has
-      </li>
-      <li>
-        Log out by
-        <strong class="hl-green">deleting the session from the store</strong>.
-        Then the stolen identifier refers to nothing
-      </li>
-      <li>
-        This is the strongest argument for server-side sessions over
-        self-contained tokens
-
-        <ul>
-          <li>
-            A signed <span class="hl-orange">JWT</span> is valid until it
-            expires, because nothing is consulted to check it
-          </li>
-          <li>
-            Revoking one means keeping a deny-list — which is a session store,
-            rebuilt reluctantly
-          </li>
-        </ul>
-      </li>
-      <li>
-        And a JWT is <em class="hl-red">signed, not encrypted</em>. The payload
-        is readable base64url; do not put secrets in it
-      </li>
-    </ul>
   </section>
 </section>
 <section>
@@ -542,6 +689,10 @@ Set-Cookie: session=1nEDix88iEUq4gQ16crT6A; Path=/; HttpOnly; Secure; SameSite=L
 <section>
   <section>
     <h2>What TLS Actually Gives You</h2>
+    <p>
+      The grade service still sends the password, then the cookie, in the clear.
+      TLS gives the channel three things:
+    </p>
     <ul>
       <li>
         <span class="hl-orange">Confidentiality</span> — the network cannot read
@@ -569,30 +720,16 @@ Set-Cookie: session=1nEDix88iEUq4gQ16crT6A; Path=/; HttpOnly; Secure; SameSite=L
   </section>
   <section>
     <h2>The Handshake, Briefly</h2>
-    <ul>
-      <li>
-        <span class="hl-orange">ClientHello</span> — versions, cipher suites,
-        and a key share. Sent before any key exists, so it is
-        <strong>in the clear</strong>
-      </li>
-      <li>
-        <span class="hl-green">ServerHello</span> — the chosen suite and the
-        server's key share
-      </li>
-      <li>
-        <span class="hl-cyan">Certificate + signature</span> — the server proves
-        it holds the private key for the name it claims
-      </li>
-      <li>
-        Both sides derive the same session keys from the two shares — that is
-        Diffie–Hellman from lecture 3, and it is why recording the traffic does
-        not help later
-      </li>
-      <li>
-        <span class="hl-violet">TLS 1.3</span> does this in one round trip,
-        removed every legacy cipher, and made forward secrecy mandatory
-      </li>
-    </ul>
+    <img
+      src="img/tls13.svg"
+      alt="TLS 1.3: the client sends ClientHello with a key share in the clear; the server replies with ServerHello and its key share; both sides now hold the Diffie-Hellman secret; the server sends its certificate, a signature over the handshake and Finished, all encrypted; the client sends Finished and its first request, such as POST /login, inside the tunnel. One round trip"
+      width="820"
+    />
+    <p>
+      Fresh key shares every time — Diffie–Hellman from lecture 3 — so a
+      recording is useless later. <span class="hl-violet">TLS 1.3</span> also
+      removed every legacy cipher.
+    </p>
   </section>
   <section class="hands-on">
     <h2>A Certificate the Client Will Not Accept</h2>
@@ -640,6 +777,34 @@ Verification error: self-signed certificate
       </li>
     </ul>
   </section>
+  <section class="hands-on">
+    <h2>The Grade Service, Over HTTPS</h2>
+    <pre><code class="lang-go">
+log.Fatal(http.ListenAndServeTLS("localhost:8080", "cert.pem", "key.pem", nil))
+    </code></pre>
+    <pre><code class="lang-sh">
+$ openssl req -x509 -newkey ec -pkeyopt ec_paramgen_curve:P-256 \
+       -nodes -keyout key.pem -out cert.pem -days 1 \
+       -subj /CN=localhost -addext subjectAltName=DNS:localhost
+-----
+$ curl -d name=parham -d 'password=correct horse battery staple' \
+       http://localhost:8080/login
+Client sent an HTTP request to an HTTPS server.
+$ curl --cacert cert.pem -d name=parham \
+       -d 'password=correct horse battery staple' https://localhost:8080/login
+hello parham
+    </code></pre>
+    <ul>
+      <li>
+        <code>--cacert</code> trusts this one certificate, for this one name.
+        <code>-k</code> would also connect — to anyone
+      </li>
+      <li>
+        Lecture 4's password now crosses inside the tunnel. Lecture 1's wifi
+        reader sees a hostname and some sizes
+      </li>
+    </ul>
+  </section>
   <section>
     <h2>Getting HTTPS Right</h2>
     <ul>
@@ -667,17 +832,43 @@ Verification error: self-signed certificate
     </ul>
   </section>
   <section>
+    <h2>Check Yourself</h2>
+    <ol>
+      <li>
+        In the v1 query, <code>user</code> and <code>course</code> are both
+        concatenated. Why is only <code>course</code> a hole — and why is the
+        fix not better escaping?
+      </li>
+      <li>
+        The grade service's cookie is <code>HttpOnly</code>. Can an XSS bug on
+        its origin still change a grade?
+      </li>
+      <li>
+        The CSRF form from <code>evil.example</code> posts a grade change. Which
+        attribute stops it, and what must be true of every <code>GET</code>?
+      </li>
+      <li>
+        <code>curl -k</code> connects with AES-256-GCM. Why is that connection
+        still worthless?
+      </li>
+    </ol>
+  </section>
+  <section>
     <h2>Where This Leaves Us</h2>
     <ul>
       <li>
-        Every server-side bug here was <em>data becoming code</em>. Every
-        client-side one was <em>trust in an origin being misused</em>
+        Every server-side bug here was <em>data becoming code</em>. Keep the two
+        apart — prepared statements, not better escaping
       </li>
       <li>
-        Sessions are the credential after login, and deserve the care the
-        password gets
+        After login, the session cookie <em>is</em> the password. Make it
+        random, <code>HttpOnly</code>, <code>Secure</code> and
+        <code>SameSite</code>, and delete it on the server at logout
       </li>
-      <li>TLS protects the channel. It has never protected the endpoints</li>
+      <li>
+        TLS protects the channel, never the endpoints. The grade service now has
+        all three fixes — and still trusts the network it runs on
+      </li>
     </ul>
     <div class="box">
       <p>
