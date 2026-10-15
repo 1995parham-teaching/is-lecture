@@ -51,12 +51,12 @@ opening slide of lecture 1.
   policy, risk management, incident response and business continuity
 - **3** — Cryptography — symmetric encryption, hashes and MACs, public-key
   cryptography, digital signatures and PKI
-- **4** — Access Control — the four A's, DAC/MAC/RBAC/ABAC, authentication,
-  passwords, biometrics
+- **4** — Access Control — the four A's, DAC/MAC/RBAC/ABAC, passwords, second
+  factors, biometrics
 - **5** — System & Software Security — operating system and file system
   security, malware, memory safety, host defences, virtualization
-- **6** — Web Security — the web threat model, server-side and client-side
-  attacks, sessions and cookies, TLS and HTTPS
+- **6** — Web Security — the web threat model, server-side attacks, sessions
+  and cookies, client-side attacks, TLS and HTTPS
 - **7** — Network & Transport Security — network threats, zoning, edge security
   and firewalls, secure access and VPN, VLAN and segmentation
 

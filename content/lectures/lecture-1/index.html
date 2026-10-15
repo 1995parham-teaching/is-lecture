@@ -218,7 +218,8 @@ draft: false
 
         <ul>
           <li>
-            Needs a <em>digital signature</em>, not just a MAC (lecture 3)
+            Needs a <em>digital signature</em>: a check anyone can verify but
+            only the sender could make (lecture 3)
           </li>
         </ul>
       </li>
@@ -238,6 +239,10 @@ draft: false
   </section>
   <section class="hands-on">
     <h2>Integrity, in One Command</h2>
+    <p>
+      A <span class="hl-green">hash function</span> turns any input into a short
+      fingerprint, the <span class="hl-green">digest</span>:
+    </p>
     <pre><code class="lang-sh">
 $ cat order.txt
 transfer 100 USD to alice
@@ -282,7 +287,7 @@ $ shasum -a 256 order.txt
 <section>
   <section>
     <h2>Say It Precisely</h2>
-    <p>These four words are used interchangeably in the press. Not here.</p>
+    <p>These five words are used interchangeably in the press. Not here.</p>
     <table style="font-size: 0.85em">
       <tr>
         <td class="hl-orange"><strong>Asset</strong></td>
@@ -312,33 +317,20 @@ $ shasum -a 256 order.txt
   </section>
   <section>
     <h2>Passive and Active</h2>
-    <p>The oldest useful split, and it is the one X.800 uses:</p>
-    <ul>
-      <li>
-        <span class="hl-orange">Passive</span> — the attacker only
-        <em>observes</em>. Nothing changes, so there is nothing to notice
-
-        <ul>
-          <li>Release of message contents · traffic analysis</li>
-          <li>
-            You cannot detect it; you
-            <strong class="hl-green">prevent</strong> it, with encryption
-          </li>
-        </ul>
-      </li>
-      <li>
-        <span class="hl-red">Active</span> — the attacker <em>modifies</em> the
-        stream or fakes one
-
-        <ul>
-          <li>Masquerade · replay · modification · denial of service</li>
-          <li>
-            You cannot prevent all of it; you
-            <strong class="hl-green">detect</strong> it and recover
-          </li>
-        </ul>
-      </li>
-    </ul>
+    <p>
+      The oldest useful split. Lecture 2's standard, X.800, uses exactly these
+      names:
+    </p>
+    <img
+      src="img/passive-active.svg"
+      alt="Left: Eve copies the traffic between Alice and Bob and changes nothing; prevent it with encryption. Right: Mallory sits in the path and pretends to be Alice, replays an old message, modifies one, or blocks the line; detect it and recover."
+      width="860"
+    />
+    <p>
+      Passive changes nothing, so there is nothing to notice: you
+      <strong class="hl-green">prevent</strong> it. Active you cannot always
+      prevent: you <strong class="hl-green">detect</strong> it and recover.
+    </p>
   </section>
   <section>
     <h2>Traffic Analysis Is Not Nothing</h2>
@@ -377,15 +369,15 @@ $ openssl s_client -connect example.com:443 -servername example.com \
       The first packet of the connection, sent before any key exists. Every byte
       of the request that follows is encrypted; the
       <strong class="hl-orange">name of the site is not</strong>, because the
-      server needs it to pick a certificate. Metadata is not a leftover — it is
-      structural.
+      server must know which site you want before it can answer. Metadata is not
+      a leftover — it is structural.
     </p>
   </section>
   <section>
     <h2>Who Is the Attacker?</h2>
     <p>
-      "A hacker" is not a threat model. The defence depends entirely on the
-      budget on the other side.
+      A <strong class="hl-yellow">threat model</strong> names who attacks and
+      what they can spend. "A hacker" is not one.
     </p>
     <table style="font-size: 0.8em">
       <tr>
@@ -402,7 +394,10 @@ $ openssl s_client -connect example.com:443 -servername example.com \
       </tr>
       <tr>
         <td class="hl-red"><strong>State actor</strong></td>
-        <td>Buys zero-days, targets supply chains, will not give up</td>
+        <td>
+          Buys unknown bugs (zero-days), attacks your suppliers, will not give
+          up
+        </td>
       </tr>
     </table>
     <p>
@@ -464,10 +459,13 @@ $ openssl s_client -connect example.com:443 -servername example.com \
       <tr>
         <td class="hl-cyan"><strong>E</strong>levation of privilege</td>
         <td>becoming admin</td>
-        <td>→ authorization</td>
+        <td>→ authorization (who may do what)</td>
       </tr>
     </table>
-    <p>Walk a data-flow diagram and ask all six at every boundary.</p>
+    <p>
+      Draw how data moves through the system, and ask all six wherever it
+      crosses from one owner to another.
+    </p>
   </section>
 </section>
 <section>
@@ -513,7 +511,9 @@ $ openssl s_client -connect example.com:443 -servername example.com \
       </tr>
       <tr>
         <td class="hl-yellow"><strong>Application</strong></td>
-        <td>Input handling, authentication, session management — lecture 6</td>
+        <td>
+          Authentication — lecture 4. Input handling, sessions — lecture 6
+        </td>
       </tr>
       <tr>
         <td class="hl-orange"><strong>Data</strong></td>
@@ -538,7 +538,7 @@ $ openssl s_client -connect example.com:443 -servername example.com \
       </li>
       <li>
         <span class="hl-yellow">Detect</span> — notice that it happened. Logs,
-        IDS, file-integrity monitoring
+        intrusion detection (IDS), file-integrity monitoring
       </li>
       <li>
         <span class="hl-orange">Respond</span> — contain it. Isolate the host,
@@ -555,36 +555,40 @@ $ openssl s_client -connect example.com:443 -servername example.com \
   </section>
   <section>
     <h2>Principles Worth Memorizing</h2>
-    <ul>
-      <li>
-        <span class="hl-green">Least privilege</span> — every subject gets the
-        rights it needs, and no more
-      </li>
-      <li>
-        <span class="hl-green">Fail safe defaults</span> — deny unless
-        explicitly allowed
-      </li>
-      <li>
-        <span class="hl-cyan">Economy of mechanism</span> — a simple design is
-        one you can actually check
-      </li>
-      <li>
-        <span class="hl-cyan">Complete mediation</span> — check every access,
-        not just the first
-      </li>
-      <li>
-        <span class="hl-orange">Open design</span> — security must not depend on
-        the design being secret
-      </li>
-      <li>
-        <span class="hl-orange">Separation of privilege</span> — two keys are
-        better than one
-      </li>
-      <li>
-        <span class="hl-yellow">Least common mechanism</span> ·
-        <span class="hl-yellow">psychological acceptability</span>
-      </li>
-    </ul>
+    <table style="font-size: 0.78em">
+      <tr>
+        <td class="hl-green"><strong>Least privilege</strong></td>
+        <td>every subject gets the rights it needs, and no more</td>
+      </tr>
+      <tr>
+        <td class="hl-green"><strong>Fail-safe defaults</strong></td>
+        <td>deny unless explicitly allowed — <em>default deny</em></td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>Economy of mechanism</strong></td>
+        <td>a simple design is one you can actually check</td>
+      </tr>
+      <tr>
+        <td class="hl-cyan"><strong>Complete mediation</strong></td>
+        <td>check every access, not just the first</td>
+      </tr>
+      <tr>
+        <td class="hl-orange"><strong>Open design</strong></td>
+        <td>security must not depend on the design being secret</td>
+      </tr>
+      <tr>
+        <td class="hl-orange"><strong>Separation of privilege</strong></td>
+        <td>two keys are better than one</td>
+      </tr>
+      <tr>
+        <td class="hl-yellow"><strong>Least common mechanism</strong></td>
+        <td>every part users share is a path between them</td>
+      </tr>
+      <tr>
+        <td class="hl-yellow"><strong>Psychological acceptability</strong></td>
+        <td>if the secure way is hard, people take the other way</td>
+      </tr>
+    </table>
     <p>Saltzer and Schroeder, 1975. They have not needed revising.</p>
   </section>
   <section>
@@ -694,7 +698,7 @@ $ head -1 server.log
       </li>
       <li>
         The reader on the lab wifi is a passive attack; no check stops it. That
-        needs TLS, and TLS is lecture 3
+        needs encryption: the primitives are lecture 3, TLS is lecture 6
       </li>
       <li>
         No single wall: the check can be wrong again. The log is the layer that
@@ -717,15 +721,15 @@ $ head -1 server.log
       <strong>Cryptography</strong> — symmetric, public key, signatures, PKI
     </li>
     <li>
-      <strong>Access Control</strong> — AAAA, DAC/MAC/RBAC, authentication,
-      biometrics
+      <strong>Access Control</strong> — the four A's, DAC/MAC/RBAC, passwords,
+      second factors, biometrics
     </li>
     <li>
       <strong>System &amp; Software Security</strong> — file systems, malware,
       host defences, virtualization
     </li>
     <li>
-      <strong>Web Security</strong> — server side, client side, sessions, TLS
+      <strong>Web Security</strong> — server side, sessions, client side, TLS
     </li>
     <li>
       <strong>Network &amp; Transport Security</strong> — zoning, edge, VPN,
@@ -808,20 +812,46 @@ $ head -1 server.log
   </p>
 </section>
 <section>
-  <h2>Next: Security Architecture</h2>
+  <h2>Check Yourself</h2>
+  <ol>
+    <li>
+      Student 4001 set their own grade to 20. Which property broke, and which
+      line of the grade service was the vulnerability?
+    </li>
+    <li>
+      Why does a digest stored next to a file not stop an attacker who can edit
+      the file?
+    </li>
+    <li>
+      Encryption hides the request. Name one thing it does not hide, and say
+      why.
+    </li>
+    <li>The role check prevents and the log detects. Why keep both?</li>
+  </ol>
+</section>
+<section>
+  <h2>Where This Leaves Us</h2>
   <ul>
     <li>
-      We now have the vocabulary. Lecture 2 turns it into a
-      <span class="hl-orange">standard</span> one — X.800 — so that "we need
-      integrity here" names a specific service and a specific mechanism
+      <span class="hl-orange">Name the property</span> — confidentiality,
+      integrity or availability. The grade service lost integrity
     </li>
     <li>
-      Then: how an organization writes that down as
-      <span class="hl-green">policy</span>, decides where to spend using
-      <span class="hl-cyan">risk management</span>, and what it does on the day
-      it goes wrong
+      <span class="hl-red">Name the threat</span> — who attacks, with what
+      budget, through which part of the attack surface
+    </li>
+    <li>
+      <span class="hl-green">Then pick the mechanism</span> — and expect it to
+      fail, so layer it: prevent, detect, respond, recover
     </li>
   </ul>
+  <p>
+    Next: lecture 2 turns this vocabulary into a
+    <span class="hl-orange">standard</span> one — X.800 — then writes it down as
+    <span class="hl-green">policy</span>, prices it with
+    <span class="hl-cyan">risk management</span>, and plans for the day it goes
+    wrong.
+  </p>
   <div class="box">
     <p>Name the property. Name the threat. Then pick the mechanism.</p>
   </div>

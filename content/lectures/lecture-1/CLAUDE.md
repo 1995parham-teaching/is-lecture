@@ -2,7 +2,7 @@
 
 The opening session: who the instructor is, what the course is and is not, the
 properties being defended, the vocabulary for threats and attacks, defence in
-depth, and the policies. 41 slides, 5 vertical stacks.
+depth, and the policies. 42 slides, 5 vertical stacks, 1 diagram.
 
 Topics (TOC indices): `0` Instructor · `1` Course Overview · `2` Security
 Properties · `3` Threats & Attacks · `4` Defence in Depth · `5` Course Policies.
@@ -115,6 +115,40 @@ Facts worth not re-deriving:
   binds `localhost:8080` only.
 - The marker on each slide is `class="hands-on"` on the `<section>`, per the
   repository rule.
+
+## The learning path (14 October 2026 review)
+
+The deck was read as a first-year student would read it. What that pass fixed,
+so that it is not undone:
+
+- **No forward jargon.** "MAC" is gone from **Three Is Not Always Enough**
+  (a signature is glossed instead); "certificate" is gone from **Metadata, in
+  One Command**; "threat model", "zero-day", "IDS" and "authorization" are
+  glossed where they first appear. **Integrity, in One Command** defines _hash
+  function_ and _digest_ before the transcript, because the next slide depends
+  on both words.
+- **Say It Precisely** lists five words; it used to say "four".
+- **Passive and Active** is `img/passive-active.svg`: Eve on the wire, Mallory
+  in the path, with X.800's six names (release of contents, traffic analysis;
+  masquerade, replay, modification, denial of service). The names are X.800's —
+  keep them in step with lecture 2.
+- **Principles Worth Memorizing** is a table that explains all eight. The
+  second is written _Fail-safe defaults_ with _default deny_ beside it, because
+  lectures 4, 5 and 7 say "default deny".
+- The syllabus says "the four A's", the name lecture 4 uses, not "AAAA".
+- **Check Yourself** comes before the closing slide. Answers:
+  1. Integrity. The `if user == ""` check — it asks "logged in?", never
+     "allowed?".
+  2. Whoever rewrites the file rewrites the digest; a hash has no key.
+  3. The site name (and who, when, how much). The server must know the site
+     before any key exists — it is in the first packet, in the clear.
+  4. The check can be wrong again; the log is what tells you it was.
+- **Where This Leaves Us** replaces "Next: Security Architecture". It keeps the
+  three-step sentence as its box — the line the deck is built to earn — and the
+  hand-off to X.800, policy and risk that lecture 2 opens on.
+
+The diagram is drawn like lecture 3's: league background, `$highlights` as
+literal hex. Render it with `rsvg-convert -b '#2b2b2b'` after any edit.
 
 ## The instructor stack
 
