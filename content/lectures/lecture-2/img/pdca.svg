@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 400">
+  <title>The ISMS loop: Plan, Do, Check, Act, and back to Plan</title>
+  <style>
+    text { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 20px; fill: #eeeeee; text-anchor: middle; dominant-baseline: middle; }
+    .small { font-size: 16px; fill: #b0b4bc; }
+    .mono { font-family: Menlo, Consolas, monospace; font-size: 16px; }
+    .title { font-size: 22px; font-weight: bold; }
+    .box { fill: rgba(255, 255, 255, 0.06); stroke: #cfd3da; stroke-width: 2; }
+    .line { fill: none; stroke: #cfd3da; stroke-width: 2; marker-end: url(#arrow); }
+    .dash { fill: none; stroke: #8d97a8; stroke-width: 2; stroke-dasharray: 6 5; marker-end: url(#arrow); }
+    .orange { fill: #ff9100; } .green { fill: #76ff03; } .cyan { fill: #00e5ff; }
+    .red { fill: #ff5252; } .violet { fill: #ee82ee; } .yellow { fill: #ffcc00; }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#cfd3da" />
+    </marker>
+  </defs>
+  <rect class="box" x="40" y="30" width="260" height="110" rx="6" style="stroke: #76ff03" />
+  <text class="green title" x="170" y="62">Plan</text>
+  <text x="170" y="100">assess risk,</text>
+  <text x="170" y="124">choose controls</text>
+
+  <rect class="box" x="460" y="30" width="260" height="110" rx="6" style="stroke: #76ff03" />
+  <text class="green title" x="590" y="62">Do</text>
+  <text x="590" y="100">implement and</text>
+  <text x="590" y="124">operate them</text>
+
+  <rect class="box" x="460" y="250" width="260" height="110" rx="6" style="stroke: #00e5ff" />
+  <text class="cyan title" x="590" y="282">Check</text>
+  <text x="590" y="320">measure, audit,</text>
+  <text x="590" y="344">review incidents</text>
+
+  <rect class="box" x="40" y="250" width="260" height="110" rx="6" style="stroke: #00e5ff" />
+  <text class="cyan title" x="170" y="282">Act</text>
+  <text x="170" y="320">fix what</text>
+  <text x="170" y="344">Check found</text>
+
+  <path class="line" d="M300,85 L458,85" />
+  <path class="line" d="M590,140 L590,248" />
+  <path class="line" d="M460,305 L302,305" />
+  <path class="line" d="M170,250 L170,142" />
+
+  <text class="orange" x="380" y="180">ISO 27001 certifies</text>
+  <text class="orange" x="380" y="208">this loop, not the controls</text>
+</svg>

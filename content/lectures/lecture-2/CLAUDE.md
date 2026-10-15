@@ -1,7 +1,7 @@
 # Lecture 2 — Security Architecture
 
 The management half of the course, and the only deck with no attack in it.
-50 slides including the generated title, 6 vertical stacks. Topics (TOC indices): `0` X.800 ·
+51 slides including the generated title, 6 vertical stacks, 4 diagrams. Topics (TOC indices): `0` X.800 ·
 `1` Enterprise Architecture · `2` Security Policy · `3` Risk Management ·
 `4` Incidents & Continuity.
 
@@ -151,6 +151,57 @@ by X.800 services, mechanisms, architecture, standards, policy, risk, and
 incidents/continuity. It is a reference and retrieval aid: use it to ask students
 to explain a term or distinguish a pair, rather than teach the lists again.
 Keep each definition short and keep the lecture 3 hand-off as the final slide.
+
+## The learning path (14 October 2026 review)
+
+The deck was read as a first-year student would read it. What that pass fixed,
+so that it is not undone:
+
+- **The opening recalls lecture 1's last sentence**, and notes that lecture 1's
+  passive and active attacks were already X.800's words.
+- **"Attack" keeps lecture 1's meaning** (a threat someone carried out) on
+  **Three Definitions**. The same slide says a _control_ is a mechanism put in
+  place, because risk management says "control" and lecture 1 used both words.
+- **No forward jargon.** _Peer entity_ and _data origin_ are explained on the
+  services slide; CIS is introduced as "a priority list we meet below"; SABSA is
+  expanded and _assurance_ glossed; ISMS on the standards slide points to the
+  next section; _risk appetite_, _exposure factor_ and _risk register_ are
+  defined where they first appear.
+- **Bridges between sections.** **What the Numbers Cannot Do** ends on "one
+  day, it happens", which **When It Happens Anyway** answers. **The Policy Is a
+  Test** ends on a one-sentence takeaway.
+- **Check Yourself** comes before **Where This Leaves Us**. Answers:
+  1. The `if roles[user] != "instructor"` check is a specific mechanism (access
+     control) and supports data integrity. `log.Printf` is a pervasive one (the
+     security audit trail) and supports detection and investigation.
+  2. No: it loses 10,000 a year. The next argument is about the inputs — is the
+     asset worth what we said, is the frequency right — as on **So Do We Buy
+     It?**.
+  3. Detection and analysis, then containment: confirm with the instructor that
+     the change was not theirs, freeze grade entry, and copy the log before
+     touching anything (**The Day It Happens**).
+  4. An RPO — how much data you can lose, not how long until it is back.
+- **Where This Leaves Us** has three points; the third names the grade service.
+  The box is still the lecture 3 hand-off.
+
+## The diagrams
+
+Four hand-written SVGs in `img/`, drawn like lecture 3's (league background,
+`$highlights` as literal hex). Render with `rsvg-convert -b '#2b2b2b'` after any
+edit; text that overflows a box is not reported anywhere.
+
+| Diagram              | Slide                     | Replaces                           |
+| -------------------- | ------------------------- | ---------------------------------- |
+| `trust-boundaries`   | Zones and Boundaries      | a text arrow chain and sub-bullets |
+| `pdca`               | The ISMS Loop             | the Plan/Do/Check/Act sub-list     |
+| `risk-loop`          | You Cannot Fix Everything | the five-step ordered list         |
+| `incident-lifecycle` | When It Happens Anyway    | the four-phase ordered list        |
+
+`trust-boundaries` names the three enforcement points of the grade service:
+authenticate (the login layer, lecture 4), authorize (the `roles` check), record
+(the log). `incident-lifecycle` draws NIST SP 800-61's loop between detection
+and containment, and the dashed return from post-incident activity to
+preparation.
 
 ## Cautions
 

@@ -21,8 +21,10 @@ draft: false
     <h2>Why a Standard Vocabulary?</h2>
     <ul>
       <li>
-        Lecture 1 gave us words. Two engineers can still mean different things
-        by <em>"the channel is authenticated"</em>
+        Lecture 1 ended on:
+        <em>name the property, name the threat, then pick the mechanism</em>.
+        Two engineers can still mean different things by
+        <em>"the channel is authenticated"</em>
       </li>
       <li>
         <span class="hl-orange">ITU-T X.800</span> — the Security Architecture
@@ -30,8 +32,9 @@ draft: false
         <span class="hl-cyan">ISO 7498-2</span>
       </li>
       <li>
-        Old, and still the backbone of how requirements get written down: a
-        requirement names a <strong>service</strong>, a design names a
+        Lecture 1's passive and active attacks were already its words. Old, and
+        still how requirements get written down: a requirement names a
+        <strong>service</strong>, a design names a
         <strong>mechanism</strong>
       </li>
     </ul>
@@ -47,7 +50,7 @@ draft: false
     <table>
       <tr>
         <td class="hl-red"><strong>Security attack</strong></td>
-        <td>Any action that compromises the security of information</td>
+        <td>A threat someone carried out — lecture 1's word, unchanged</td>
       </tr>
       <tr>
         <td class="hl-green"><strong>Security mechanism</strong></td>
@@ -69,6 +72,10 @@ draft: false
         "Confidentiality" is a service. "AES-256-GCM" is a mechanism. Never
         write the second where the first belongs
       </li>
+      <li>
+        A <em>control</em> is a mechanism put in place in a real system — the
+        word risk management uses
+      </li>
     </ul>
   </section>
   <section>
@@ -77,8 +84,8 @@ draft: false
       <tr>
         <td class="hl-orange"><strong>Authentication</strong></td>
         <td>
-          The communicating party is who it claims — peer entity, and data
-          origin
+          The other side is who it claims (<em>peer entity</em>); the data came
+          from who it claims (<em>data origin</em>)
         </td>
       </tr>
       <tr>
@@ -87,11 +94,13 @@ draft: false
       </tr>
       <tr>
         <td class="hl-green"><strong>Data confidentiality</strong></td>
-        <td>Protect from disclosure — including the traffic-flow variety</td>
+        <td>
+          Protect from disclosure — including what traffic patterns reveal
+        </td>
       </tr>
       <tr>
         <td class="hl-cyan"><strong>Data integrity</strong></td>
-        <td>The data is as sent, with or without recovery</td>
+        <td>The data arrives unchanged, or the change is detected</td>
       </tr>
       <tr>
         <td class="hl-violet"><strong>Non-repudiation</strong></td>
@@ -311,41 +320,27 @@ draft: false
         </ul>
       </li>
       <li>
-        CIS Control 1 and 2 are inventory of hardware and software. They are
-        first on purpose
+        The CIS Controls, a priority list we meet below, put hardware and
+        software inventory first and second — on purpose
       </li>
     </ul>
   </section>
   <section>
     <h2>Zones and Boundaries</h2>
-    <div class="box">
-      <p>
-        Students / instructor → login layer → grade application → grade store
-      </p>
-    </div>
+    <img
+      src="img/trust-boundaries.svg"
+      alt="Users, login layer, grade application and grade store in a row, separated by three boundaries: authenticate, authorize, record"
+      width="820"
+    />
     <ul>
       <li>
         A <span class="hl-orange">zone</span> is a set of assets with the same
-        trust level and the same policy
+        trust level and the same policy. A
+        <strong class="hl-red">boundary</strong> is where trust changes
       </li>
       <li>
-        A <strong class="hl-red">boundary</strong> is where trust changes: the
-        application trusts identity from the login layer, then checks who may
-        write
-
-        <ul>
-          <li>
-            Every permitted path across a boundary needs an enforcement point
-          </li>
-          <li>
-            For grades: validate identity, authorize the write, and log the
-            decision
-          </li>
-        </ul>
-      </li>
-      <li>
-        Draw them once and the firewall rules, the network design and the audit
-        scope all fall out of the same picture — lecture 7 builds this properly
+        Draw them once and the firewall rules and the audit scope fall out of
+        the same picture — lecture 7 builds this properly
       </li>
     </ul>
   </section>
@@ -378,7 +373,10 @@ draft: false
   </section>
   <section>
     <h2>Layers of an Architecture</h2>
-    <p>SABSA's six views, applied to the same grade service:</p>
+    <p>
+      SABSA (Sherwood Applied Business Security Architecture) looks at one
+      system from six views. Here, the grade service:
+    </p>
     <table style="font-size: 0.8em">
       <tr>
         <td class="hl-orange"><strong>Contextual</strong></td>
@@ -405,7 +403,10 @@ draft: false
         <td>The operator. Owners, denied-write alerts, restore tests</td>
       </tr>
     </table>
-    <p>Requirements flow down. Assurance flows back up.</p>
+    <p>
+      Requirements flow down. Assurance — evidence that each layer does its job
+      — flows back up.
+    </p>
   </section>
   <section>
     <h2>The Standards You Will Meet</h2>
@@ -413,7 +414,7 @@ draft: false
       <tr>
         <td class="hl-orange"><strong>ISO/IEC 27001</strong></td>
         <td>
-          The requirements for an ISMS. What you get
+          The requirements for an ISMS (next section). What you get
           <em>certified</em> against
         </td>
       </tr>
@@ -513,25 +514,13 @@ draft: false
         An <span class="hl-orange">Information Security Management System</span>
         is the machinery that keeps policy connected to reality
       </li>
-      <li>
-        Plan · Do · Check · Act, forever
-        <ul>
-          <li>
-            <span class="hl-green">Plan</span> — assess risk, choose controls
-          </li>
-          <li><span class="hl-green">Do</span> — implement and operate them</li>
-          <li>
-            <span class="hl-cyan">Check</span> — measure, audit, review
-            incidents
-          </li>
-          <li><span class="hl-cyan">Act</span> — fix what the check found</li>
-        </ul>
-      </li>
-      <li>
-        ISO 27001 certifies the <em>loop</em>, not the controls. An organization
-        can be certified and still be badly defended
-      </li>
     </ul>
+    <img
+      src="img/pdca.svg"
+      alt="Plan, Do, Check, Act in a loop; ISO 27001 certifies the loop, not the controls"
+      width="620"
+    />
+    <p>An organization can be certified and still be badly defended.</p>
   </section>
   <section>
     <h2>Why Policies Fail</h2>
@@ -588,6 +577,7 @@ FAIL
 $ go test -count=1 ./...        # with the check in place
 ok  	grades	0.219s
     </code></pre>
+    <p>A policy that runs on every commit cannot be forgotten.</p>
   </section>
 </section>
 <section>
@@ -603,20 +593,16 @@ ok  	grades	0.219s
         <strong class="hl-orange">deciding what not to fix</strong>
       </li>
       <li>
-        <span class="hl-green">Risk = likelihood × impact</span>, on the asset,
-        given the threat and the vulnerability
-      </li>
-      <li>
-        The loop, from ISO 27005 and NIST SP 800-30:
-        <ol>
-          <li>Identify — assets, threats, vulnerabilities</li>
-          <li>Analyse — how likely, how bad</li>
-          <li>Evaluate — compare against the appetite</li>
-          <li>Treat — do something about it</li>
-          <li>Monitor — because all four inputs move</li>
-        </ol>
+        <span class="hl-yellow">Risk appetite</span> — how much risk the
+        organization agrees to carry. Above it, act; below it, accept
       </li>
     </ul>
+    <img
+      src="img/risk-loop.svg"
+      alt="Identify, analyse, evaluate, treat, monitor, and back to identify; risk equals likelihood times impact"
+      width="860"
+    />
+    <p style="font-size: 0.8em">The loop, from ISO 27005 and NIST SP 800-30.</p>
   </section>
   <section>
     <h2>Qualitative or Quantitative?</h2>
@@ -653,7 +639,7 @@ ok  	grades	0.219s
     <ul>
       <li>
         <span class="hl-orange">SLE</span> — single loss expectancy = asset
-        value × exposure factor
+        value × exposure factor (the fraction of the value one event destroys)
       </li>
       <li>
         <span class="hl-green">ARO</span> — annualized rate of occurrence, how
@@ -783,6 +769,10 @@ check pays back in  36 days
         The model is a way to make assumptions
         <span class="hl-green">explicit and arguable</span> — not an oracle
       </li>
+      <li>
+        A wrong estimate and an accepted risk end the same way: one day, it
+        happens
+      </li>
     </ul>
     <div class="box">
       <p>All models are wrong, but some are useful. — George Box</p>
@@ -796,30 +786,18 @@ check pays back in  36 days
   <section>
     <h2>When It Happens Anyway</h2>
     <ul>
+      <li><span class="hl-orange">Event</span> — anything observable</li>
+      <li><span class="hl-yellow">Alert</span> — an event worth a look</li>
       <li>
-        <span class="hl-orange">Event</span> — anything observable ·
-        <span class="hl-yellow">Alert</span> — an event worth a look ·
-        <span class="hl-red">Incident</span> — an event that actually harmed the
-        properties
-      </li>
-      <li>
-        The four phases of NIST SP 800-61, and note that the middle one is a
-        loop
-
-        <ol>
-          <li><span class="hl-green">Preparation</span></li>
-          <li><span class="hl-cyan">Detection and analysis</span></li>
-          <li>
-            <span class="hl-orange">Containment, eradication and recovery</span>
-          </li>
-          <li><span class="hl-violet">Post-incident activity</span></li>
-        </ol>
-      </li>
-      <li>
-        Phase 1 is the only one you can do <em>today</em>, and it decides how
-        the other three go
+        <span class="hl-red">Incident</span> — an event that actually harmed
+        confidentiality, integrity or availability
       </li>
     </ul>
+    <img
+      src="img/incident-lifecycle.svg"
+      alt="NIST SP 800-61: preparation, detection and analysis, containment eradication and recovery, post-incident activity; the middle two loop, and lessons feed back into preparation"
+      width="860"
+    />
   </section>
   <section>
     <h2>Preparation Is the Whole Game</h2>
@@ -917,7 +895,8 @@ check pays back in  36 days
       </li>
       <li>Output is a small number of dated actions with owners</li>
       <li>
-        Feed it back into the risk register — an incident is
+        Feed it back into the <em>risk register</em> — the written list of
+        risks, owners and decisions. An incident is
         <em class="hl-cyan">measured</em> frequency data, the thing the model
         was missing
       </li>
@@ -1375,6 +1354,26 @@ $ grep -v 'by parham' server.log
   </section>
 </section>
 <section>
+  <h2>Check Yourself</h2>
+  <ol>
+    <li>
+      In the grade service, which line is a specific mechanism and which is a
+      pervasive one? Which service does each support?
+    </li>
+    <li>
+      A control removes 30,000 of ALE a year and costs 40,000 a year. Do you buy
+      it, and what is the next argument?
+    </li>
+    <li>
+      The nightly grep finds a grade changed by a student. Which phase are you
+      in, and what are the first two things you do?
+    </li>
+    <li>
+      "We can lose at most the last hour of grades." Is that an RTO or an RPO?
+    </li>
+  </ol>
+</section>
+<section>
   <h2>Where This Leaves Us</h2>
   <ul>
     <li>
@@ -1386,6 +1385,10 @@ $ grep -v 'by parham' server.log
       Every one of those services eventually rests on the same small set of
       <strong class="hl-violet">mechanisms</strong> — and most of those are
       cryptography
+    </li>
+    <li>
+      One program carried every idea: the check is a mechanism, the test is the
+      policy, the price says buy it, and the log made the incident visible
     </li>
   </ul>
   <div class="box">
