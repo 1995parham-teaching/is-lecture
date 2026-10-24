@@ -46,6 +46,44 @@ draft: false
     </ul>
   </section>
   <section>
+    <h2>In the Wild: Pakistan Telecom and YouTube, 2008</h2>
+    <ul>
+      <li>
+        24 February 2008: to block YouTube at home, Pakistan Telecom announced
+        <code>208.65.153.0/24</code>. Its upstream, PCCW, passed it on to the
+        world
+      </li>
+      <li>
+        YouTube announced the wider <code>/22</code>. Routers prefer the
+        <em>most specific</em> route, so the world's YouTube traffic went to
+        Pakistan
+      </li>
+      <li>
+        The <span class="hl-red">claim</span> from the slide before: no router
+        asked whether that network had the right to announce the prefix. It was
+        over in about two hours, when PCCW withdrew the route
+      </li>
+      <li>
+        What stops it: an upstream that filters what its customers may announce,
+        and <span class="hl-green">RPKI</span> — signed records of who may
+        originate which prefix, checked by the routers
+      </li>
+    </ul>
+    <div class="box">
+      <p>
+        A hijacker gets the packets, not the certificate — TLS from lecture 6
+        still holds.
+      </p>
+    </div>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Source:
+      <a
+        href="https://www.ripe.net/publications/news/industry-developments/youtube-hijacking-a-ripe-ncc-ris-case-study"
+        >RIPE NCC, YouTube Hijacking: A RIPE NCC RIS case study</a
+      >
+    </p>
+  </section>
+  <section>
     <h2>Passive: Listening</h2>
     <ul>
       <li>
@@ -134,6 +172,52 @@ rtt min/avg/max/mdev = 0.095/0.095/0.095/0.000 ms
     </ul>
   </section>
   <section>
+    <h2>In the Wild: Kaminsky's DNS Attack, 2008</h2>
+    <ul>
+      <li>
+        DNS spoofing from <em>Active: Lying</em>, made reliable. A resolver
+        accepted the first answer that matched a
+        <span class="hl-orange">16-bit</span> query ID, and some sent every
+        query from one fixed port
+      </li>
+      <li>
+        The TTL was meant to limit the attacker to one race per name until the
+        record expired. Kaminsky asked for names that were never cached, so
+        every query was a new race
+      </li>
+      <li>
+        The winning forgery did not answer the question asked. It said "ask
+        <code>www.foo.com</code>, it is here" — and the resolver cached the lie
+        for everyone behind it
+      </li>
+      <li>
+        Fixed in a coordinated patch on 8 July 2008 (CVE-2008-1447):
+        <span class="hl-green">random source ports</span>. Only DNSSEC makes a
+        forged answer detectable
+      </li>
+    </ul>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Sources:
+      <a href="https://www.kb.cert.org/vuls/id/800113"
+        >CERT/CC, VU#800113, Multiple DNS implementations vulnerable to cache
+        poisoning</a
+      >
+      ·
+      <a
+        href="https://blackhat.com/presentations/bh-jp-08/bh-jp-08-Kaminsky/BlackHat-Japan-08-Kaminsky-DNS08-BlackOps.pdf"
+        >Dan Kaminsky, Black Hat Japan 2008</a
+      >
+    </p>
+  </section>
+  <section>
+    <h2>Kaminsky's Race, Drawn</h2>
+    <img
+      src="img/kaminsky.svg"
+      alt="The attacker asks a caching resolver for a random name, 83.foo.com, that is not cached. The resolver asks ns.foo.com with a query ID the attacker cannot see. The attacker floods the resolver with forged answers for IDs 0 to 199, each saying ask www.foo.com, it is at 203.0.113.66. The real answer arrives too late, and www.foo.com is poisoned. A lost race is retried with 84.foo.com. Random source ports raise the guess from 16 bits to about 32; DNSSEC makes a forged answer fail its signature check"
+      width="860"
+    />
+  </section>
+  <section>
     <h2>What the Middle Buys</h2>
     <ul>
       <li>Read everything · change everything · impersonate either side</li>
@@ -187,7 +271,7 @@ rtt min/avg/max/mdev = 0.095/0.095/0.095/0.000 ms
       </li>
       <li>
         UDP services with no handshake are the reflectors — DNS, NTP, memcached.
-        US-CERT TA14-013A tabulates the factors, and they run from tens to tens
+        US-CERT TA14-017A tabulates the factors, and they run from tens to tens
         of thousands
       </li>
       <li>
@@ -195,6 +279,38 @@ rtt min/avg/max/mdev = 0.095/0.095/0.095/0.000 ms
         bought upstream
       </li>
     </ul>
+  </section>
+  <section>
+    <h2>In the Wild: GitHub and memcached, 2018</h2>
+    <ul>
+      <li>
+        28 February 2018: GitHub received
+        <strong class="hl-red">1.35 Tbps</strong> — the amplification from the
+        slide before, reflected off memcached servers left open to the internet
+        on UDP
+      </li>
+      <li>
+        A forged source address and a factor of up to
+        <span class="hl-orange">51,000</span>: one byte sent, up to 51 KB
+        delivered to GitHub
+      </li>
+      <li>
+        GitHub's own link could not take it. It moved its traffic to Akamai's
+        scrubbing network — the defence bought upstream — and was fully back
+        within ten minutes of the alert
+      </li>
+      <li>
+        What stops it at the source: memcached off UDP and off the internet, and
+        networks that drop packets with forged source addresses
+      </li>
+    </ul>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Source:
+      <a
+        href="https://github.blog/news-insights/company-news/ddos-incident-report/"
+        >GitHub, February 28th DDoS Incident Report</a
+      >
+    </p>
   </section>
   <section>
     <h2>Reconnaissance</h2>
@@ -214,6 +330,37 @@ rtt min/avg/max/mdev = 0.095/0.095/0.095/0.000 ms
         surface argument from lecture 1, applied to open ports
       </li>
     </ul>
+  </section>
+  <section>
+    <h2>In the Wild: Mirai and Dyn, 2016</h2>
+    <ul>
+      <li>
+        Mirai scanned the internet for Telnet and logged in with a list of
+        <span class="hl-orange">62</span> default usernames and passwords —
+        cameras, routers, recorders. It peaked at about 600,000 devices
+      </li>
+      <li>
+        21 October 2016: it flooded Dyn, a DNS provider. Sites that used Dyn —
+        GitHub, Netflix, PayPal, Reddit, Twitter — stayed up, but their names no
+        longer resolved
+      </li>
+      <li>
+        The slide before, automated: scan, find, log in. The failure is lecture
+        4's — a default password is no authentication at all
+      </li>
+      <li>
+        The grade service is only as available as its name: a second DNS
+        provider is a defence too
+      </li>
+    </ul>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Source:
+      <a
+        href="https://www.usenix.org/conference/usenixsecurity17/technical-sessions/presentation/antonakakis"
+        >Antonakakis et al., Understanding the Mirai Botnet, USENIX Security
+        2017</a
+      >
+    </p>
   </section>
 </section>
 <section>
@@ -325,6 +472,45 @@ rtt min/avg/max/mdev = 0.095/0.095/0.095/0.000 ms
     />
   </section>
   <section>
+    <h2>In the Wild: Target, 2013</h2>
+    <ul>
+      <li>
+        Attackers phished an HVAC contractor and took its login to a Target
+        system for vendors' billing. From there they reached the point-of-sale
+        terminals in Target's stores
+      </li>
+      <li>
+        About 40 million card numbers and up to 70 million customer records left
+        — over FTP, to servers outside, for two weeks
+      </li>
+      <li>
+        The flat network from the slide before: the US Senate report found that
+        Target "failed to properly isolate its most sensitive network assets"
+      </li>
+      <li>
+        What stops it: the vendor portal in its own zone with no path to the
+        tills, and an egress allowlist naming the few places the tills may send
+        to
+      </li>
+    </ul>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Source:
+      <a
+        href="https://www.commerce.senate.gov/services/files/24d3c229-4f2f-405d-b8db-a3a67f183883"
+        >US Senate Commerce Committee, A "Kill Chain" Analysis of the 2013
+        Target Data Breach (2014)</a
+      >
+    </p>
+  </section>
+  <section>
+    <h2>Target, Drawn</h2>
+    <img
+      src="img/target.svg"
+      alt="The HVAC vendor is phished and its password stolen. Step 1: the attacker logs in to Target's vendor billing portal. Step 2: from there to the point-of-sale terminals, with a RAM scraper on each, inside one flat network. Step 3: card data is collected on an internal server. Step 4: passed to another internal server. Step 5: sent by FTP to the attacker's drop server abroad. A zone wall between the portal and the terminals, or an egress allowlist at step 5, would have stopped it. How step 2 happened is not public"
+      width="860"
+    />
+  </section>
+  <section>
     <h2>Zero Trust</h2>
     <div class="box">
       <p>Never trust, always verify. Location is not a credential.</p>
@@ -363,6 +549,42 @@ rtt min/avg/max/mdev = 0.095/0.095/0.095/0.000 ms
     <p>
       The decision point and the enforcement point are NIST SP 800-207's own
       names. Lecture 4's <code>allow(s, a, o)</code>, asked on every request.
+    </p>
+  </section>
+  <section>
+    <h2>In the Wild: Operation Aurora, 2009</h2>
+    <ul>
+      <li>
+        Late 2009: an intrusion into Google, which Google attributed to the
+        Chinese government, ended in the theft of intellectual property. Several
+        other large companies were targeted too
+      </li>
+      <li>
+        Google's lesson was the one on <em>Zero Trust</em>: once an attacker is
+        inside the perimeter, the privileged intranet trusts them
+      </li>
+      <li>
+        Its answer was <span class="hl-green">BeyondCorp</span>: no privileged
+        intranet at all. Every request is checked for user and device, from any
+        network, without a VPN
+      </li>
+      <li>
+        The decision point from the slide before, built at the scale of a whole
+        company — and published, so others could copy it
+      </li>
+    </ul>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Sources:
+      <a
+        href="https://blog.google/company-news/outreach-and-initiatives/public-policy/transparency-in-the-shadowy-world-of-cyberattacks/"
+        >Google, Transparency in the shadowy world of cyberattacks (2022)</a
+      >
+      ·
+      <a
+        href="https://research.google/pubs/beyondcorp-a-new-approach-to-enterprise-security/"
+        >Ward and Beyer, BeyondCorp: A New Approach to Enterprise Security,
+        ;login: 2014</a
+      >
     </p>
   </section>
 </section>
@@ -509,6 +731,42 @@ counter packets 2 bytes 120 drop
         counter is the alarm
       </li>
     </ul>
+  </section>
+  <section>
+    <h2>In the Wild: SolarWinds SUNBURST, 2020</h2>
+    <ul>
+      <li>
+        Attackers put a backdoor into signed updates of SolarWinds Orion, a
+        network monitoring product. Fewer than 18,000 customers installed one
+      </li>
+      <li>
+        After up to two weeks asleep, it looked up a name under
+        <code>avsvmcloud[.]com</code>, then talked HTTP dressed as Orion's own
+        telemetry
+      </li>
+      <li>
+        Each call home was an <span class="hl-orange">outbound</span> connection
+        from a server with no business on the internet — the DMZ counter on the
+        slide before
+      </li>
+      <li>
+        The responders' advice was this rule: block all internet egress from
+        Orion servers. Count DNS as egress — the first call home was a lookup
+      </li>
+    </ul>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Sources:
+      <a
+        href="https://cloud.google.com/blog/topics/threat-intelligence/evasive-attacker-leverages-solarwinds-supply-chain-compromises-with-sunburst-backdoor"
+        >FireEye (Mandiant), Highly Evasive Attacker Leverages SolarWinds Supply
+        Chain</a
+      >
+      ·
+      <a
+        href="https://www.sec.gov/Archives/edgar/data/1739942/000162828020017451/swi-20201214.htm"
+        >SolarWinds, Form 8-K, 14 December 2020</a
+      >
+    </p>
   </section>
   <section>
     <h2>Rules, and How They Go Wrong</h2>
@@ -662,6 +920,43 @@ iifname "dmz" counter packets 0 bytes 0 drop
         laptop inside your network
       </li>
     </ul>
+  </section>
+  <section>
+    <h2>In the Wild: Pulse Secure and Ivanti, 2019–2024</h2>
+    <ul>
+      <li>
+        The VPN box is itself a host on the internet. Pulse Secure's
+        CVE-2019-11510 let anyone, with no login, read files from it — including
+        the credentials of the users who had logged in
+      </li>
+      <li>
+        Patched in April 2019, yet CISA kept finding intruders who logged in
+        months later with credentials stolen before the patch
+      </li>
+      <li>
+        January 2024, the same product line under a new name: an authentication
+        bypass chained with command injection in Ivanti Connect Secure. CISA
+        ordered US agencies to mitigate within three days, then to unplug every
+        such box
+      </li>
+      <li>
+        So the gateway belongs in the DMZ, patched first, with MFA — and after a
+        breach, patching is not enough:
+        <span class="hl-red">reset every credential</span> it held
+      </li>
+    </ul>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Sources:
+      <a
+        href="https://www.cisa.gov/news-events/cybersecurity-advisories/aa20-107a"
+        >CISA, AA20-107A</a
+      >
+      ·
+      <a
+        href="https://www.cisa.gov/news-events/directives/ed-24-01-mitigate-ivanti-connect-secure-and-ivanti-policy-secure-vulnerabilities"
+        >CISA, Emergency Directive 24-01</a
+      >
+    </p>
   </section>
   <section>
     <h2>IPsec</h2>

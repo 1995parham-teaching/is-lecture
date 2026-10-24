@@ -1,7 +1,7 @@
 # Lecture 7 — Network & Transport Security
 
-The closing deck, and the one that also closes the course. 42 slides,
-5 vertical stacks, 4 hands-on sections, 7 diagrams. Topics (TOC indices):
+The closing deck, and the one that also closes the course. 52 slides,
+5 vertical stacks, 4 hands-on sections, 9 diagrams, 8 real-world cases. Topics (TOC indices):
 `0` Network Threats · `1` Security Zoning · `2` Edge Security ·
 `3` Secure Access & VPN · `4` VLAN & Segmentation.
 
@@ -186,7 +186,9 @@ If you re-capture, re-capture the whole block, and re-check the
 - **DNS amplification** was attempted and abandoned honestly — the local
   resolver strips DNSSEC records, so every response came back around 120
   bytes and there was no amplification to show. The slide cites
-  **US-CERT TA14-013A** for the published factors. Do not replace that
+  **US-CERT TA14-017A** (UDP-Based Amplification Attacks) for the published
+  factors — not TA14-013A, the NTP-only alert that 017A's table cross-references.
+  The slide said 013A until October 2026. Do not replace that
   citation with numbers from a run that did not happen.
 - **VLAN double tagging** needs two 802.1Q switches with a native VLAN on a
   trunk; a Linux bridge in a namespace does not reproduce that faithfully. It
@@ -194,21 +196,24 @@ If you re-capture, re-capture the whole block, and re-check the
 
 ## The diagrams
 
-Seven hand-written SVGs in `img/`, each on its own "…, Drawn" slide straight
+Nine hand-written SVGs in `img/`, each on its own "…, Drawn" slide straight
 after the slide it draws (except `zones.svg`, which is **The Grade Service,
-Zoned**). Same conventions as lecture 3: league background, light strokes,
+Zoned**). `kaminsky` and `target` draw an In the Wild slide, not a concept
+slide. Same conventions as lecture 3: league background, light strokes,
 `$highlights` hex literals; render with `rsvg-convert -b '#2b2b2b'` before and
 after any edit.
 
-| Diagram          | Draws                                                    |
-| ---------------- | -------------------------------------------------------- |
-| `arp-spoofing`   | the victim's ARP cache before and after one forged reply |
-| `zones`          | five zones, the grade service in the DMZ, allowed/denied |
-| `east-west`      | flat network vs microsegmented, lateral movement         |
-| `zero-trust`     | one check at the door vs PDP/PEP per request             |
-| `firewall-rules` | first match wins; the temporary rule shadows rule 5      |
-| `ipsec-modes`    | ESP transport vs tunnel: what is encrypted/authenticated |
-| `vlan-hopping`   | double tagging across a native-VLAN trunk, one-way       |
+| Diagram          | Draws                                                      |
+| ---------------- | ---------------------------------------------------------- |
+| `arp-spoofing`   | the victim's ARP cache before and after one forged reply   |
+| `zones`          | five zones, the grade service in the DMZ, allowed/denied   |
+| `east-west`      | flat network vs microsegmented, lateral movement           |
+| `zero-trust`     | one check at the door vs PDP/PEP per request               |
+| `firewall-rules` | first match wins; the temporary rule shadows rule 5        |
+| `ipsec-modes`    | ESP transport vs tunnel: what is encrypted/authenticated   |
+| `vlan-hopping`   | double tagging across a native-VLAN trunk, one-way         |
+| `kaminsky`       | the race on a random name, won by a forged delegation      |
+| `target`         | vendor login → POS → staging → FTP out; two ✗ that stop it |
 
 `arp-spoofing` uses the hands-on's addresses and MAC suffixes, and
 `firewall-rules` uses the hands-on's rule base; keep them in step.
@@ -271,6 +276,54 @@ drops that function, drop the sentence.
      the text.
   4. Confidentiality, integrity and peer authentication of the link. It does
      nothing about the endpoint: the malware is now inside the network.
+
+## Real-world cases
+
+Eight "In the Wild: Name, Year" slides, each straight after the slide whose
+concept it proves, never in an appendix. Shape: 3–4 bullets (what happened →
+which mechanism failed, in the deck's words → what stops it), then a
+`font-size: 0.55em` source line. They are not hands-on slides. Facts were
+checked against the cited source in October 2026; numbers not in the source
+were left out.
+
+| Case (slide)                                   | Sits after                                                    | Source                                                           |
+| ---------------------------------------------- | ------------------------------------------------------------- | ---------------------------------------------------------------- |
+| Pakistan Telecom and YouTube, 2008             | The Network Was Built on Trust                                | RIPE NCC RIS case study                                          |
+| Kaminsky's DNS Attack, 2008 (+ `kaminsky.svg`) | ARP Spoofing, in One Broadcast (closes the Active: Lying run) | CERT/CC VU#800113; Kaminsky, Black Hat Japan 2008 slides         |
+| GitHub and memcached, 2018                     | Denial of Service                                             | GitHub's incident report                                         |
+| Mirai and Dyn, 2016                            | Reconnaissance                                                | Antonakakis et al., USENIX Security 2017                         |
+| Target, 2013 (+ `target.svg`)                  | North-South and East-West, Drawn                              | US Senate Commerce Committee, "Kill Chain" report, 26 March 2014 |
+| Operation Aurora, 2009                         | Zero Trust, Drawn                                             | Google (Kent Walker, 2022); Ward and Beyer, ;login: 2014         |
+| SolarWinds SUNBURST, 2020                      | Five Connections, Five Answers                                | FireEye/Mandiant SUNBURST post; SolarWinds 8-K, 14 Dec 2020      |
+| Pulse Secure and Ivanti, 2019–2024             | VPN                                                           | CISA AA20-107A; CISA ED 24-01                                    |
+
+Facts worth not re-deriving:
+
+- YouTube: Pakistan Telecom (AS17557) announced `208.65.153.0/24`, more
+  specific than YouTube's `/22`; PCCW (AS3491) propagated it; about two hours.
+- Kaminsky: 16-bit ID; fix was source-port randomization (CERT: about 16
+  more bits), patched 8 July 2008, CVE-2008-1447. The drawing's forged
+  address is the documentation range `203.0.113.66`, not Kaminsky's `6.6.6.6`.
+- GitHub: 1.35 Tbps, 28 February 2018, factor up to 51,000, moved to Akamai;
+  down 17:21–17:26 UTC, intermittent to 17:30.
+- Mirai: Telnet, 62 default credential pairs, peak about 600k; Dyn on
+  21 October 2016. The paper lists Amazon, GitHub, Netflix, PayPal, Reddit,
+  Twitter as disrupted.
+- Target: about 40 million cards, up to 70 million records, FTP out over two
+  weeks. The report says it is **unclear** how the attackers got from the
+  vendor billing system to the POS network; the drawing says so.
+- SUNBURST: dormant up to two weeks; DNS to `avsvmcloud[.]com`, then HTTP as
+  the Orion Improvement Program. FireEye advised blocking all internet egress
+  from SolarWinds servers. "Fewer than 18,000" is SolarWinds' own figure.
+- Pulse Secure CVE-2019-11510 (pre-auth file read), patched April 2019;
+  AA20-107A is about stolen credentials used **after** the patch. Ivanti:
+  CVE-2023-46805 + CVE-2024-21887, ED 24-01 issued 19 January 2024, mitigate
+  by 22 January; a supplemental direction then required disconnecting them.
+
+**Links.** `commerce.senate.gov`, `cisa.gov`, `sec.gov` and `usenix.org`
+answer 403 to curl and WebFetch from the instructor's network (a bot or
+geo block); their content was checked through the Wayback Machine or the
+downloaded PDF. The other links answer 200.
 
 ## Cautions
 
