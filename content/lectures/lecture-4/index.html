@@ -391,8 +391,9 @@ if roles[user] != "instructor" {
       width="860"
     />
     <p>
-      Two places it could have stopped, both in this lecture: the role check,
-      and a second factor a fake page cannot relay.
+      Two places it could have stopped, both in this lecture: the role check on
+      this slide's model, and a second factor a fake page cannot relay — FIDO2,
+      in the "have" section.
     </p>
   </section>
   <section>
@@ -491,35 +492,6 @@ if roles[user] != "instructor" {
     </ul>
   </section>
   <section>
-    <h2>In the Wild: Colonial Pipeline, 2021</h2>
-    <ul>
-      <li>
-        May 2021: ransomware took Colonial's systems offline, and the fuel
-        pipeline with them, for days
-      </li>
-      <li>
-        The way in, the CEO told the US Senate: one password for a
-        <em>legacy</em> VPN account that was no longer meant to be in use
-      </li>
-      <li>
-        "It was a complicated password" — so strength did not matter. It was
-        stolen, not guessed
-      </li>
-      <li>
-        It "only had single-factor authentication". One row of the previous
-        slide's table; a second row, or deleting the unused account, would have
-        stopped it
-      </li>
-    </ul>
-    <p style="font-size: 0.55em; line-height: 1.4">
-      Source:
-      <a href="https://www.carriermanagement.com/news/2021/06/09/221844.htm"
-        >Reuters (via Carrier Management), Hackers Stole a Single Password to
-        Disrupt Colonial Pipeline</a
-      >
-    </p>
-  </section>
-  <section>
     <h2>Passwords Are Still Here</h2>
     <ul>
       <li>
@@ -572,6 +544,50 @@ if roles[user] != "instructor" {
       >
       ·
       <a href="https://www.kali.org/tools/wordlists/">Kali Linux, wordlists</a>
+    </p>
+  </section>
+  <section>
+    <h2>In the Wild: Adobe, 2013</h2>
+    <ul>
+      <li>
+        October 2013: a leaked Adobe file held over 130 million accounts; Adobe
+        put the active users at about 38 million
+      </li>
+      <li>
+        The passwords were not hashed but
+        <strong class="hl-red">encrypted</strong>
+        — Triple DES, in ECB mode, with one key for every password
+      </li>
+      <li>
+        Lecture 3's ECB picture again: the same password gave the same
+        ciphertext, and the users' password hints sat beside it in plain text.
+        Nearly 1.9 million accounts shared the ciphertext of
+        <code>123456</code>
+      </li>
+      <li>
+        Encryption can be undone by whoever holds the key. A password store must
+        not be undoable at all
+      </li>
+    </ul>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Source:
+      <a
+        href="https://www.csoonline.com/article/540070/network-security-adobe-confirms-stolen-passwords-were-encrypted-not-hashed.html"
+        >CSO Online, Adobe confirms stolen passwords were encrypted, not
+        hashed</a
+      >
+    </p>
+  </section>
+  <section>
+    <h2>Adobe 2013, Drawn</h2>
+    <img
+      src="img/adobe-ecb.svg"
+      alt="Three users with the same password: under one-key 3DES-ECB they share one ciphertext block and their hints are in plain text beside it; under a salted KDF each stored value is unrelated"
+      width="860"
+    />
+    <p>
+      The researchers never needed Adobe's key. Identical blocks and the hints
+      beside them were enough.
     </p>
   </section>
   <section class="hands-on">
@@ -699,50 +715,6 @@ scrypt, N=2^17 r=8 p=1              198.368 ms/hash            5 guesses/sec
         <em>on your hardware</em>, and revisit it as hardware improves
       </li>
     </ul>
-  </section>
-  <section>
-    <h2>In the Wild: Adobe, 2013</h2>
-    <ul>
-      <li>
-        October 2013: a leaked Adobe file held over 130 million accounts; Adobe
-        put the active users at about 38 million
-      </li>
-      <li>
-        The passwords were not hashed but
-        <strong class="hl-red">encrypted</strong>
-        — Triple DES, in ECB mode, with one key for every password
-      </li>
-      <li>
-        Lecture 3's ECB picture again: the same password gave the same
-        ciphertext, and the users' password hints sat beside it in plain text.
-        Nearly 1.9 million accounts shared the ciphertext of
-        <code>123456</code>
-      </li>
-      <li>
-        Encryption can be undone by whoever holds the key. A password store must
-        not be undoable at all
-      </li>
-    </ul>
-    <p style="font-size: 0.55em; line-height: 1.4">
-      Source:
-      <a
-        href="https://www.csoonline.com/article/540070/network-security-adobe-confirms-stolen-passwords-were-encrypted-not-hashed.html"
-        >CSO Online, Adobe confirms stolen passwords were encrypted, not
-        hashed</a
-      >
-    </p>
-  </section>
-  <section>
-    <h2>Adobe 2013, Drawn</h2>
-    <img
-      src="img/adobe-ecb.svg"
-      alt="Three users with the same password: under one-key 3DES-ECB they share one ciphertext block and their hints are in plain text beside it; under a salted KDF each stored value is unrelated"
-      width="860"
-    />
-    <p>
-      The researchers never needed Adobe's key. Identical blocks and the hints
-      beside them were enough.
-    </p>
   </section>
   <section class="hands-on">
     <h2>The Grade Service Gets a Login</h2>
@@ -885,7 +857,35 @@ $ echo NDAwMTp0dWxpcC1yaXZlci00Mg== | base64 -d
     </table>
     <p>
       Only two of the five depend on how you hash. The other three need a
-      <strong class="hl-green">second factor</strong> — the next section.
+      <strong class="hl-green">second factor</strong>.
+    </p>
+  </section>
+  <section>
+    <h2>In the Wild: Colonial Pipeline, 2021</h2>
+    <ul>
+      <li>
+        May 2021: ransomware took Colonial's systems offline, and the fuel
+        pipeline with them, for days
+      </li>
+      <li>
+        The way in, the CEO told the US Senate: one password for a
+        <em>legacy</em> VPN account that was no longer meant to be in use
+      </li>
+      <li>
+        "It was a complicated password" — so strength did not matter. It was
+        stolen, not guessed: the bottom rows of the table before
+      </li>
+      <li>
+        It "only had single-factor authentication". A second factor — the next
+        section — or deleting the unused account would have stopped it
+      </li>
+    </ul>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Source:
+      <a href="https://www.carriermanagement.com/news/2021/06/09/221844.htm"
+        >Reuters (via Carrier Management), Hackers Stole a Single Password to
+        Disrupt Colonial Pipeline</a
+      >
     </p>
   </section>
 </section>
@@ -914,7 +914,8 @@ $ echo NDAwMTp0dWxpcC1yaXZlci00Mg== | base64 -d
           <li>
             The one design that is <strong>phishing-resistant</strong>: the
             browser signs over the real origin, so a look-alike domain gets a
-            signature that does not verify
+            signature that does not verify. Twitter 2020's fake VPN page would
+            have got nothing
           </li>
           <li>
             Nothing shared, nothing to type, nothing to leak from the server

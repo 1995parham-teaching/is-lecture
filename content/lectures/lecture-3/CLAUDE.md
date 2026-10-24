@@ -164,7 +164,7 @@ proves, in the same stack. None is hands-on. Each carries its sources on a
 | Slide                             | Sits after                    | Sources                                                                                  |
 | --------------------------------- | ----------------------------- | ---------------------------------------------------------------------------------------- |
 | WEP, 2001 (+ TJX, 2007)           | Why the Nonce Must Not Repeat | Borisov–Goldberg–Wagner paper; FMS (SAC 2001); Privacy Commissioner of Canada TJX report |
-| Flame, 2012 (+ `flame-collision`) | Which Hash?                   | CWI press release (Stevens); Microsoft Security Advisory 2718704                         |
+| Flame, 2012 (+ `flame-collision`) | The Chain of Trust            | CWI press release (Stevens); Microsoft Security Advisory 2718704                         |
 | ROCA, 2017                        | Key Sizes Are Not Comparable  | Nemec et al., CCS 2017 (crocs.fi.muni.cz); Government of Estonia, 2 Nov 2017             |
 | Sony PS3, 2010 (+ `ps3-ecdsa`)    | Sign, Verify, Tamper          | fail0verflow 27C3 talk and slides; RFC 8032                                              |
 | Symantec, 2015–2018               | The Chain Has Consequences    | Google Security Blog (Sept/Oct 2015, Sept 2017); Mozilla CA/Symantec Issues              |
@@ -196,3 +196,7 @@ when you move a slide: IV and nonce are defined in the caption of **CBC and
 CTR, Drawn**, one slide before the **Modes Worth Knowing** table uses them.
 The Hash Functions slide opens with lecture 1's `shasum`, so the section
 starts from a tool students already ran.
+
+- **Flame sits in the PKI section, not after Which Hash?** It needs
+  _signature_, _CA_ and _chain_, which are not taught until section 4. Which
+  Hash? points forward to it in one sentence.

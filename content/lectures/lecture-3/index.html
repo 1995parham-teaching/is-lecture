@@ -610,58 +610,8 @@ s1.pdf s2.pdf differ: char 193, line 8
     <p>
       "Dead" still means dead where a
       <strong class="hl-orange">deliberate</strong> collision matters —
-      certificates, signatures, code updates.
-    </p>
-  </section>
-  <section>
-    <h2>In the Wild: Flame, 2012</h2>
-    <ul>
-      <li>
-        Espionage malware, announced in May 2012 by Kaspersky, CrySyS and Iran's
-        national CERT. It spread by posing as a
-        <span class="hl-orange">Windows Update</span>
-      </li>
-      <li>
-        Its code carried a valid signature chaining to Microsoft's root. A
-        Microsoft licensing CA was
-        <strong class="hl-red">still signing with MD5</strong>, though Microsoft
-        had banned MD5 for public CAs in 2009
-      </li>
-      <li>
-        The attackers built a
-        <span class="hl-violet">chosen-prefix collision</span>: the CA signed
-        one certificate, and the signature fitted another. CWI found it was a
-        variant nobody had published
-      </li>
-      <li>
-        Microsoft revoked the CAs in June 2012. The real fix was the "Dead" row
-        of the previous table, applied everywhere
-      </li>
-    </ul>
-    <p style="font-size: 0.55em; line-height: 1.4">
-      Source:
-      <a
-        href="https://www.cwi.nl/en/news/2012/cwi-cryptanalist-discovers-new-cryptographic-attack-variant-in-flame-spy-malware/"
-        >CWI, new cryptographic attack variant in Flame</a
-      >
-      ·
-      <a
-        href="https://learn.microsoft.com/en-us/security-updates/securityadvisories/2012/2718704"
-        >Microsoft Security Advisory 2718704</a
-      >
-    </p>
-  </section>
-  <section>
-    <h2>Flame's Collision, Drawn</h2>
-    <img
-      src="img/flame-collision.svg"
-      alt="Certificate A, a licensing certificate the CA signed, and certificate B, which signs code as Microsoft, end in collision blocks that give them the same MD5 digest; the CA's signature over that digest is copied onto B and still verifies"
-      width="860"
-    />
-    <p>
-      A signature is over the <em>digest</em>. Find two documents with one
-      digest and every signature on one is a signature on the other — the
-      <span class="hl-violet">collision</span> column of the properties diagram.
+      certificates, signatures, code updates. Flame, in the PKI section, was all
+      three.
     </p>
   </section>
   <section>
@@ -1238,6 +1188,57 @@ Signature Verification Failure
       forgets to send the intermediate, there is a gap: unless the client
       fetches the missing certificate itself, it holds a leaf it cannot connect
       to any root.
+    </p>
+  </section>
+  <section>
+    <h2>In the Wild: Flame, 2012</h2>
+    <ul>
+      <li>
+        Espionage malware, announced in May 2012 by Kaspersky, CrySyS and Iran's
+        national CERT. It spread by posing as a
+        <span class="hl-orange">Windows Update</span>
+      </li>
+      <li>
+        Its code carried a valid signature chaining to Microsoft's root. A
+        Microsoft licensing CA was
+        <strong class="hl-red">still signing with MD5</strong>, though Microsoft
+        had banned MD5 for public CAs in 2009
+      </li>
+      <li>
+        The attackers built a
+        <span class="hl-violet">chosen-prefix collision</span>: the CA signed
+        one certificate, and the signature fitted another. CWI found it was a
+        variant nobody had published
+      </li>
+      <li>
+        Microsoft revoked the CAs in June 2012. The real fix was the "Dead" row
+        of Which Hash?, applied everywhere
+      </li>
+    </ul>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Source:
+      <a
+        href="https://www.cwi.nl/en/news/2012/cwi-cryptanalist-discovers-new-cryptographic-attack-variant-in-flame-spy-malware/"
+        >CWI, new cryptographic attack variant in Flame</a
+      >
+      ·
+      <a
+        href="https://learn.microsoft.com/en-us/security-updates/securityadvisories/2012/2718704"
+        >Microsoft Security Advisory 2718704</a
+      >
+    </p>
+  </section>
+  <section>
+    <h2>Flame's Collision, Drawn</h2>
+    <img
+      src="img/flame-collision.svg"
+      alt="Certificate A, a licensing certificate the CA signed, and certificate B, which signs code as Microsoft, end in collision blocks that give them the same MD5 digest; the CA's signature over that digest is copied onto B and still verifies"
+      width="860"
+    />
+    <p>
+      A signature is over the <em>digest</em>. Find two documents with one
+      digest and every signature on one is a signature on the other — the
+      <span class="hl-violet">collision</span> column of the properties diagram.
     </p>
   </section>
   <section>

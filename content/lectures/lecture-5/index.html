@@ -83,7 +83,7 @@ draft: false
       <li>
         The sensor runs as a <span class="hl-red">kernel driver</span> — in the
         TCB. Its update expected 21 input fields and got 20, and read past the
-        end of the array
+        end of the array — section 4's bug
       </li>
       <li>
         In user mode that is one dead process. In the kernel, it is the whole
@@ -439,7 +439,7 @@ $ chflags nouappnd server.log
       </li>
       <li>
         An air gap is a wall with a door: every USB stick and every contractor's
-        laptop. A signature proves who signed, not that the signer was honest
+        laptop. A signature proves which key signed, not who was holding it
       </li>
     </ul>
     <p style="font-size: 0.55em; line-height: 1.4">
@@ -965,39 +965,6 @@ P(attack | alarm)            9.01%
     </ul>
   </section>
   <section>
-    <h2>In the Wild: runc, 2019</h2>
-    <ul>
-      <li>
-        <code>runc</code> starts the containers under Docker, containerd, CRI-O
-        and Kubernetes.
-        <span style="white-space: nowrap">CVE-2019-5736</span> let a container
-        <span class="hl-red">overwrite the host's runc binary</span>
-      </li>
-      <li>
-        The next time runc ran, the attacker's code ran as
-        <strong>root on the host</strong> — and every other container on it
-      </li>
-      <li>
-        It needed root <em>inside</em> the container, usually from an untrusted
-        image
-      </li>
-      <li>
-        So the first item on the previous slide was the defence:
-        <span class="hl-green">a non-root user</span>, or user namespaces.
-        RHEL's SELinux policy blocked it too
-      </li>
-    </ul>
-    <p style="font-size: 0.55em; line-height: 1.4">
-      Source:
-      <a href="https://www.openwall.com/lists/oss-security/2019/02/11/2"
-        >Aleksa Sarai, CVE-2019-5736: runc container breakout (oss-security)</a
-      >;
-      <a href="https://kubernetes.io/blog/2019/02/11/runc-and-cve-2019-5736/"
-        >Kubernetes, Runc and CVE-2019-5736</a
-      >
-    </p>
-  </section>
-  <section>
     <h2>Isolation, Drawn</h2>
     <img
       src="img/isolation.svg"
@@ -1031,6 +998,39 @@ $ docker run --rm --privileged debian:bookworm sh -c 'ls /dev | wc -l'
         the VM's hardware, handed over in one flag
       </li>
     </ul>
+  </section>
+  <section>
+    <h2>In the Wild: runc, 2019</h2>
+    <ul>
+      <li>
+        <code>runc</code> starts the containers under Docker, containerd, CRI-O
+        and Kubernetes.
+        <span style="white-space: nowrap">CVE-2019-5736</span> let a container
+        <span class="hl-red">overwrite the host's runc binary</span>
+      </li>
+      <li>
+        The next time runc ran, the attacker's code ran as
+        <strong>root on the host</strong> — and every other container on it
+      </li>
+      <li>
+        It needed root <em>inside</em> the container, usually from an untrusted
+        image
+      </li>
+      <li>
+        So the first item on Containers Are Not Small VMs was the defence:
+        <span class="hl-green">a non-root user</span>, or user namespaces.
+        RHEL's SELinux policy blocked it too
+      </li>
+    </ul>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Source:
+      <a href="https://www.openwall.com/lists/oss-security/2019/02/11/2"
+        >Aleksa Sarai, CVE-2019-5736: runc container breakout (oss-security)</a
+      >;
+      <a href="https://kubernetes.io/blog/2019/02/11/runc-and-cve-2019-5736/"
+        >Kubernetes, Runc and CVE-2019-5736</a
+      >
+    </p>
   </section>
   <section>
     <h2>Check Yourself</h2>

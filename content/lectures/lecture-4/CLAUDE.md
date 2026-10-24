@@ -227,10 +227,10 @@ its source line; re-check a claim against it before editing.
 | Slide                   | After                        | Source                                                                                                                                              |
 | ----------------------- | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Twitter, 2020 (+ drawn) | You Already Wrote One (RBAC) | NYDFS, Report on Investigation of Twitter's July 15, 2020 Cybersecurity Incident — https://www.dfs.ny.gov/Twitter_Report                            |
-| Colonial Pipeline, 2021 | Three Kinds of Evidence      | Reuters via Carrier Management — https://www.carriermanagement.com/news/2021/06/09/221844.htm                                                       |
+| Colonial Pipeline, 2021 | Attacks on Passwords         | Reuters via Carrier Management — https://www.carriermanagement.com/news/2021/06/09/221844.htm                                                       |
 | RockYou, 2009           | Passwords Are Still Here     | The Register, 16 Dec 2009 — https://www.theregister.com/2009/12/16/rockyou_password_snafu/ ; Kali wordlists page for `rockyou.txt`                  |
 | LinkedIn, 2012          | The Salt, Drawn              | Krebs on Security, May 2016 — https://krebsonsecurity.com/2016/05/as-scope-of-2012-breach-expands-linkedin-to-again-reset-passwords-for-some-users/ |
-| Adobe, 2013 (+ drawn)   | What To Actually Use         | CSO Online — https://www.csoonline.com/article/540070/network-security-adobe-confirms-stolen-passwords-were-encrypted-not-hashed.html               |
+| Adobe, 2013 (+ drawn)   | RockYou, 2009                | CSO Online — https://www.csoonline.com/article/540070/network-security-adobe-confirms-stolen-passwords-were-encrypted-not-hashed.html               |
 | Reddit, 2018            | Something You Have           | BleepingComputer — https://www.bleepingcomputer.com/news/security/reddit-announces-security-breach-after-hackers-bypassed-staffs-2fa/               |
 | Touch ID, 2013          | Attacking and Defending It   | Chaos Computer Club — https://www.ccc.de/en/updates/2013/ccc-breaks-apple-touchid                                                                   |
 
@@ -248,8 +248,17 @@ Facts worth not re-deriving:
   million in Krebs); the slide says "over 130 million" and Adobe's 38 million
   active users. The 1.9 million `123456` figure is Jeremi Gosney's analysis.
 - **LinkedIn**: 6.5 million is the 2012 posting; 117 million is the 2016 sale.
-- The Twitter and Colonial slides are inside sections whose closing slide must
-  stay last (**Choosing**, **Attacks on Passwords**); none was placed after one.
+- **Twitter** sits inside the RBAC section, before **Choosing**, which must stay
+  that section's last slide.
+- **Colonial** is the last slide of the passwords section, after **Attacks on
+  Passwords**: it is the stolen-password, no-second-factor case that hands off
+  to "have", so it carries the "the next section" hand-off that Attacks on
+  Passwords used to. It was first placed after Three Kinds of Evidence, which
+  split that slide from the know/have/are sections it announces.
+- **Adobe** follows **RockYou** so the section reads as a ladder: plain text →
+  reversible encryption → unsalted hash (LinkedIn) → fast hash → KDF. Do not put
+  it after What To Actually Use; that puts a step backwards between the
+  recommendation and the hands-on that implements it.
 
 ## The "AAAA" question
 
