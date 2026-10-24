@@ -207,6 +207,40 @@ $ curl -u 4001:tulip-river-42 -G localhost:8080/grades \
     </ul>
   </section>
   <section>
+    <h2>In the Wild: TalkTalk, 2015</h2>
+    <ul>
+      <li>
+        October 2015: an attacker reads the personal details of
+        <strong>156,959</strong> TalkTalk customers, and bank details for 15,656
+        of them
+      </li>
+      <li>
+        The way in was <span class="hl-red">SQL injection</span>, the v1 bug,
+        into three old web pages that came with the 2009 purchase of Tiscali's
+        UK business
+      </li>
+      <li>
+        The same pages had been injected twice that summer, and nobody was
+        watching them. The database software also lacked a fix released three
+        and a half years earlier
+      </li>
+      <li>
+        Prepared statements on those pages, or deleting them, would have stopped
+        it. The UK ICO fined TalkTalk £400,000, its largest fine at the time
+      </li>
+    </ul>
+    <div class="box">
+      <p>You cannot prepare the queries of a page you forgot you run.</p>
+    </div>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Source:
+      <a
+        href="https://ico.org.uk/about-the-ico/media-centre/talktalk-cyber-attack-how-the-ico-investigation-unfolded/"
+        >UK ICO, TalkTalk cyber attack: how the ICO investigation unfolded</a
+      >
+    </p>
+  </section>
+  <section>
     <h2>The Same Bug, Other Interpreters</h2>
     <ul>
       <li>
@@ -234,6 +268,41 @@ $ curl -u 4001:tulip-river-42 -G localhost:8080/grades \
     </ul>
   </section>
   <section>
+    <h2>In the Wild: Equifax, 2017</h2>
+    <ul>
+      <li>
+        7 March 2017: Apache Struts discloses CVE-2017-5638. A crafted
+        <code>Content-Type</code> header is evaluated as an
+        <span class="hl-orange">OGNL expression</span> — Struts' own expression
+        language — and runs commands on the server
+      </li>
+      <li>
+        A header the client controls became code, in an interpreter the
+        developers never thought of as one. The same bug as
+        <code>course</code>, one framework down
+      </li>
+      <li>
+        Equifax's internet-facing dispute portal ran that Struts and was not
+        patched. From 13 May the attackers were inside for 76 days
+      </li>
+      <li>
+        A file of unencrypted passwords took them on to other databases: about
+        <strong>148 million</strong> people's records
+      </li>
+      <li>
+        Stopped by: the 48-hour patch Equifax's own security team had asked for,
+        and lecture 4's least privilege behind it
+      </li>
+    </ul>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Source:
+      <a
+        href="https://oversight.house.gov/wp-content/uploads/2018/12/Equifax-Report.pdf"
+        >US House Committee on Oversight, The Equifax Data Breach (2018)</a
+      >
+    </p>
+  </section>
+  <section>
     <h2>Broken Access Control</h2>
     <p>
       OWASP's number one since 2021, and it needs no injection at all — just a
@@ -259,6 +328,37 @@ GET /api/invoices/1042     → someone else's invoice
         — and injection deleted it, so it needs both fixes
       </li>
     </ul>
+  </section>
+  <section>
+    <h2>In the Wild: Optus, 2022</h2>
+    <ul>
+      <li>
+        September 2022: records of about <strong>9.5 million</strong> current
+        and former customers of Optus, an Australian telco, are taken through a
+        customer-data API
+      </li>
+      <li>
+        The regulator, ACMA, alleges a 2018 coding error left the API's
+        <span class="hl-red">access control</span> not working. Optus fixed it
+        on the main domain in 2021 — not on <code>api.www.optus.com.au</code>
+      </li>
+      <li>
+        No injection: ACMA calls the attack "a simple process of trial and
+        error". The endpoint nobody linked to was still there
+      </li>
+      <li>
+        The fix is the previous slide's: check ownership on every endpoint, in
+        the query, including the ones you have forgotten
+      </li>
+    </ul>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Source:
+      <a
+        href="https://www.csoonline.com/article/2492520/optus-breach-occurred-due-to-a-coding-error-alleges-acma.html"
+        >CSO Online, Optus breach occurred due to a coding error, alleges ACMA
+        (2024)</a
+      >
+    </p>
   </section>
   <section>
     <h2>Server-Side Request Forgery</h2>
@@ -291,6 +391,36 @@ GET /api/invoices/1042     → someone else's invoice
         a private address, and can answer differently the second time
       </li>
     </ul>
+  </section>
+  <section>
+    <h2>In the Wild: Capital One, 2019</h2>
+    <img
+      src="img/capital-one-ssrf.svg"
+      alt="The attacker sends a request to Capital One's web application firewall on EC2; it is misconfigured and relays the request to the metadata service at 169.254.169.254, which returns temporary credentials for the firewall's role. The attacker uses them to list and copy S3 buckets: about 100 million people in the US and 6 million in Canada"
+      width="800"
+    />
+    <ul>
+      <li>
+        The fetcher was a firewall, and the inward target was the metadata
+        address on the previous slide. The role it handed out could read far
+        more than a firewall needs
+      </li>
+      <li>
+        Stopped by: no route from the fetcher to <code>169.254.169.254</code>,
+        and a role that does only its job. AWS later added IMDSv2, which a
+        simple relayed request cannot use
+      </li>
+    </ul>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Sources:
+      <a
+        href="https://krebsonsecurity.com/2019/08/what-we-can-learn-from-the-capital-one-hack/"
+        >KrebsOnSecurity, What we can learn from the Capital One hack</a
+      >;
+      <a href="https://www.capitalone.com/digital/facts2019/"
+        >Capital One, 2019 cyber incident</a
+      >
+    </p>
   </section>
 </section>
 <section>
@@ -412,6 +542,36 @@ Set-Cookie: session=1nEDix88iEUq4gQ16crT6A; Path=/; HttpOnly; Secure; SameSite=L
     <p>
       <code>HttpOnly</code> blocks <em>script access</em>. It does nothing about
       the network — that is what <code>Secure</code> is for.
+    </p>
+  </section>
+  <section>
+    <h2>In the Wild: Firesheep, 2010</h2>
+    <ul>
+      <li>
+        October 2010: Eric Butler releases Firesheep, a Firefox extension. On
+        open wifi it lists the people around you who are logged in to popular
+        sites. Double-click one, and you are them
+      </li>
+      <li>
+        Those sites encrypted the login, then sent the session cookie over
+        <span class="hl-red">plain HTTP</span> on every request after it
+      </li>
+      <li>
+        Nothing was cracked. The identifier was as good as the password, and it
+        crossed the room in the clear: <span class="hl-orange">hijacking</span>
+        by sniffing
+      </li>
+      <li>
+        Missing: <code>Secure</code>, and HTTPS for the whole session, not just
+        the login form. The grade service's cookie is about to be
+        <code>Secure</code>; HTTPS is the last section
+      </li>
+    </ul>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Source:
+      <a href="https://codebutler.com/2010/10/24/firesheep/"
+        >Eric Butler, Firesheep (2010)</a
+      >
     </p>
   </section>
   <section class="hands-on">
@@ -559,6 +719,38 @@ element.innerHTML = "&lt;p&gt;" + comment + "&lt;/p&gt;";
     </ul>
   </section>
   <section>
+    <h2>In the Wild: Samy, MySpace, 2005</h2>
+    <ul>
+      <li>
+        October 2005: Samy Kamkar hides script in his MySpace profile. Viewing
+        it adds "samy is my hero" to your profile, befriends him — and copies
+        the script into your profile too
+      </li>
+      <li>
+        <span class="hl-red">Stored</span> XSS, the top row of the drawing: no
+        lure, just a visit. Over one million users in under 20 hours
+      </li>
+      <li>
+        MySpace stripped words such as <code>javascript</code> and
+        <code>innerHTML</code>. The worm wrote <code>java</code>, a line break,
+        <code>script</code>, and built the rest with <code>eval</code>
+      </li>
+      <li>
+        A friend request needed a random token. The worm fetched the page and
+        read it first — exactly the previous slide's point
+      </li>
+    </ul>
+    <div class="box">
+      <p>A filter of bad words loses to string concatenation.</p>
+    </div>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Source:
+      <a href="https://samy.pl/myspace/tech.html"
+        >Samy Kamkar, Technical explanation of the MySpace worm</a
+      >
+    </p>
+  </section>
+  <section>
     <h2>Stopping It</h2>
     <ul>
       <li>
@@ -582,6 +774,33 @@ element.innerHTML = "&lt;p&gt;" + comment + "&lt;/p&gt;";
         accept it. Your regular expression will be bypassed
       </li>
     </ul>
+  </section>
+  <section>
+    <h2>In the Wild: British Airways, 2018</h2>
+    <img
+      src="img/ba-skimmer.svg"
+      alt="The attacker, in through a contractor's Citrix login with no MFA, edits a JavaScript file on britishairways.com. The customer's payment page loads it from BA's own origin; the booking goes through, and the script posts a copy of the card number and CVV to BAways.com, a lookalike domain the attacker controls. A CSP allow-list would refuse that host"
+      width="800"
+    />
+    <ul>
+      <li>
+        For 15 days, each card typed into the payment page was also sent to
+        <code>BAways.com</code>: card and CVV for about 244,000 customers. UK
+        ICO fine: £20 million
+      </li>
+      <li>
+        No encoding bug to fix — the script was BA's own. A
+        <span class="hl-cyan">CSP</span> that lists where the page may send data
+        is the second layer that refuses it
+      </li>
+    </ul>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Source:
+      <a
+        href="https://web.archive.org/web/20220225190222/https://ico.org.uk/media/action-weve-taken/mpns/2618421/ba-penalty-20201016.pdf"
+        >UK ICO, Penalty Notice: British Airways (2020)</a
+      >
+    </p>
   </section>
   <section>
     <h2>Cross-Site Request Forgery</h2>
@@ -776,6 +995,37 @@ Verification error: self-signed certificate
         production code are a finding, not a convenience
       </li>
     </ul>
+  </section>
+  <section>
+    <h2>In the Wild: Superfish, Lenovo, 2015</h2>
+    <ul>
+      <li>
+        Some Lenovo laptops shipped with Superfish adware. To put ads into HTTPS
+        pages, it installed its own
+        <span class="hl-orange">trusted root CA</span> and decrypted and
+        re-encrypted all browser traffic
+      </li>
+      <li>
+        That root was the same on every machine, and its
+        <span class="hl-red">private key</span> could easily be recovered from
+        the software
+      </li>
+      <li>
+        So anyone on the café wifi could make a certificate for any bank that
+        those laptops would accept, with no browser warning
+      </li>
+      <li>
+        The handshake was perfect. What broke was the step before it: whom the
+        client trusts to vouch for a name
+      </li>
+    </ul>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Source:
+      <a href="https://seclists.org/cert/2015/103"
+        >US-CERT Alert TA15-051A, Lenovo Superfish adware vulnerable to HTTPS
+        spoofing</a
+      >
+    </p>
   </section>
   <section class="hands-on">
     <h2>The Grade Service, Over HTTPS</h2>

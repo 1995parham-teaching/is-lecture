@@ -1,7 +1,7 @@
 # Lecture 6 — Web Security
 
-47 `<section>` elements plus the generated title: 36 content slides, 6 TOC
-slides, 5 vertical stacks, 9 hands-on slides, 6 diagrams. Topics (TOC indices):
+55 `<section>` elements plus the generated title: 44 content slides, 6 TOC
+slides, 5 vertical stacks, 9 hands-on slides, 8 diagrams. Topics (TOC indices):
 `0` The Web Threat Model · `1` Server-Side Attacks · `2` Sessions & Cookies ·
 `3` Client-Side Attacks · `4` TLS and HTTPS.
 
@@ -309,20 +309,22 @@ server.` is Go's real reply to plain HTTP on a TLS listener. The server log
 
 ## The diagrams
 
-Six hand-written SVGs in `img/`, drawn for the league background with the
+Eight hand-written SVGs in `img/`, drawn for the league background with the
 `$highlights` colours as literal hex. Render before and after an edit with
 `rsvg-convert -b '#2b2b2b'`; text that overflows a box is not reported. Text
 with significant spaces inside `<tspan>`s carries `xml:space="preserve"`
 (`sql-boundary`, `tls13`); without it the spaces collapse.
 
-| Diagram            | Slide                            | Draws                                                            |
-| ------------------ | -------------------------------- | ---------------------------------------------------------------- |
-| `web-threat-model` | Two Victims, Drawn               | attacker → your app → your machine, or → your users              |
-| `sql-boundary`     | The Query the Database Sees      | glued, parsed, prepared — the grade query with the v1 payload    |
-| `xss-kinds`        | Three Kinds                      | stored, reflected and DOM as three four-step flows               |
-| `csrf`             | CSRF on the Grade Service, Drawn | `evil.example` posts a grade change with the instructor's cookie |
-| `samesite`         | SameSite, Drawn                  | when the cookie goes: same-site, then Strict / Lax / None        |
-| `tls13`            | The Handshake, Briefly           | TLS 1.3, one round trip, key shares in the clear                 |
+| Diagram            | Slide                              | Draws                                                            |
+| ------------------ | ---------------------------------- | ---------------------------------------------------------------- |
+| `web-threat-model` | Two Victims, Drawn                 | attacker → your app → your machine, or → your users              |
+| `sql-boundary`     | The Query the Database Sees        | glued, parsed, prepared — the grade query with the v1 payload    |
+| `xss-kinds`        | Three Kinds                        | stored, reflected and DOM as three four-step flows               |
+| `csrf`             | CSRF on the Grade Service, Drawn   | `evil.example` posts a grade change with the instructor's cookie |
+| `samesite`         | SameSite, Drawn                    | when the cookie goes: same-site, then Strict / Lax / None        |
+| `tls13`            | The Handshake, Briefly             | TLS 1.3, one round trip, key shares in the clear                 |
+| `capital-one-ssrf` | In the Wild: Capital One, 2019     | WAF relays to the metadata service, role credentials, S3         |
+| `ba-skimmer`       | In the Wild: British Airways, 2018 | edited JavaScript on BA's origin posts a card copy to BAways.com |
 
 - `sql-boundary`, `xss-kinds` and `tls13` **replaced** text: the SQL code
   block, the three-kinds table and the handshake bullet list. Do not add that
@@ -336,8 +338,46 @@ with significant spaces inside `<tspan>`s carries `xml:space="preserve"`
   The "one round trip" bracket ends when the server's flight arrives — the
   client's Finished and its first request then go together.
 - Widths: `xss-kinds` and `tls13` at `820`, `samesite` at `860`, `sql-boundary`
-  and `csrf` at `840`, `web-threat-model` at `860`. Each slide was checked at
+  and `csrf` at `840`, `web-threat-model` at `860`, `capital-one-ssrf` and
+  `ba-skimmer` at `800`. Each slide was checked at
   960×700 in headless Chrome.
+
+## Real-world cases
+
+Eight "In the Wild" slides, each directly after the concept it illustrates and
+inside that section's stack. Shape: `<h2>In the Wild: Name, Year</h2>`, three to
+five bullets (what happened, which mechanism failed, what would have stopped
+it), an optional one-line `box`, and a `0.55em` source line. They are not
+hands-on slides. Every figure was checked against the source below in October
+2026; do not round a number up.
+
+| Slide                   | After                                   | Claim                                                                                        | Source                                                            |
+| ----------------------- | --------------------------------------- | -------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| TalkTalk, 2015          | The Same Request, Prepared              | SQLi into legacy Tiscali pages; 156,959 customers, 15,656 bank details; £400,000             | UK ICO, "how the ICO investigation unfolded"                      |
+| Equifax, 2017           | The Same Bug, Other Interpreters        | Struts CVE-2017-5638 (`Content-Type` → OGNL); unpatched portal; 76 days; ~148 million        | US House Oversight report (Dec 2018); OGNL detail from NVD/S2-045 |
+| Optus, 2022             | Broken Access Control                   | 2018 coding error left the API's access control ineffective; ~9.5 million; "trial and error" | CSO Online on ACMA's 2024 Federal Court filing — **allegations**  |
+| Capital One, 2019       | Server-Side Request Forgery             | misconfigured WAF relayed to metadata; role read S3; ~100 M US, ~6 M Canada                  | KrebsOnSecurity; Capital One's facts2019 page                     |
+| Firesheep, 2010         | The Cookie Attributes                   | login over HTTPS, session cookie over HTTP; one-click hijacking on open wifi                 | Eric Butler, codebutler.com                                       |
+| Samy, MySpace, 2005     | Three Kinds                             | stored XSS worm; 1M+ users in <20 h; `java\nscript`, `eval`; read the anti-CSRF hash         | Samy Kamkar, samy.pl/myspace/tech.html                            |
+| British Airways, 2018   | Stopping It (XSS)                       | contractor Citrix login, no MFA; edited JS; 15 days to BAways.com; 244,000 cards; £20 M      | UK ICO Penalty Notice, 16 Oct 2020 (Wayback copy)                 |
+| Superfish, Lenovo, 2015 | The Same Handshake, Checking Turned Off | one root CA on every machine, private key recoverable; any site spoofable                    | US-CERT TA15-051A (seclists.org mirror)                           |
+
+- **Capital One and SSRF.** Capital One and the court documents say only
+  "configuration vulnerability" / misconfigured firewall. The slide says the
+  WAF _relayed_ a request to the metadata service, which is Krebs's account
+  and AWS's; it does not claim a named SSRF bug in Capital One's code.
+- **Optus** is ACMA's allegation, and Optus disputes how sophisticated the
+  attack was. The slide says "ACMA alleges". The slide does not claim
+  enumerable IDs: no primary source states that.
+- **BA's script was self-hosted**, so Subresource Integrity on a CDN tag is not
+  the lesson; the slide sits after **Stopping It** because CSP is the layer
+  that refuses the extra POST. That keeps **The Rest of the Client Side** as
+  the section's last slide and its lab-wifi hand-off intact.
+- **Superfish** sits after the `-k` pair, not between it: the pair is not
+  separated.
+- Links that refuse curl: `ico.org.uk` moved its penalty notices (the BA PDF
+  404s; the Wayback copy is used), and `cisa.gov` returns 403 to every
+  non-browser client, hence the seclists mirror of the same US-CERT alert.
 
 ## Check Yourself
 
