@@ -74,6 +74,82 @@ draft: false
     </div>
   </section>
   <section>
+    <h2>In the Wild: CrowdStrike Falcon, 2024</h2>
+    <ul>
+      <li>
+        19 July 2024: a content update to CrowdStrike's Falcon sensor crashed
+        about <strong>8.5 million</strong> Windows machines
+      </li>
+      <li>
+        The sensor runs as a <span class="hl-red">kernel driver</span> — in the
+        TCB. Its update expected 21 input fields and got 20, and read past the
+        end of the array
+      </li>
+      <li>
+        In user mode that is one dead process. In the kernel, it is the whole
+        machine
+      </li>
+      <li>
+        The vendor's fixes: a <span class="hl-green">bounds check</span>, and
+        <span class="hl-green">staged rollout</span> instead of everyone at once
+      </li>
+    </ul>
+    <div class="box">
+      <p>A security tool is in the TCB too — and so is its bug.</p>
+    </div>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Source:
+      <a
+        href="https://www.crowdstrike.com/wp-content/uploads/2024/08/Channel-File-291-Incident-Root-Cause-Analysis-08.06.2024.pdf"
+        >CrowdStrike, Channel File 291 Root Cause Analysis</a
+      >;
+      <a
+        href="https://blogs.microsoft.com/blog/2024/07/20/helping-our-customers-through-the-crowdstrike-outage/"
+        >Microsoft, Helping our customers through the CrowdStrike outage</a
+      >
+    </p>
+  </section>
+  <section>
+    <h2>In the Wild: The xz Backdoor, 2024</h2>
+    <ul>
+      <li>
+        A contributor spent two years earning maintainer rights on
+        <code>xz</code>, a compression library, then shipped a backdoor in
+        releases 5.6.0 and 5.6.1 (CVE-2024-3094)
+      </li>
+      <li>
+        <code>sshd</code> never uses compression — but on several distributions
+        it loads <code>libsystemd</code>, which loads <code>liblzma</code>
+      </li>
+      <li>
+        Your TCB is not the code you wrote. It is
+        <span class="hl-orange">every library the trusted process loads</span>,
+        and everyone who can publish one
+      </li>
+      <li>
+        Caught while it was mostly in pre-release distributions, because an
+        engineer chased half a second of extra login time
+      </li>
+    </ul>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Source:
+      <a href="https://www.openwall.com/lists/oss-security/2024/03/29/4"
+        >Andres Freund, backdoor in upstream xz/liblzma (oss-security)</a
+      >;
+      <a href="https://research.swtch.com/xz-timeline"
+        >Russ Cox, Timeline of the xz open source attack</a
+      >
+    </p>
+  </section>
+  <section>
+    <h2>The xz Backdoor, Drawn</h2>
+    <img
+      src="img/xz.svg"
+      alt="A contributor who became an xz maintainer published release tarballs whose build script, not in git, pulled a payload out of test files during distribution package builds; the backdoored liblzma is loaded by libsystemd, which a distribution patch links into sshd, so the code runs inside sshd as root before any login; Andres Freund found it because a failed login took about 0.8 seconds instead of 0.3"
+      width="820"
+    />
+  </section>
+  <section>
     <h2>The Reference Monitor</h2>
     <ul>
       <li>
@@ -345,6 +421,37 @@ $ chflags nouappnd server.log
     </ul>
   </section>
   <section>
+    <h2>In the Wild: Stuxnet, 2010</h2>
+    <ul>
+      <li>
+        A worm aimed at Siemens industrial controllers (PLCs); about 60% of the
+        infected hosts Symantec counted were in Iran
+      </li>
+      <li>
+        Its targets were not on the internet. It crossed the gap on
+        <span class="hl-orange">USB drives</span>, using a Windows shortcut bug
+        that ran code as soon as the drive was browsed
+      </li>
+      <li>
+        Four unpatched Windows vulnerabilities, drivers signed with
+        <span class="hl-red">two stolen certificates</span>, and a rootkit on
+        both Windows and the PLC
+      </li>
+      <li>
+        An air gap is a wall with a door: every USB stick and every contractor's
+        laptop. A signature proves who signed, not that the signer was honest
+      </li>
+    </ul>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Source:
+      <a
+        href="https://docs.broadcom.com/doc/security-response-w32-stuxnet-dossier-11-en"
+        >Falliere, O Murchu &amp; Chien, W32.Stuxnet Dossier v1.4 (Symantec,
+        2011)</a
+      >
+    </p>
+  </section>
+  <section>
     <h2>Ransomware, Because It Is What You Will Meet</h2>
     <ul>
       <li>Encrypt the victim's files, sell the key. Purely a business model</li>
@@ -367,6 +474,40 @@ $ chflags nouappnd server.log
         one copy <em class="hl-green">offline or immutable</em>
       </li>
     </ul>
+  </section>
+  <section>
+    <h2>In the Wild: NotPetya and Maersk, 2017</h2>
+    <ul>
+      <li>
+        Delivered through the update server of M.E.Doc, a Ukrainian accounting
+        package, then spread with EternalBlue and stolen passwords (Mimikatz)
+      </li>
+      <li>
+        It looked like ransomware and worked as a
+        <span class="hl-red">wiper</span>. The White House put total damage at
+        more than $10 billion
+      </li>
+      <li>
+        Maersk rebuilt 4,000 servers and 45,000 PCs. Its ~150 domain controllers
+        synced with each other, so all were wiped together
+      </li>
+      <li>
+        The one survivor was in Ghana, <em>offline because of a power cut</em>.
+        Two staffers relayed its disk to London by plane
+      </li>
+    </ul>
+    <div class="box">
+      <p>
+        A replica is not a backup. The offline copy has to be design, not luck.
+      </p>
+    </div>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Source:
+      <a
+        href="https://www.wired.com/story/notpetya-cyberattack-ukraine-russia-code-crashed-the-world/"
+        >Andy Greenberg, The Untold Story of NotPetya (WIRED, 2018)</a
+      >
+    </p>
   </section>
   <section>
     <h2>Detecting It</h2>
@@ -526,6 +667,48 @@ exit=134          # SIGABRT — the canary was overwritten
     </ul>
   </section>
   <section>
+    <h2>In the Wild: Heartbleed, 2014</h2>
+    <ul>
+      <li>
+        OpenSSL's TLS heartbeat: the client sends a payload and says how long it
+        is; the server echoes that many bytes back
+      </li>
+      <li>
+        OpenSSL never compared the claimed length with what arrived. Send one
+        byte, claim 65,535, and receive up to
+        <strong class="hl-red">64 KB of server memory</strong> — keys,
+        passwords, cookies (CVE-2014-0160)
+      </li>
+      <li>
+        An over-<em>read</em>, so nothing on the previous slide fires: no canary
+        is touched, nothing crashes, and the logs show nothing unusual
+      </li>
+      <li>
+        The fix was <span class="hl-green">one bounds check</span>. Found
+        independently by Google's Neel Mehta and by Codenomicon
+      </li>
+    </ul>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Source:
+      <a href="https://www.openssl.org/news/secadv/20140407.txt"
+        >OpenSSL Security Advisory, 7 April 2014</a
+      >;
+      <a href="https://heartbleed.com/">Codenomicon, The Heartbleed Bug</a>
+    </p>
+  </section>
+  <section>
+    <h2>Heartbleed, Drawn</h2>
+    <img
+      src="img/heartbleed.svg"
+      alt="A heartbeat request claims a length of 65535 but carries one byte, A; the server copies 65535 bytes starting at that A, so the reply holds the A followed by 65,534 bytes of whatever lay next in the heap, such as a private key, a password or a cookie; it is a read, so no canary changes and nothing crashes"
+      width="820"
+    />
+    <p>
+      The length came with the data. Lecture 6 meets the same trust, one layer
+      up.
+    </p>
+  </section>
+  <section>
     <h2>The Actual Fix</h2>
     <ul>
       <li>
@@ -665,9 +848,40 @@ P(attack | alarm)            9.01%
         </ul>
       </li>
     </ul>
+  </section>
+  <section>
+    <h2>In the Wild: Target's Alarms, 2013</h2>
+    <ul>
+      <li>
+        Attackers stole data from 40 million payment cards, plus up to 70
+        million customer records
+      </li>
+      <li>
+        Target's FireEye system <span class="hl-green">did</span> flag the
+        malware, with urgent alerts as each version was installed
+      </li>
+      <li>
+        Nobody acted, and the option to delete the malware automatically was not
+        turned on. The alert was named only
+        <code>malware.binary</code>
+      </li>
+      <li>
+        The Senate report's own guess: staff may have read it as
+        <span class="hl-red">a false alarm</span>, if the system alarmed often —
+        the base-rate fallacy, at work
+      </li>
+    </ul>
     <p>
       Detection will miss. So limit the damage: when this host falls, what else
       falls with it?
+    </p>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Source:
+      <a
+        href="https://www.commerce.senate.gov/wp-content/uploads/media/doc/2014%200325%20Target%20Kill%20Chain%20Analysis.pdf"
+        >US Senate Commerce Committee, A "Kill Chain" Analysis of the 2013
+        Target Data Breach (2014)</a
+      >
     </p>
   </section>
 </section>
@@ -749,6 +963,39 @@ P(attack | alarm)            9.01%
         (Firecracker, Kata) or a user-space kernel (gVisor)
       </li>
     </ul>
+  </section>
+  <section>
+    <h2>In the Wild: runc, 2019</h2>
+    <ul>
+      <li>
+        <code>runc</code> starts the containers under Docker, containerd, CRI-O
+        and Kubernetes.
+        <span style="white-space: nowrap">CVE-2019-5736</span> let a container
+        <span class="hl-red">overwrite the host's runc binary</span>
+      </li>
+      <li>
+        The next time runc ran, the attacker's code ran as
+        <strong>root on the host</strong> — and every other container on it
+      </li>
+      <li>
+        It needed root <em>inside</em> the container, usually from an untrusted
+        image
+      </li>
+      <li>
+        So the first item on the previous slide was the defence:
+        <span class="hl-green">a non-root user</span>, or user namespaces.
+        RHEL's SELinux policy blocked it too
+      </li>
+    </ul>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Source:
+      <a href="https://www.openwall.com/lists/oss-security/2019/02/11/2"
+        >Aleksa Sarai, CVE-2019-5736: runc container breakout (oss-security)</a
+      >;
+      <a href="https://kubernetes.io/blog/2019/02/11/runc-and-cve-2019-5736/"
+        >Kubernetes, Runc and CVE-2019-5736</a
+      >
+    </p>
   </section>
   <section>
     <h2>Isolation, Drawn</h2>

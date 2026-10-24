@@ -1,6 +1,6 @@
 # Lecture 5 — System & Software Security
 
-47 slides, 6 vertical stacks, 6 hands-on sections, 5 diagrams. Topics (TOC indices):
+56 slides, 6 vertical stacks, 6 hands-on sections, 7 diagrams, 7 real-world incident slides. Topics (TOC indices):
 `0` Operating System Security · `1` File System Security · `2` Malware ·
 `3` Software Security · `4` Host Defences · `5` Virtualization.
 
@@ -28,7 +28,7 @@ The deck is read by a first-year student, so it keeps four habits:
   | Append-Only, and Who Can… | every check trusts the program that runs as you        |
   | Detecting It              | how does malware arrive? A bug in a trusted program    |
   | The Actual Fix            | bugs still ship, so the host must notice               |
-  | The Base-Rate Fallacy     | detection will miss, so limit what falls with the host |
+  | In the Wild: Target's…    | detection will miss, so limit what falls with the host |
 
   If you reorder the sections, rewrite these sentences; they name the next
   topic.
@@ -130,7 +130,7 @@ whole block rather than edit one line.
 
 ## The diagrams
 
-Five hand-written SVGs in `img/`, styled like lecture 3's (league background,
+Seven hand-written SVGs in `img/`, styled like lecture 3's (league background,
 `$highlights` as literal hex). Render with `rsvg-convert -b '#2b2b2b'` before
 and after an edit.
 
@@ -141,6 +141,8 @@ and after an edit.
 | `mitigations` | Layers of Mitigation   | one frame, and which mitigation guards which part      |
 | `base-rate`   | The Base Rate, Counted | the 1,000,000-event tree and the alarms to scale       |
 | `isolation`   | Isolation, Drawn       | Type 2, Type 1, containers: what separates two tenants |
+| `xz`          | The xz Backdoor, Drawn | maintainer → tarball → liblzma → libsystemd → sshd     |
+| `heartbleed`  | Heartbleed, Drawn      | a 1-byte heartbeat claiming 65535, and the reply       |
 
 - **`overflow` carries real data.** `parham` is `70 61 72 68 61 6d 00`; the
   struct is little-endian; `strcpy` writes a terminating `00`, which in the
@@ -156,6 +158,38 @@ and after an edit.
 - `namespaces · cgroups` is drawn as its own layer in `isolation` for
   legibility; they are part of the shared kernel, and the caption says the
   kernel bug crosses that wall.
+
+## Real-world cases
+
+Each `In the Wild` slide sits directly after the concept it proves, in the same
+vertical stack. None is `hands-on`: they are cited, not captured. Every number
+below was checked against the source on 24 October 2026; if you edit a slide,
+re-check against the same source rather than memory.
+
+| Slide (placed after)                              | Claim on the slide                                                                                                                                                     | Source                                                                                                                 |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| CrowdStrike Falcon, 2024 (Trusted Computing Base) | ~8.5 M Windows machines; kernel driver; 21 fields expected, 20 given; out-of-bounds read; fixes: bounds check + staged rollout                                         | CrowdStrike Channel File 291 RCA (PDF); Microsoft blog 20 July 2024 (8.5 M)                                            |
+| The xz Backdoor, 2024 (+ Drawn)                   | CVE-2024-3094, 5.6.0/5.6.1; sshd → libsystemd → liblzma via distro patch; ≈ 0.8 s vs ≈ 0.3 s login                                                                     | Andres Freund, oss-security 2024/03/29/4; Russ Cox, research.swtch.com/xz-timeline (2021 first patch, 2022 maintainer) |
+| Stuxnet, 2010 (Why the Worm Is Different)         | ~60% of infected hosts in Iran; LNK auto-execution over USB; four unpatched Windows bugs; two stolen signing certificates (Realtek, JMicron); Windows and PLC rootkits | Symantec W32.Stuxnet Dossier v1.4 (docs.broadcom.com)                                                                  |
+| NotPetya and Maersk, 2017 (Ransomware…)           | M.E.Doc update; EternalBlue + Mimikatz; wiper; > $10 bn (White House); 4,000 servers, 45,000 PCs; ~150 DCs; Ghana DC offline from a blackout                           | Andy Greenberg, WIRED, Aug 2018                                                                                        |
+| Heartbleed, 2014 (Layers of Mitigation, + Drawn)  | CVE-2014-0160; missing bounds check; up to 64 KB per heartbeat; no trace in logs; found by Neel Mehta and Codenomicon                                                  | OpenSSL advisory 7 Apr 2014; heartbleed.com                                                                            |
+| Target's Alarms, 2013 (The Base-Rate Fallacy)     | 40 M cards, up to 70 M records; FireEye alerted on each install; auto-delete off; alert named `malware.binary`; report suggests staff saw it as a false alarm          | US Senate Commerce Committee staff report, 25 Mar 2014                                                                 |
+| runc, 2019 (Containers Are Not Small VMs)         | CVE-2019-5736 overwrites host runc → root on host; needs root in the container; non-root, user namespaces, RHEL SELinux block it                                       | Aleksa Sarai, oss-security 2019/02/11/2; Kubernetes blog 11 Feb 2019                                                   |
+
+- **Target** is only the alert angle. Lecture 7 owns the HVAC-vendor pivot into
+  a flat network; do not add it here. The section's bridge sentence moved from
+  **The Base-Rate Fallacy** onto this slide, because it is now the section's
+  last.
+- The Senate PDF on commerce.senate.gov returns 403 to curl and headless Chrome (Akamai bot block);
+  the text was checked against an identical copy at covert.io. Microsoft's
+  blog also 403s to curl and loads in a browser.
+- **Heartbleed** sits before **The Actual Fix** on purpose: it is the case for
+  "never trust a length that came with the data", and it shows that the
+  mitigations on the slide before it only see writes. The CrowdStrike bug is
+  the same class (an out-of-bounds read in the kernel); the two slides may be
+  cross-referenced in class.
+- **Stuxnet** is stated in the dossier's terms (targets, propagation,
+  certificates). Keep attribution out of the slide; the source does not make it.
 
 ## Other captured material
 
