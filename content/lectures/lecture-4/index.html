@@ -354,6 +354,48 @@ if roles[user] != "instructor" {
     </ul>
   </section>
   <section>
+    <h2>In the Wild: Twitter, 2020</h2>
+    <ul>
+      <li>
+        15 July: callers posing as the IT help desk sent staff to a look-alike
+        VPN login page. Some approved the MFA push that followed
+      </li>
+      <li>
+        From inside, they found staff who held the internal account-support
+        tool, and took over 130 accounts — Obama, Bezos and Musk among them —
+        for a bitcoin scam
+      </li>
+      <li>
+        The tool could take over <em>any</em> account, and
+        <strong class="hl-red">over 1,000 employees</strong> held that role. No
+        least privilege, no separation of duty
+      </li>
+      <li>
+        The regulator's fix: fewer holders, a second approver for high-risk
+        actions, and hardware keys, which it said would have stopped the attack
+      </li>
+    </ul>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Source:
+      <a href="https://www.dfs.ny.gov/Twitter_Report"
+        >NY Department of Financial Services, Report on Investigation of
+        Twitter's July 15, 2020 Cybersecurity Incident</a
+      >
+    </p>
+  </section>
+  <section>
+    <h2>Twitter 2020, Drawn</h2>
+    <img
+      src="img/twitter-2020.svg"
+      alt="A phone call sends an employee to a look-alike VPN page; the attacker replays the password on the real VPN and the employee approves the MFA push; inside, the attacker finds holders of the account-support tool, held by over 1,000 staff, and takes over 130 accounts"
+      width="860"
+    />
+    <p>
+      Two places it could have stopped, both in this lecture: the role check,
+      and a second factor a fake page cannot relay.
+    </p>
+  </section>
+  <section>
     <h2>ABAC — the Context Decides</h2>
     <ul>
       <li>
@@ -449,6 +491,35 @@ if roles[user] != "instructor" {
     </ul>
   </section>
   <section>
+    <h2>In the Wild: Colonial Pipeline, 2021</h2>
+    <ul>
+      <li>
+        May 2021: ransomware took Colonial's systems offline, and the fuel
+        pipeline with them, for days
+      </li>
+      <li>
+        The way in, the CEO told the US Senate: one password for a
+        <em>legacy</em> VPN account that was no longer meant to be in use
+      </li>
+      <li>
+        "It was a complicated password" — so strength did not matter. It was
+        stolen, not guessed
+      </li>
+      <li>
+        It "only had single-factor authentication". One row of the previous
+        slide's table; a second row, or deleting the unused account, would have
+        stopped it
+      </li>
+    </ul>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Source:
+      <a href="https://www.carriermanagement.com/news/2021/06/09/221844.htm"
+        >Reuters (via Carrier Management), Hackers Stole a Single Password to
+        Disrupt Colonial Pipeline</a
+      >
+    </p>
+  </section>
+  <section>
     <h2>Passwords Are Still Here</h2>
     <ul>
       <li>
@@ -472,6 +543,36 @@ if roles[user] != "instructor" {
         </ul>
       </li>
     </ul>
+  </section>
+  <section>
+    <h2>In the Wild: RockYou, 2009</h2>
+    <ul>
+      <li>
+        December 2009: an SQL injection flaw in RockYou.com, a maker of
+        social-network apps, exposed about 32 million accounts
+      </li>
+      <li>
+        The passwords were stored in <strong class="hl-red">plain text</strong>
+        — no hash at all. The injection is lecture 6's bug; the storage is
+        entirely the site's fault
+      </li>
+      <li>
+        Many users had reused their webmail password, so one leak opened other
+        accounts: credential stuffing, at the end of this section
+      </li>
+      <li>
+        The list lives on as <code>rockyou.txt</code>, shipped in Kali Linux as
+        a standard cracking wordlist
+      </li>
+    </ul>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Source:
+      <a href="https://www.theregister.com/2009/12/16/rockyou_password_snafu/"
+        >The Register, RockYou password snafu exposes webmail accounts</a
+      >
+      ·
+      <a href="https://www.kali.org/tools/wordlists/">Kali Linux, wordlists</a>
+    </p>
   </section>
   <section class="hands-on">
     <h2>Never Store It Twice the Same</h2>
@@ -509,6 +610,36 @@ $6$9kSX7tN9L2s6M5N.$g.pyl63tv1ad97rS8/Il3yZSEaZ34j25vs...
     <p>
       The values are the ones from the run on the previous slide. The salt is
       not a secret; its only job is to make every user a separate attack.
+    </p>
+  </section>
+  <section>
+    <h2>In the Wild: LinkedIn, 2012</h2>
+    <ul>
+      <li>
+        June 2012: about 6.5 million LinkedIn password hashes were posted to a
+        password-cracking forum
+      </li>
+      <li>
+        They were <strong class="hl-red">SHA-1 with no salt</strong> — the left
+        half of the drawing. Everyone who chose the same password had the same
+        hash, so one guess cracked them all
+      </li>
+      <li>
+        In 2016 the same breach turned out to hold about 117 million accounts,
+        offered for sale. LinkedIn reset passwords unchanged since 2012
+      </li>
+      <li>
+        A salt alone would not have saved them: SHA-1 is fast. The next two
+        slides are the rest of the fix
+      </li>
+    </ul>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Source:
+      <a
+        href="https://krebsonsecurity.com/2016/05/as-scope-of-2012-breach-expands-linkedin-to-again-reset-passwords-for-some-users/"
+        >Krebs on Security, As Scope of 2012 Breach Expands, LinkedIn to Again
+        Reset Passwords for Some Users</a
+      >
     </p>
   </section>
   <section>
@@ -568,6 +699,50 @@ scrypt, N=2^17 r=8 p=1              198.368 ms/hash            5 guesses/sec
         <em>on your hardware</em>, and revisit it as hardware improves
       </li>
     </ul>
+  </section>
+  <section>
+    <h2>In the Wild: Adobe, 2013</h2>
+    <ul>
+      <li>
+        October 2013: a leaked Adobe file held over 130 million accounts; Adobe
+        put the active users at about 38 million
+      </li>
+      <li>
+        The passwords were not hashed but
+        <strong class="hl-red">encrypted</strong>
+        — Triple DES, in ECB mode, with one key for every password
+      </li>
+      <li>
+        Lecture 3's ECB picture again: the same password gave the same
+        ciphertext, and the users' password hints sat beside it in plain text.
+        Nearly 1.9 million accounts shared the ciphertext of
+        <code>123456</code>
+      </li>
+      <li>
+        Encryption can be undone by whoever holds the key. A password store must
+        not be undoable at all
+      </li>
+    </ul>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Source:
+      <a
+        href="https://www.csoonline.com/article/540070/network-security-adobe-confirms-stolen-passwords-were-encrypted-not-hashed.html"
+        >CSO Online, Adobe confirms stolen passwords were encrypted, not
+        hashed</a
+      >
+    </p>
+  </section>
+  <section>
+    <h2>Adobe 2013, Drawn</h2>
+    <img
+      src="img/adobe-ecb.svg"
+      alt="Three users with the same password: under one-key 3DES-ECB they share one ciphertext block and their hints are in plain text beside it; under a salted KDF each stored value is unrelated"
+      width="860"
+    />
+    <p>
+      The researchers never needed Adobe's key. Identical blocks and the hints
+      beside them were enough.
+    </p>
   </section>
   <section class="hands-on">
     <h2>The Grade Service Gets a Login</h2>
@@ -748,6 +923,36 @@ $ echo NDAwMTp0dWxpcC1yaXZlci00Mg== | base64 -d
       </li>
     </ul>
   </section>
+  <section>
+    <h2>In the Wild: Reddit, 2018</h2>
+    <ul>
+      <li>
+        June 2018: an attacker got into a few Reddit employees' accounts at its
+        cloud and source-code hosting providers
+      </li>
+      <li>
+        Those accounts had a second factor — codes by
+        <span class="hl-orange">SMS</span>. The attacker intercepted the texts
+        sent to the employees' phone numbers
+      </li>
+      <li>
+        The attacker read source code and internal files, and took an old backup
+        of early users: usernames, salted password hashes, emails
+      </li>
+      <li>
+        Reddit moved its staff to token-based 2FA. SMS is a second factor, but
+        the weakest on the previous slide
+      </li>
+    </ul>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Source:
+      <a
+        href="https://www.bleepingcomputer.com/news/security/reddit-announces-security-breach-after-hackers-bypassed-staffs-2fa/"
+        >BleepingComputer, Reddit Announces Security Breach After Hackers
+        Bypassed Staff's 2FA</a
+      >
+    </p>
+  </section>
   <section class="hands-on">
     <h2>TOTP Is Twenty Lines</h2>
     <pre><code class="lang-go">
@@ -889,6 +1094,39 @@ T=2000000000   code=69279037
         special-category personal data nearly everywhere
       </li>
     </ul>
+  </section>
+  <section>
+    <h2>In the Wild: Touch ID, 2013</h2>
+    <ul>
+      <li>
+        September 2013, the month the iPhone 5s shipped: the Chaos Computer Club
+        unlocked its Touch ID sensor with a fake finger
+      </li>
+      <li>
+        The print was photographed from a glass surface at 2400 dpi,
+        laser-printed onto a transparency, and filled with latex milk or wood
+        glue
+      </li>
+      <li>
+        A <span class="hl-red">presentation attack</span>, exactly. The sensor
+        checked the pattern, and the fake carried the pattern
+      </li>
+      <li>
+        It is the "not secret" fact two slides back: the owner had left the
+        print on a glass
+      </li>
+    </ul>
+    <div class="box">
+      <p>
+        Fine as a local factor beside a device you hold. Never the only one.
+      </p>
+    </div>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Source:
+      <a href="https://www.ccc.de/en/updates/2013/ccc-breaks-apple-touchid"
+        >Chaos Computer Club, Chaos Computer Club breaks Apple TouchID</a
+      >
+    </p>
   </section>
   <section>
     <h2>Check Yourself</h2>

@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420">
+  <title>The Twitter 2020 attack path: a phone call, a relayed VPN login and MFA push, then an internal tool that could take over any account</title>
+  <style>
+    text { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 18px; fill: #eeeeee; text-anchor: middle; dominant-baseline: middle; }
+    .small { font-size: 15px; fill: #b0b4bc; }
+    .title { font-size: 20px; font-weight: bold; }
+    .box { fill: rgba(255, 255, 255, 0.06); stroke: #cfd3da; stroke-width: 2; }
+    .line { fill: none; stroke: #cfd3da; stroke-width: 2; marker-end: url(#arrow); }
+    .dash { fill: none; stroke: #76ff03; stroke-width: 2; stroke-dasharray: 6 5; }
+    .orange { fill: #ff9100; } .green { fill: #76ff03; } .cyan { fill: #00e5ff; }
+    .red { fill: #ff5252; } .violet { fill: #ee82ee; } .yellow { fill: #ffcc00; }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#cfd3da" />
+    </marker>
+  </defs>
+
+  <!-- row 1: getting in -->
+  <rect class="box" x="10" y="20" width="200" height="110" rx="6" style="stroke: #ff9100" />
+  <text class="orange title" x="110" y="48">Phone call</text>
+  <text x="110" y="80">"IT help desk:</text>
+  <text x="110" y="104">your VPN is broken"</text>
+  <path class="line" d="M210,75 H236" />
+
+  <rect class="box" x="240" y="20" width="200" height="110" rx="6" style="stroke: #ff5252" />
+  <text class="red title" x="340" y="48">Look-alike page</text>
+  <text x="340" y="80">employee types</text>
+  <text x="340" y="104">name + password</text>
+  <path class="line" d="M440,75 H466" />
+
+  <rect class="box" x="470" y="20" width="200" height="110" rx="6" style="stroke: #00e5ff" />
+  <text class="cyan title" x="570" y="48">Real VPN</text>
+  <text x="570" y="80">attacker types</text>
+  <text x="570" y="104">the same, at once</text>
+  <path class="line" d="M670,75 H696" />
+
+  <rect class="box" x="700" y="20" width="190" height="110" rx="6" style="stroke: #ffcc00" />
+  <text class="yellow title" x="795" y="48">MFA push</text>
+  <text x="795" y="80">employee's phone:</text>
+  <text x="795" y="104">"approve"</text>
+
+  <path class="dash" d="M240,148 H890" />
+  <text class="green small" x="565" y="168">a hardware key signs the real origin: the relay fails here</text>
+
+  <path class="line" d="M795,130 V226" />
+
+  <!-- row 2: moving inside -->
+  <rect class="box" x="620" y="230" width="270" height="110" rx="6" />
+  <text class="title" x="755" y="258">Inside the network</text>
+  <text x="755" y="290">learn the processes, find</text>
+  <text x="755" y="314">staff who hold the tool</text>
+  <path class="line" d="M620,285 H584" />
+
+  <rect class="box" x="320" y="230" width="260" height="110" rx="6" style="stroke: #ee82ee" />
+  <text class="violet title" x="450" y="258">Account-support tool</text>
+  <text x="450" y="290">can take over any account</text>
+  <text x="450" y="314">held by over 1,000 staff</text>
+  <path class="line" d="M320,285 H284" />
+
+  <rect class="box" x="10" y="230" width="270" height="110" rx="6" style="stroke: #ff5252" />
+  <text class="red title" x="145" y="258">130 accounts</text>
+  <text x="145" y="290">45 used to tweet a scam</text>
+  <text x="145" y="314">about $118,000 in bitcoin</text>
+
+  <path class="dash" d="M320,358 H580" />
+  <text class="green small" x="450" y="378">least privilege: fewer holders</text>
+  <text class="green small" x="450" y="400">separation of duty: a second approver</text>
+</svg>

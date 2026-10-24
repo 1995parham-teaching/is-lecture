@@ -1,7 +1,7 @@
 # Lecture 4 — Access Control
 
-42 slides including the generated title (35 content, 6 TOC), 5 vertical
-stacks, 8 hands-on slides, 4 diagrams. Topics (TOC indices):
+51 slides including the generated title (44 content, 6 TOC), 5 vertical
+stacks, 8 hands-on slides, 6 diagrams, 7 real-world incident slides. Topics (TOC indices):
 `0` The Four A's · `1` Access Control Models · `2` Passwords ·
 `3` Second Factors · `4` Biometrics.
 
@@ -189,7 +189,7 @@ Facts worth not re-deriving:
 
 ## The diagrams
 
-Four hand-written SVGs in `img/`, drawn for the league background with the
+Six hand-written SVGs in `img/`, drawn for the league background with the
 `$highlights` colours as literal hex. Render before and after an edit with
 `rsvg-convert -b '#2b2b2b'`; text that overflows a box is not reported.
 
@@ -199,6 +199,8 @@ Four hand-written SVGs in `img/`, drawn for the league background with the
 | `acl-capability` | The Access Matrix          | the matrix; a column is an ACL, a row a capability    |
 | `salt`           | The Salt, Drawn            | unsalted vs salted, the values from the hands-on run  |
 | `far-frr`        | FAR, FRR and the Threshold | FAR and FRR against the threshold, the EER, two uses  |
+| `twitter-2020`   | Twitter 2020, Drawn        | phone call → relayed VPN login and MFA push → tool    |
+| `adobe-ecb`      | Adobe 2013, Drawn          | one-key 3DES-ECB plus hints vs a salted KDF           |
 
 - `acl-capability` **replaced** the access-matrix table, and `far-frr`
   **replaced** the FAR/FRR bullet list. The same cells and the same claims are
@@ -210,6 +212,44 @@ Four hand-written SVGs in `img/`, drawn for the league background with the
   cross at x = 430, y ≈ 245, where the EER dot is.
 - `four-as` shows `curl -u 4001:••••••••`: the student's request, which takes
   the 403 exit. The green `200` label is generic on purpose.
+
+- `twitter-2020` uses only figures from the NYDFS report (130 accounts, 45
+  tweeted, about $118,000, over 1,000 staff with the tool).
+- `adobe-ecb` is a schematic: the names, hints and `$2a$…` values are
+  invented, and the drawing says so. Do not replace them with real records.
+
+## Real-world cases
+
+Seven `In the Wild: Name, Year` slides, each placed directly after the concept
+it illustrates, inside that section's stack. None is `hands-on`. Each carries
+its source line; re-check a claim against it before editing.
+
+| Slide                   | After                        | Source                                                                                                                                              |
+| ----------------------- | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Twitter, 2020 (+ drawn) | You Already Wrote One (RBAC) | NYDFS, Report on Investigation of Twitter's July 15, 2020 Cybersecurity Incident — https://www.dfs.ny.gov/Twitter_Report                            |
+| Colonial Pipeline, 2021 | Three Kinds of Evidence      | Reuters via Carrier Management — https://www.carriermanagement.com/news/2021/06/09/221844.htm                                                       |
+| RockYou, 2009           | Passwords Are Still Here     | The Register, 16 Dec 2009 — https://www.theregister.com/2009/12/16/rockyou_password_snafu/ ; Kali wordlists page for `rockyou.txt`                  |
+| LinkedIn, 2012          | The Salt, Drawn              | Krebs on Security, May 2016 — https://krebsonsecurity.com/2016/05/as-scope-of-2012-breach-expands-linkedin-to-again-reset-passwords-for-some-users/ |
+| Adobe, 2013 (+ drawn)   | What To Actually Use         | CSO Online — https://www.csoonline.com/article/540070/network-security-adobe-confirms-stolen-passwords-were-encrypted-not-hashed.html               |
+| Reddit, 2018            | Something You Have           | BleepingComputer — https://www.bleepingcomputer.com/news/security/reddit-announces-security-breach-after-hackers-bypassed-staffs-2fa/               |
+| Touch ID, 2013          | Attacking and Defending It   | Chaos Computer Club — https://www.ccc.de/en/updates/2013/ccc-breaks-apple-touchid                                                                   |
+
+Facts worth not re-deriving:
+
+- **Twitter**: the MFA was an app push that some employees approved; the
+  NYDFS report says hardware MFA "would have stopped the Hackers". The
+  dfs.ny.gov site serves a Cloudflare challenge to `curl`; the report was read
+  through its Wayback Machine snapshot.
+- **Colonial**: the CEO told the Senate it was a "complicated password" on a
+  legacy VPN account with single-factor authentication. How the password was
+  obtained was not established at the hearing — do not add a claim about it.
+- **Reddit**: the sources say "SMS intercept", not SIM swap. Keep the wording.
+- **Adobe**: the leaked-file size differs by source (130 million in CSO, 150
+  million in Krebs); the slide says "over 130 million" and Adobe's 38 million
+  active users. The 1.9 million `123456` figure is Jeremi Gosney's analysis.
+- **LinkedIn**: 6.5 million is the 2012 posting; 117 million is the 2016 sale.
+- The Twitter and Colonial slides are inside sections whose closing slide must
+  stay last (**Choosing**, **Attacks on Passwords**); none was placed after one.
 
 ## The "AAAA" question
 

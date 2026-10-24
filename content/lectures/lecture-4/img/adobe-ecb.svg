@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 400">
+  <title>Three users with the same password: under one-key 3DES-ECB they share one ciphertext and their plaintext hints sit beside it; under a salted KDF they share nothing</title>
+  <style>
+    text { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 18px; fill: #eeeeee; text-anchor: middle; dominant-baseline: middle; }
+    .small { font-size: 15px; fill: #b0b4bc; }
+    .mono { font-family: Menlo, Monaco, "Courier New", monospace; font-size: 17px; }
+    .title { font-size: 20px; font-weight: bold; }
+    .left { text-anchor: start; }
+    .box { fill: rgba(255, 255, 255, 0.06); stroke: #cfd3da; stroke-width: 2; }
+    .orange { fill: #ff9100; } .green { fill: #76ff03; } .cyan { fill: #00e5ff; }
+    .red { fill: #ff5252; } .violet { fill: #ee82ee; } .yellow { fill: #ffcc00; }
+  </style>
+
+  <text class="red title" x="225" y="24">3DES-ECB, one key for all</text>
+  <text class="green title" x="675" y="24">Salted KDF, own salt each</text>
+  <text class="small" x="225" y="50">user · stored value · hint</text>
+  <text class="small" x="675" y="50">user · stored value</text>
+
+  <!-- left: ECB -->
+  <rect class="box" x="10" y="66" width="430" height="200" rx="6" style="stroke: #ff5252" />
+  <text class="left" x="26" y="100">ana</text>
+  <rect x="96" y="84" width="150" height="32" rx="4" fill="rgba(255, 82, 82, 0.18)" stroke="#ff5252" />
+  <text class="mono" x="171" y="100">block A</text>
+  <text class="left yellow" x="262" y="100">"1 to 6"</text>
+
+  <text class="left" x="26" y="160">bob</text>
+  <rect x="96" y="144" width="150" height="32" rx="4" fill="rgba(255, 82, 82, 0.18)" stroke="#ff5252" />
+  <text class="mono" x="171" y="160">block A</text>
+  <text class="left yellow" x="262" y="160">"numbers"</text>
+
+  <text class="left" x="26" y="220">cyd</text>
+  <rect x="96" y="204" width="150" height="32" rx="4" fill="rgba(255, 82, 82, 0.18)" stroke="#ff5252" />
+  <text class="mono" x="171" y="220">block A</text>
+  <text class="left yellow" x="262" y="220">"123456"</text>
+
+  <!-- right: KDF -->
+  <rect class="box" x="460" y="66" width="430" height="200" rx="6" style="stroke: #76ff03" />
+  <text class="left" x="476" y="100">ana</text>
+  <text class="mono left cyan" x="546" y="100">$2a$12$Qx…  (unrelated)</text>
+  <text class="left" x="476" y="160">bob</text>
+  <text class="mono left cyan" x="546" y="160">$2a$12$h7…  (unrelated)</text>
+  <text class="left" x="476" y="220">cyd</text>
+  <text class="mono left cyan" x="546" y="220">$2a$12$Lm…  (unrelated)</text>
+
+  <text x="225" y="296">Same password, same block.</text>
+  <text x="225" y="320">Count the repeats, read the hints:</text>
+  <text class="red" x="225" y="344">no key needed</text>
+  <text x="675" y="296">Same password, nothing in common.</text>
+  <text x="675" y="320">Each guess is one slow hash</text>
+  <text class="green" x="675" y="344">per user</text>
+
+  <text class="small" x="450" y="384">Schematic: the names, hints and values are invented, not records from the leak</text>
+</svg>
