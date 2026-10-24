@@ -1,7 +1,7 @@
 # Lecture 3 — Cryptography
 
-The toolbox lecture, and the one the rest of the course spends. 59 slides,
-5 vertical stacks, 4 hands-on sections, 3 images, 13 diagrams. Topics (TOC indices):
+The toolbox lecture, and the one the rest of the course spends. 67 slides,
+5 vertical stacks, 4 hands-on sections, 3 images, 15 diagrams, 6 real-world cases. Topics (TOC indices):
 `0` Foundations · `1` Symmetric Encryption · `2` Hashes & MACs ·
 `3` Public-Key Cryptography · `4` Signatures & PKI.
 
@@ -53,7 +53,7 @@ transcripts are the failure mode this deck is most exposed to.
 
 ## The diagrams
 
-Thirteen hand-written SVGs in `img/`, each on its own slide (titled "…, Drawn"
+Fifteen hand-written SVGs in `img/`, each on its own slide (titled "…, Drawn"
 or "…, Counted") straight after the slide it draws, so no existing slide got
 more crowded. In deck order:
 
@@ -72,6 +72,8 @@ more crowded. In deck order:
 | `forward-secrecy`  | static RSA vs ephemeral DH against one later leak     |
 | `signature`        | sign and verify                                       |
 | `chain`            | root → intermediate → leaf                            |
+| `flame-collision`  | one MD5 signature fits two certificates (Flame)       |
+| `ps3-ecdsa`        | repeated ECDSA nonce → nonce → private key (Sony)     |
 
 They are drawn for the league background (light strokes, transparent fill)
 with the `$highlights` colours as literal hex, because an `<img>` SVG cannot see
@@ -151,6 +153,41 @@ what sets up "sign the exchange" on the Forward Secrecy slide after it.
 - **Where This Leaves Us** follows it and is the 3 → 4 hand-off: a key proves
   possession, not permission. It names the grade service's `X-User` header,
   which lecture 4 replaces with a real login. Keep both in step with lecture 4.
+
+## Real-world cases
+
+Six "In the Wild: Name, Year" slides, each straight after the concept slide it
+proves, in the same stack. None is hands-on. Each carries its sources on a
+`font-size: 0.55em` line; every number on them was checked against that source
+(October 2026). Re-check the source before changing a number.
+
+| Slide                             | Sits after                    | Sources                                                                                  |
+| --------------------------------- | ----------------------------- | ---------------------------------------------------------------------------------------- |
+| WEP, 2001 (+ TJX, 2007)           | Why the Nonce Must Not Repeat | Borisov–Goldberg–Wagner paper; FMS (SAC 2001); Privacy Commissioner of Canada TJX report |
+| Flame, 2012 (+ `flame-collision`) | Which Hash?                   | CWI press release (Stevens); Microsoft Security Advisory 2718704                         |
+| ROCA, 2017                        | Key Sizes Are Not Comparable  | Nemec et al., CCS 2017 (crocs.fi.muni.cz); Government of Estonia, 2 Nov 2017             |
+| Sony PS3, 2010 (+ `ps3-ecdsa`)    | Sign, Verify, Tamper          | fail0verflow 27C3 talk and slides; RFC 8032                                              |
+| Symantec, 2015–2018               | The Chain Has Consequences    | Google Security Blog (Sept/Oct 2015, Sept 2017); Mozilla CA/Symantec Issues              |
+| Debian OpenSSL, 2008              | Keys Have a Life Cycle        | DSA-1571-1; Debian Wiki SSLkeys; USN-612-1                                               |
+
+Facts worth not re-deriving:
+
+- **WEP**: "under half a day" and "about 5,000 packets" are both from the
+  Borisov–Goldberg–Wagner paper. TJX's "estimated 45 million" cards is the
+  Canadian report's figure; that report is also what says the stores were on WEP.
+- **Flame**: Microsoft disallowed MD5 for CAs from 15 January 2009; CWI dates
+  the collision to February 2010 — about a year, not "years", later.
+- **ROCA**: 140.8 CPU-years and $20,000–40,000 are the paper's _expected_
+  figures for 2048-bit. Estonia's own statement says about 760,000 cards (early
+  press said 750,000). ROCA is **not** a bad RNG — do not merge it with Debian.
+- **PS3**: `ps3-ecdsa.svg` uses k for the nonce and d for the private key; the
+  fail0verflow slides use m and k. The algebra was checked with a pure-Python
+  secp256k1 run (same r, nonce and key recovered); the script is not committed.
+- **Symantec**: the 2015 google.com certificate was a _pre-certificate_. The 164
+  / 76 / 2,458 numbers are Symantec's re-audit, per Google's October post.
+  Chrome 70 (Oct 2018); Firefox 64 (Dec 2018) after Mozilla's delay.
+- **Debian**: 32,767 seeds _per architecture_ (Debian wiki). The DSA point is
+  in the advisory itself, and it is what links this slide to the PS3 one.
 
 ## Terms and where they are defined
 

@@ -432,6 +432,52 @@ draft: false
       <em class="hl-red">nonce reuse</em> is fatal rather than merely weak.
     </p>
   </section>
+  <section>
+    <h2>In the Wild: WEP, 2001</h2>
+    <ul>
+      <li>
+        Wi-Fi's first encryption: RC4 keyed with a shared key and a
+        <span class="hl-orange">24-bit IV</span>, sent in the clear
+      </li>
+      <li>
+        A busy access point runs out of IVs in under half a day; random IVs
+        repeat after about 5,000 packets. A repeated IV is
+        <strong class="hl-red">a repeated keystream</strong> — the diagram
+        before this one
+      </li>
+      <li>
+        The same year, Fluhrer, Mantin and Shamir went further and recovered the
+        key itself from RC4's key schedule
+      </li>
+      <li>
+        TJX's stores were still on WEP when intruders came in over their store
+        Wi-Fi: an estimated 45 million payment cards, reported in 2007
+      </li>
+      <li>
+        The fix, WPA2: AES with a 48-bit packet counter that never repeats, and
+        a real MAC
+      </li>
+    </ul>
+    <div class="box">
+      <p>Lecture 1's "reader on the lab wifi", with a published recipe.</p>
+    </div>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Source:
+      <a href="https://people.eecs.berkeley.edu/~daw/papers/wep-mob01.pdf"
+        >Borisov, Goldberg, Wagner, Intercepting Mobile Communications</a
+      >
+      ·
+      <a href="https://link.springer.com/chapter/10.1007/3-540-45537-X_1"
+        >Fluhrer, Mantin, Shamir, Weaknesses in the Key Scheduling Algorithm of
+        RC4</a
+      >
+      ·
+      <a
+        href="https://www.priv.gc.ca/en/opc-actions-and-decisions/investigations/investigations-into-businesses/2007/tjx_rep_070925/"
+        >Privacy Commissioner of Canada, TJX report</a
+      >
+    </p>
+  </section>
 </section>
 <section>
   <div class="toc" data-selected="2"></div>
@@ -565,6 +611,57 @@ s1.pdf s2.pdf differ: char 193, line 8
       "Dead" still means dead where a
       <strong class="hl-orange">deliberate</strong> collision matters —
       certificates, signatures, code updates.
+    </p>
+  </section>
+  <section>
+    <h2>In the Wild: Flame, 2012</h2>
+    <ul>
+      <li>
+        Espionage malware, announced in May 2012 by Kaspersky, CrySyS and Iran's
+        national CERT. It spread by posing as a
+        <span class="hl-orange">Windows Update</span>
+      </li>
+      <li>
+        Its code carried a valid signature chaining to Microsoft's root. A
+        Microsoft licensing CA was
+        <strong class="hl-red">still signing with MD5</strong>, though Microsoft
+        had banned MD5 for public CAs in 2009
+      </li>
+      <li>
+        The attackers built a
+        <span class="hl-violet">chosen-prefix collision</span>: the CA signed
+        one certificate, and the signature fitted another. CWI found it was a
+        variant nobody had published
+      </li>
+      <li>
+        Microsoft revoked the CAs in June 2012. The real fix was the "Dead" row
+        of the previous table, applied everywhere
+      </li>
+    </ul>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Source:
+      <a
+        href="https://www.cwi.nl/en/news/2012/cwi-cryptanalist-discovers-new-cryptographic-attack-variant-in-flame-spy-malware/"
+        >CWI, new cryptographic attack variant in Flame</a
+      >
+      ·
+      <a
+        href="https://learn.microsoft.com/en-us/security-updates/securityadvisories/2012/2718704"
+        >Microsoft Security Advisory 2718704</a
+      >
+    </p>
+  </section>
+  <section>
+    <h2>Flame's Collision, Drawn</h2>
+    <img
+      src="img/flame-collision.svg"
+      alt="Certificate A, a licensing certificate the CA signed, and certificate B, which signs code as Microsoft, end in collision blocks that give them the same MD5 digest; the CA's signature over that digest is copied onto B and still verifies"
+      width="860"
+    />
+    <p>
+      A signature is over the <em>digest</em>. Find two documents with one
+      digest and every signature on one is a signature on the other — the
+      <span class="hl-violet">collision</span> column of the properties diagram.
     </p>
   </section>
   <section>
@@ -818,6 +915,42 @@ open one bit flipped: "" err=cipher: message authentication failed
     </p>
   </section>
   <section>
+    <h2>In the Wild: ROCA, 2017</h2>
+    <ul>
+      <li>
+        Infineon's RSA library — in smartcards, tokens and TPMs, FIPS 140-2
+        certified — generated primes with a
+        <span class="hl-red">specific structure</span>. The randomness was fine;
+        the algorithm was not (CVE-2017-15361)
+      </li>
+      <li>
+        The structure shows in the public key, and it makes factoring cheap: a
+        2048-bit key in about 140 CPU-years, roughly $20,000–40,000 of cloud
+        time — where the table promises 2<sup>112</sup> work
+      </li>
+      <li>
+        Estonia blocked the certificates of about 760,000 national ID cards on 3
+        November 2017
+      </li>
+      <li>
+        The key <em>size</em> was right. The key
+        <em class="hl-orange">generation</em>
+        was wrong — "never the key length", from How Big Is Big Enough
+      </li>
+    </ul>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Source:
+      <a href="https://crocs.fi.muni.cz/public/papers/rsa_ccs17"
+        >Nemec et al., The Return of Coppersmith's Attack (ACM CCS 2017)</a
+      >
+      ·
+      <a
+        href="https://www.valitsus.ee/en/news/estonia-will-block-certificates-760-000-id-cards-evening-3-november"
+        >Government of Estonia, 2 November 2017</a
+      >
+    </p>
+  </section>
+  <section>
     <h2>Nobody Encrypts Data With RSA</h2>
     <ul>
       <li>
@@ -961,6 +1094,55 @@ Signature Verification Failure
     <p>64 bytes, for a message of any size.</p>
   </section>
   <section>
+    <h2>In the Wild: Sony PS3, 2010</h2>
+    <ul>
+      <li>
+        The PlayStation 3 ran only code carrying Sony's
+        <span class="hl-orange">ECDSA</span> signature — the top row of the
+        signing diagram, with Sony's private key
+      </li>
+      <li>
+        ECDSA needs a fresh random <span class="hl-cyan">nonce</span> for every
+        signature. Sony's signer used
+        <strong class="hl-red">the same one</strong>
+        every time
+      </li>
+      <li>
+        fail0verflow, at 27C3 in December 2010: from two signatures, solve for
+        the nonce, then for the private key. Anyone could now sign code as Sony
+      </li>
+      <li>
+        The Ed25519 we just ran derives its nonce from the key and the message
+        (RFC 8032), so there is no random number to get wrong
+      </li>
+    </ul>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Source:
+      <a href="https://media.ccc.de/v/27c3-4087-en-console_hacking_2010"
+        >fail0verflow, Console Hacking 2010 (27C3)</a
+      >
+      ·
+      <a
+        href="https://fahrplan.events.ccc.de/congress/2010/Fahrplan/attachments/1780_27c3_console_hacking_2010.pdf"
+        >the talk's slides</a
+      >
+      ·
+      <a href="https://www.rfc-editor.org/rfc/rfc8032">RFC 8032</a>
+    </p>
+  </section>
+  <section>
+    <h2>Sony's Nonce, Drawn</h2>
+    <img
+      src="img/ps3-ecdsa.svg"
+      alt="Two ECDSA signatures share the same r because the nonce k repeated. Subtracting s1 minus s2 cancels the private key term, giving k, and then the private key d from either signature"
+      width="820"
+    />
+    <p>
+      The same rule as CTR mode, in a different equation: a nonce used twice
+      cancels out, and what is left is the secret.
+    </p>
+  </section>
+  <section>
     <h2>MAC or Signature?</h2>
     <table style="font-size: 0.85em">
       <tr>
@@ -1086,6 +1268,55 @@ Signature Verification Failure
     </ul>
   </section>
   <section>
+    <h2>In the Wild: Symantec, 2015–2018</h2>
+    <ul>
+      <li>
+        September 2015: Google saw, in the
+        <span class="hl-green">Certificate Transparency</span> logs, an EV
+        pre-certificate for <code>google.com</code> from Symantec's Thawte CA —
+        which Google had never asked for
+      </li>
+      <li>
+        It came from Symantec's internal testing. Its re-audit found 164 more
+        certificates over 76 domains, and 2,458 for domains never registered
+      </li>
+      <li>
+        2017: a partner in Korea had misissued under Symantec's name — 127
+        confirmed. Browsers judged the CA, not the certificate
+      </li>
+      <li>
+        Chrome 70, October 2018,
+        <strong class="hl-red">stopped trusting everything</strong> Symantec's
+        old CA had issued; Firefox 64 in December. DigiNotar's fate, without a
+        breach
+      </li>
+    </ul>
+    <div class="box">
+      <p>Who watches the CA? A public log that anyone can read.</p>
+    </div>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Source:
+      <a
+        href="https://security.googleblog.com/2015/09/improved-digital-certificate-security.html"
+        >Google, Improved Digital Certificate Security</a
+      >
+      ·
+      <a
+        href="https://security.googleblog.com/2015/10/sustaining-digital-certificate-security.html"
+        >Sustaining Digital Certificate Security</a
+      >
+      ·
+      <a href="https://wiki.mozilla.org/CA/Symantec_Issues"
+        >Mozilla, CA/Symantec Issues</a
+      >
+      ·
+      <a
+        href="https://security.googleblog.com/2017/09/chromes-plan-to-distrust-symantec.html"
+        >Chrome's plan to distrust Symantec</a
+      >
+    </p>
+  </section>
+  <section>
     <h2>Revocation Is the Hard Part</h2>
     <ul>
       <li>
@@ -1133,6 +1364,48 @@ Signature Verification Failure
     <p>
       One key, one purpose. A key that both signs and encrypts turns any flaw in
       either into a flaw in both.
+    </p>
+  </section>
+  <section>
+    <h2>In the Wild: Debian OpenSSL, 2008</h2>
+    <ul>
+      <li>
+        2006: to silence a Valgrind warning, a Debian-only change to OpenSSL
+        removed the entropy from its random generator. Only the
+        <span class="hl-orange">process ID</span> was left
+      </li>
+      <li>
+        For twenty months every key OpenSSL made on Debian and Ubuntu came from
+        one of
+        <strong class="hl-red">32,767</strong> seeds per architecture — a list
+        anyone could generate in advance (CVE-2008-0166)
+      </li>
+      <li>
+        SSH, OpenVPN, DNSSEC and TLS keys all had to be regenerated. Even a good
+        DSA key that had merely <em>signed</em> on such a machine was lost — its
+        nonces were guessable, as on the Sony slide
+      </li>
+      <li>
+        <span class="hl-green">Generate</span> failed silently;
+        <span class="hl-cyan">Rotate</span> became everyone's emergency at once
+      </li>
+    </ul>
+    <div class="box">
+      <p>
+        A grade server keyed on such a machine would have had its key on that
+        list.
+      </p>
+    </div>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Source:
+      <a
+        href="https://lists.debian.org/debian-security-announce/2008/msg00152.html"
+        >Debian Security Advisory DSA-1571-1</a
+      >
+      ·
+      <a href="https://wiki.debian.org/SSLkeys">Debian Wiki, SSLkeys</a>
+      ·
+      <a href="https://ubuntu.com/security/notices/USN-612-1">USN-612-1</a>
     </p>
   </section>
   <section>
