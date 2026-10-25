@@ -978,13 +978,13 @@ open one bit flipped: "" err=cipher: message authentication failed
     <h2>Forward Secrecy, Drawn</h2>
     <img
       src="img/forward-secrecy.svg"
-      alt="Two timelines of three recorded sessions and a later private key leak. With static RSA key exchange every recorded session decrypts; with ephemeral Diffie-Hellman the session keys were deleted and nothing decrypts"
-      width="860"
+      alt="Two timelines of three recorded sessions and a later private key leak. With static RSA the recording holds each session key encrypted to pk, so the leaked sk unwraps every one. With signed ephemeral Diffie-Hellman the recording holds g^a, g^b and a signature; the key comes from g^ab, which needs a or b, and both were deleted. The leaked key can still sign as the server in future sessions until it is revoked"
+      width="760"
     />
     <p>
-      Same recording, same leak. The difference is whether the leaked key ever
-      <em>encrypted</em> anything. What it does instead is
-      <span class="hl-orange">sign</span> — the next section.
+      The leak only hurts the past if the key ever <em>encrypted</em> anything.
+      Here it only <span class="hl-orange">signed</span> — the next section. It
+      can still impersonate the server from now on, but it cannot read the past.
     </p>
   </section>
 </section>

@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 440">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520">
   <title>Forward secrecy: a leaked long-term key against recorded sessions</title>
   <style>
     text { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 20px; fill: #eeeeee; text-anchor: middle; dominant-baseline: middle; }
@@ -19,37 +19,57 @@
       <path d="M0,0 L10,5 L0,10 z" fill="#cfd3da" />
     </marker>
   </defs>
-  <text class="red title" x="40" y="35" style="text-anchor: start">Static RSA key exchange</text>
-  <path class="line" d="M40,120 H860" />
-  <rect class="box" x="80" y="76" width="110" height="34" rx="6" style="stroke: #cfd3da" />
-  <text class="small" x="135" y="93">session 1</text>
-  <text class="red" x="135" y="142" style="font-size: 15px">key under RSA</text>
-  <rect class="box" x="220" y="76" width="110" height="34" rx="6" style="stroke: #cfd3da" />
-  <text class="small" x="275" y="93">session 2</text>
-  <text class="red" x="275" y="142" style="font-size: 15px">key under RSA</text>
-  <rect class="box" x="360" y="76" width="110" height="34" rx="6" style="stroke: #cfd3da" />
-  <text class="small" x="415" y="93">session 3</text>
-  <text class="red" x="415" y="142" style="font-size: 15px">key under RSA</text>
-  <circle cx="620" cy="120" r="14" style="fill: #ff5252" />
-  <text x="620" y="121" style="font-weight: bold">!</text>
-  <text class="red" x="620" y="88" style="font-size: 17px">private key leaks</text>
-  <text class="red" x="760" y="154" style="font-size: 18px">every session decrypts</text>
-  <path class="line" d="M606,130 C560,180 200,190 135,158" style="stroke: #ff5252; stroke-dasharray: 6 5" />
-  <text class="green title" x="40" y="215" style="text-anchor: start">Ephemeral Diffie–Hellman, signed</text>
-  <path class="line" d="M40,300 H860" />
-  <rect class="box" x="80" y="256" width="110" height="34" rx="6" style="stroke: #cfd3da" />
-  <text class="small" x="135" y="273">session 1</text>
-  <text class="green" x="135" y="322" style="font-size: 15px">key deleted</text>
-  <rect class="box" x="220" y="256" width="110" height="34" rx="6" style="stroke: #cfd3da" />
-  <text class="small" x="275" y="273">session 2</text>
-  <text class="green" x="275" y="322" style="font-size: 15px">key deleted</text>
-  <rect class="box" x="360" y="256" width="110" height="34" rx="6" style="stroke: #cfd3da" />
-  <text class="small" x="415" y="273">session 3</text>
-  <text class="green" x="415" y="322" style="font-size: 15px">key deleted</text>
-  <circle cx="620" cy="300" r="14" style="fill: #ff5252" />
-  <text x="620" y="301" style="font-weight: bold">!</text>
-  <text class="red" x="620" y="268" style="font-size: 17px">private key leaks</text>
-  <text class="green" x="760" y="334" style="font-size: 18px">nothing to decrypt</text>
-  <text class="small" x="450" y="412">in both rows the attacker recorded every session, from day one</text>
-  <text class="yellow" x="450" y="375">the long-term key should only sign — then it can never unlock the past</text>
+
+  <!-- Row 1: static RSA -->
+  <text class="red title" x="40" y="25" style="text-anchor: start">Static RSA key exchange</text>
+  <path class="line" d="M40,95 H860" />
+  <rect class="box" x="60" y="55" width="120" height="30" rx="6" />
+  <text class="small" x="120" y="70">session 1</text>
+  <text class="red mono" x="120" y="115" style="font-size: 14px">Enc(pk, k₁)</text>
+  <rect class="box" x="200" y="55" width="120" height="30" rx="6" />
+  <text class="small" x="260" y="70">session 2</text>
+  <text class="red mono" x="260" y="115" style="font-size: 14px">Enc(pk, k₂)</text>
+  <rect class="box" x="340" y="55" width="120" height="30" rx="6" />
+  <text class="small" x="400" y="70">session 3</text>
+  <text class="red mono" x="400" y="115" style="font-size: 14px">Enc(pk, k₃)</text>
+  <circle cx="620" cy="95" r="14" style="fill: #ff5252" />
+  <text x="620" y="96" style="font-weight: bold">!</text>
+  <text class="red" x="620" y="62" style="font-size: 17px">private key sk leaks</text>
+
+  <rect class="box" x="30" y="145" width="320" height="44" rx="6" />
+  <text x="190" y="167" style="font-size: 16px">recorded: <tspan class="mono" style="font-size: 14px">Enc(pk, kᵢ)</tspan></text>
+  <path class="line" d="M350,167 H378" />
+  <rect class="box" x="380" y="145" width="130" height="44" rx="6" style="stroke: #ff5252" />
+  <text class="red" x="445" y="167" style="font-size: 16px">+ leaked sk</text>
+  <path class="line" d="M510,167 H548" />
+  <rect class="box" x="550" y="145" width="310" height="44" rx="6" style="stroke: #ff5252" />
+  <text class="red" x="705" y="167" style="font-size: 16px">Dec(sk, ·) → every kᵢ → every session</text>
+
+  <!-- Row 2: ephemeral DH -->
+  <text class="green title" x="40" y="245" style="text-anchor: start">Ephemeral Diffie–Hellman, signed</text>
+  <path class="line" d="M40,315 H860" />
+  <rect class="box" x="60" y="275" width="120" height="30" rx="6" />
+  <text class="small" x="120" y="290">session 1</text>
+  <text class="green" x="120" y="335" style="font-size: 14px">a, b deleted</text>
+  <rect class="box" x="200" y="275" width="120" height="30" rx="6" />
+  <text class="small" x="260" y="290">session 2</text>
+  <text class="green" x="260" y="335" style="font-size: 14px">a, b deleted</text>
+  <rect class="box" x="340" y="275" width="120" height="30" rx="6" />
+  <text class="small" x="400" y="290">session 3</text>
+  <text class="green" x="400" y="335" style="font-size: 14px">a, b deleted</text>
+  <circle cx="620" cy="315" r="14" style="fill: #ff5252" />
+  <text x="620" y="316" style="font-weight: bold">!</text>
+  <text class="red" x="620" y="282" style="font-size: 17px">private key sk leaks</text>
+
+  <rect class="box" x="30" y="365" width="320" height="44" rx="6" />
+  <text x="190" y="387" style="font-size: 16px">recorded: <tspan class="mono" style="font-size: 14px">gᵃ, gᵇ, Sig(sk, gᵃ‖gᵇ)</tspan></text>
+  <path class="line" d="M350,387 H378" />
+  <rect class="box" x="380" y="365" width="130" height="44" rx="6" style="stroke: #ff5252" />
+  <text class="red" x="445" y="387" style="font-size: 16px">+ leaked sk</text>
+  <path class="line" d="M510,387 H548" />
+  <rect class="box" x="550" y="365" width="310" height="44" rx="6" style="stroke: #76ff03" />
+  <text class="green" x="705" y="387" style="font-size: 16px">k from gᵃᵇ needs a or b — both gone</text>
+
+  <text class="orange" x="450" y="448" style="font-size: 17px">what sk still buys: signing as the server in <tspan font-style="italic">future</tspan> sessions, until it is revoked</text>
+  <text class="small" x="450" y="490">in both rows the attacker recorded every session, from day one</text>
 </svg>

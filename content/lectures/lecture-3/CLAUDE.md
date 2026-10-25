@@ -57,23 +57,23 @@ Fifteen hand-written SVGs in `img/`, each on its own slide (titled "…, Drawn"
 or "…, Counted") straight after the slide it draws, so no existing slide got
 more crowded. In deck order:
 
-| Diagram            | Draws                                                 |
-| ------------------ | ----------------------------------------------------- |
-| `symmetric`        | Alice, Bob, one K, Eve on the wire                    |
-| `pairwise-keys`    | 5 people, 10 keys; the n(n−1)/2 table                 |
-| `modes`            | CBC and CTR                                           |
-| `nonce-reuse`      | one keystream twice → P1 ⊕ P2                         |
-| `hash-properties`  | preimage / second preimage / collision, and the costs |
-| `avalanche`        | the 256 output bits that differ, from the hands-on    |
-| `length-extension` | resuming SHA-256 from a published `H(K ‖ m)`          |
-| `ctr-bitflip`      | `pay 100` → `pay 900` without the key                 |
-| `hybrid`           | public key moves the key, AES-GCM moves the data      |
-| `diffie-hellman`   | toy exchange, p = 23, g = 5                           |
-| `forward-secrecy`  | static RSA vs ephemeral DH against one later leak     |
-| `signature`        | sign and verify                                       |
-| `chain`            | root → intermediate → leaf                            |
-| `flame-collision`  | one MD5 signature fits two certificates (Flame)       |
-| `ps3-ecdsa`        | repeated ECDSA nonce → nonce → private key (Sony)     |
+| Diagram            | Draws                                                         |
+| ------------------ | ------------------------------------------------------------- |
+| `symmetric`        | Alice, Bob, one K, Eve on the wire                            |
+| `pairwise-keys`    | 5 people, 10 keys; the n(n−1)/2 table                         |
+| `modes`            | CBC and CTR                                                   |
+| `nonce-reuse`      | one keystream twice → P1 ⊕ P2                                 |
+| `hash-properties`  | preimage / second preimage / collision, and the costs         |
+| `avalanche`        | the 256 output bits that differ, from the hands-on            |
+| `length-extension` | resuming SHA-256 from a published `H(K ‖ m)`                  |
+| `ctr-bitflip`      | `pay 100` → `pay 900` without the key                         |
+| `hybrid`           | public key moves the key, AES-GCM moves the data              |
+| `diffie-hellman`   | toy exchange, p = 23, g = 5                                   |
+| `forward-secrecy`  | static RSA vs ephemeral DH: what is recorded, what sk unlocks |
+| `signature`        | sign and verify                                               |
+| `chain`            | root → intermediate → leaf                                    |
+| `flame-collision`  | one MD5 signature fits two certificates (Flame)               |
+| `ps3-ecdsa`        | repeated ECDSA nonce → nonce → private key (Sony)             |
 
 They are drawn for the league background (light strokes, transparent fill)
 with the `$highlights` colours as literal hex, because an `<img>` SVG cannot see
@@ -82,7 +82,7 @@ and after an edit; text that overflows a box is not reported anywhere.
 
 Widths: `modes.svg` is the tallest, which is why it is at `width="700"` — any
 wider and its caption runs into the bottom of the slide. `length-extension`,
-`ctr-bitflip` and `diffie-hellman` are at `760` for the same reason (their
+`ctr-bitflip`, `diffie-hellman` and `forward-secrecy` are at `760` for the same reason (their
 captions are two or three lines); the rest are at `820`–`860`.
 
 Four of the diagrams carry real data. Change the input and you must recompute,
