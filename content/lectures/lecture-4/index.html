@@ -689,6 +689,12 @@ scrypt, N=2^17 r=8 p=1              198.368 ms/hash            5 guesses/sec
       A <em>password hash</em> (or KDF, key derivation function) is a hash built
       to be slow:
     </p>
+    <div class="box">
+      <p>
+        Slow <em>and</em> hard: every guess must cost time and memory. Never a
+        bare MD5, SHA-1 or SHA-256 — salted or not.
+      </p>
+    </div>
     <ul>
       <li>
         <span class="hl-green">Argon2id</span> — the current recommendation.
@@ -704,9 +710,6 @@ scrypt, N=2^17 r=8 p=1              198.368 ms/hash            5 guesses/sec
         option in a certified environment
       </li>
       <li>
-        <strong class="hl-red">Never</strong> a bare MD5, SHA-1 or SHA-256
-      </li>
-      <li>
         <em>Memory-hard</em> ones need RAM per guess, which takes away the GPU's
         thousands of cores
       </li>
@@ -715,6 +718,19 @@ scrypt, N=2^17 r=8 p=1              198.368 ms/hash            5 guesses/sec
         <em>on your hardware</em>, and revisit it as hardware improves
       </li>
     </ul>
+  </section>
+  <section>
+    <h2>Storing a Password, Drawn</h2>
+    <img
+      src="img/salt-flow.svg"
+      alt="Sign-up: the password and a new random 16-byte salt go through a slow KDF, and the salt and the hash are stored in the users table, never the password. Log-in: the typed password and this user's stored salt go through the same KDF, and the result is compared in constant time with the stored hash; equal logs in, otherwise 401"
+      width="820"
+    />
+    <p>
+      A fresh salt per user, kept beside the hash; the same salt read back at
+      log-in. bcrypt and Argon2id pack salt, cost and hash into one string — the
+      next slide stores exactly that.
+    </p>
   </section>
   <section class="hands-on">
     <h2>The Grade Service Gets a Login</h2>

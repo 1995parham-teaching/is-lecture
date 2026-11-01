@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 400">
+  <title>Using a random salt: store at sign-up, verify at log-in</title>
+  <style>
+    text { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 20px; fill: #eeeeee; text-anchor: middle; dominant-baseline: middle; }
+    .small { font-size: 16px; fill: #b0b4bc; }
+    .mono { font-family: Menlo, Monaco, "Courier New", monospace; font-size: 17px; }
+    .title { font-size: 22px; font-weight: bold; text-anchor: start; }
+    .box { fill: rgba(255, 255, 255, 0.06); stroke: #cfd3da; stroke-width: 2; }
+    .cell { fill: none; stroke: #cfd3da; stroke-width: 1.5; }
+    .head { fill: rgba(255, 255, 255, 0.12); stroke: #cfd3da; stroke-width: 1.5; }
+    .line { fill: none; stroke: #cfd3da; stroke-width: 2; marker-end: url(#arrow); }
+    .orange { fill: #ff9100; } .green { fill: #76ff03; } .cyan { fill: #00e5ff; }
+    .red { fill: #ff5252; } .yellow { fill: #ffcc00; }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#cfd3da" />
+    </marker>
+  </defs>
+
+  <!-- 1. sign-up -->
+  <text class="title" x="20" y="22">1 · Sign-up: store</text>
+  <rect class="box" x="20" y="45" width="170" height="44" rx="6" style="stroke: #ff9100" />
+  <text class="orange" x="105" y="67">password</text>
+  <rect class="box" x="20" y="100" width="170" height="58" rx="6" style="stroke: #00e5ff" />
+  <text class="cyan" x="105" y="119">new random salt</text>
+  <text class="small" x="105" y="143">16 bytes, per user</text>
+  <path class="line" d="M190,67 L268,92" />
+  <path class="line" d="M190,129 L268,110" />
+  <rect class="box" x="270" y="62" width="180" height="76" rx="6" style="stroke: #76ff03" />
+  <text class="green" x="360" y="88">slow KDF</text>
+  <text class="small" x="360" y="114">Argon2id · bcrypt</text>
+  <path class="line" d="M450,100 H660 V158" />
+  <text class="small" x="555" y="86">keep salt and hash</text>
+
+  <!-- the users table -->
+  <text class="small" x="522" y="148" style="text-anchor: start">users table</text>
+  <rect class="head" x="520" y="160" width="90" height="32" />
+  <rect class="head" x="610" y="160" width="110" height="32" />
+  <rect class="head" x="720" y="160" width="160" height="32" />
+  <text x="565" y="177">user</text>
+  <text class="cyan" x="665" y="177">salt</text>
+  <text class="green" x="800" y="177">hash</text>
+  <rect class="cell" x="520" y="192" width="90" height="38" />
+  <rect class="cell" x="610" y="192" width="110" height="38" />
+  <rect class="cell" x="720" y="192" width="160" height="38" />
+  <text class="mono" x="565" y="212">4001</text>
+  <text class="mono cyan" x="665" y="212">x7Q2…</text>
+  <text class="mono green" x="800" y="212">9fd0e4…</text>
+  <text class="small" x="360" y="160">the password itself is never stored</text>
+
+  <!-- 2. log-in -->
+  <text class="title" x="20" y="272">2 · Log-in: verify</text>
+  <rect class="box" x="20" y="306" width="170" height="44" rx="6" style="stroke: #ff9100" />
+  <text class="orange" x="105" y="328">typed password</text>
+  <path class="line" d="M190,328 H268" />
+  <path class="line" d="M640,232 V272" style="marker-end: none" />
+  <path class="line" d="M640,272 H360 V292" />
+  <text class="small cyan" x="500" y="256">read this user's salt</text>
+  <rect class="box" x="270" y="294" width="180" height="76" rx="6" style="stroke: #76ff03" />
+  <text class="green" x="360" y="320">same KDF</text>
+  <text class="small" x="360" y="346">same salt, same cost</text>
+  <path class="line" d="M450,332 H548" />
+  <rect class="box" x="550" y="300" width="180" height="64" rx="6" style="stroke: #ffcc00" />
+  <text class="yellow" x="640" y="322">equal?</text>
+  <text class="small" x="640" y="346">constant-time</text>
+  <path class="line" d="M840,232 V332 H732" />
+  <text class="small green" x="840" y="352">stored hash</text>
+  <text class="green" x="590" y="388">yes → in</text>
+  <text class="red" x="700" y="388">no → 401</text>
+</svg>

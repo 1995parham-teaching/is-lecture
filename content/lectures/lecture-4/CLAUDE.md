@@ -1,7 +1,7 @@
 # Lecture 4 — Access Control
 
-51 slides including the generated title (44 content, 6 TOC), 5 vertical
-stacks, 8 hands-on slides, 6 diagrams, 7 real-world incident slides. Topics (TOC indices):
+52 slides including the generated title (45 content, 6 TOC), 5 vertical
+stacks, 8 hands-on slides, 7 diagrams, 7 real-world incident slides. Topics (TOC indices):
 `0` The Four A's · `1` Access Control Models · `2` Passwords ·
 `3` Second Factors · `4` Biometrics.
 
@@ -189,18 +189,19 @@ Facts worth not re-deriving:
 
 ## The diagrams
 
-Six hand-written SVGs in `img/`, drawn for the league background with the
+Seven hand-written SVGs in `img/`, drawn for the league background with the
 `$highlights` colours as literal hex. Render before and after an edit with
 `rsvg-convert -b '#2b2b2b'`; text that overflows a box is not reported.
 
-| Diagram          | Slide                      | Draws                                                 |
-| ---------------- | -------------------------- | ----------------------------------------------------- |
-| `four-as`        | The Four Steps, Drawn      | one grade request through the four steps, 401 and 403 |
-| `acl-capability` | The Access Matrix          | the matrix; a column is an ACL, a row a capability    |
-| `salt`           | The Salt, Drawn            | unsalted vs salted, the values from the hands-on run  |
-| `far-frr`        | FAR, FRR and the Threshold | FAR and FRR against the threshold, the EER, two uses  |
-| `twitter-2020`   | Twitter 2020, Drawn        | phone call → relayed VPN login and MFA push → tool    |
-| `adobe-ecb`      | Adobe 2013, Drawn          | one-key 3DES-ECB plus hints vs a salted KDF           |
+| Diagram          | Slide                      | Draws                                                     |
+| ---------------- | -------------------------- | --------------------------------------------------------- |
+| `four-as`        | The Four Steps, Drawn      | one grade request through the four steps, 401 and 403     |
+| `acl-capability` | The Access Matrix          | the matrix; a column is an ACL, a row a capability        |
+| `salt`           | The Salt, Drawn            | unsalted vs salted, the values from the hands-on run      |
+| `salt-flow`      | Storing a Password, Drawn  | sign-up (salt + KDF → table), log-in (read salt, compare) |
+| `far-frr`        | FAR, FRR and the Threshold | FAR and FRR against the threshold, the EER, two uses      |
+| `twitter-2020`   | Twitter 2020, Drawn        | phone call → relayed VPN login and MFA push → tool        |
+| `adobe-ecb`      | Adobe 2013, Drawn          | one-key 3DES-ECB plus hints vs a salted KDF               |
 
 - `acl-capability` **replaced** the access-matrix table, and `far-frr`
   **replaced** the FAR/FRR bullet list. The same cells and the same claims are
@@ -208,6 +209,14 @@ Six hand-written SVGs in `img/`, drawn for the league background with the
 - `salt` carries the real values from **Never Store It Twice the Same**
   (`f52fbd32…`, salts `MrTqQCcV…` and `9kSX7tN9…`). If that slide is
   re-captured, redraw this one.
+- `salt-flow` is a schematic: the `x7Q2…` salt and `9fd0e4…` hash are
+  invented. It sits **after What To Actually Use**, not beside `salt`, because
+  it needs the slow KDF and hands straight to the bcrypt code on the next
+  slide. Putting it between The Salt, Drawn and LinkedIn would break
+  LinkedIn's "left half of the drawing" and "the next two slides".
+- **What To Actually Use** opens with a `box` callout — slow _and_ hard (time
+  and memory), never a bare MD5/SHA-1/SHA-256 salted or not. That callout
+  replaced the old "Never a bare…" bullet; do not add it back.
 - `far-frr` is a schematic, not data. The curves are mirror images so that they
   cross at x = 430, y ≈ 245, where the EER dot is.
 - `four-as` shows `curl -u 4001:••••••••`: the student's request, which takes
