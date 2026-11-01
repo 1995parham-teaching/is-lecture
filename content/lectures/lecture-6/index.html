@@ -7,6 +7,7 @@ topics:
   - Sessions & Cookies
   - Client-Side Attacks
   - TLS and HTTPS
+  - The OWASP Top Ten
 draft: false
 ---
 
@@ -82,6 +83,29 @@ draft: false
     <p>
       The top branch breaks your server. The bottom one breaks nothing on it.
     </p>
+  </section>
+  <section>
+    <h2>A List Everyone Uses</h2>
+    <ul>
+      <li>
+        <span class="hl-yellow">OWASP</span>, the Open Worldwide Application
+        Security Project, is a non-profit. Its <strong>Top Ten</strong> is, in
+        its own words, "a standard awareness document" for web-application risk
+      </li>
+      <li>
+        The 2025 edition is the eighth. It ranks testing data from over
+        <strong>2.8 million</strong> applications; two of the ten were added by
+        a survey of practitioners, because scanners cannot find them well
+      </li>
+      <li>
+        Each entry is a <em>category</em> — a family of weaknesses — not a
+        checklist. Passing it is not a thing; knowing the names is
+      </li>
+      <li>
+        Lecture 4 named number one, broken access control. This lecture meets
+        most of the rest, and its last section lays the list over the course
+      </li>
+    </ul>
   </section>
   <section>
     <h2>The Golden Rule</h2>
@@ -1081,6 +1105,77 @@ hello parham
       </li>
     </ul>
   </section>
+</section>
+<section>
+  <div class="toc" data-selected="5"></div>
+</section>
+<section>
+  <section>
+    <h2>The Top Ten, Mapped</h2>
+    <img
+      src="img/owasp-top10.svg"
+      alt="The OWASP Top 10:2025 with where the course met each: A01 broken access control in lecture 4 and Optus, SSRF and CSRF here; A02 misconfiguration, lecture 5 hardening and Capital One's WAF; A03 supply chain, the xz backdoor and Equifax's Struts; A04 cryptographic failures, lecture 3 and Firesheep and TLS; A05 injection, SQL injection and XSS; A06 insecure design, STRIDE and trusting the browser; A07 authentication failures, lecture 4 and sessions and curl -k; A08 integrity failures, signatures and British Airways; A09 logging and alerting failures, lecture 5's rewritable log, TalkTalk and the replay; A10 mishandling of exceptional conditions, on the next slide"
+      width="780"
+    />
+    <p>Nine have a story already. The tenth, new in 2025, is in our code.</p>
+  </section>
+  <section class="hands-on">
+    <h2>Two Errors the Grade Service Swallowed</h2>
+    <pre><code class="lang-sh">
+$ curl --cacert cert.pem -b cookies.txt -d 'id=4002&amp;grade=eighteen' \
+       https://localhost:8080/grade
+4002 is now 0
+$ curl --cacert cert.pem -b cookies.txt -d 'id=4020&amp;grade=18' \
+       https://localhost:8080/grade
+4020 is now 18
+    </code></pre>
+    <ul>
+      <li>
+        The instructor is logged in.
+        <code class="hl-yellow">grade, _ := strconv.Atoi(...)</code> threw the
+        error away, and a failed parse is <code>0</code>: 4002's 17 is
+        <strong class="hl-red">gone</strong>, and the log says
+        <code>grade 4002=0 by parham</code>
+      </li>
+      <li>
+        There is no student 4020. An <code>UPDATE</code> that matches no row is
+        not an error, so the service reported success
+      </li>
+      <li>
+        Not an attack: the program did not know what had happened and carried
+        on. That is <span class="hl-orange">A10</span>
+      </li>
+    </ul>
+  </section>
+  <section class="hands-on">
+    <h2>Fail Closed</h2>
+    <pre><code class="lang-go">
+	grade, err := strconv.Atoi(r.FormValue("grade"))
+	if err != nil || grade &lt; 0 || grade &gt; 20 {
+		http.Error(w, "grade must be 0 to 20", http.StatusBadRequest)
+		return
+	}
+	// ... the role check, then res, err := db.Exec("UPDATE ...") ...
+	if n, err := res.RowsAffected(); err != nil || n != 1 {
+		http.Error(w, "no such student", http.StatusNotFound)
+		return
+	}
+    </code></pre>
+    <pre><code class="lang-sh">
+$ curl --cacert cert.pem -b cookies.txt -d 'id=4002&amp;grade=eighteen' \
+       https://localhost:8080/grade
+grade must be 0 to 20
+$ curl --cacert cert.pem -b cookies.txt -d 'id=4020&amp;grade=18' \
+       https://localhost:8080/grade
+no such student
+    </code></pre>
+    <ul>
+      <li>
+        Every case the code did not expect now ends the request with an error.
+        Unsure means <strong class="hl-green">stop</strong>, never carry on
+      </li>
+    </ul>
+  </section>
   <section>
     <h2>Check Yourself</h2>
     <ol>
@@ -1100,6 +1195,10 @@ hello parham
       <li>
         <code>curl -k</code> connects with AES-256-GCM. Why is that connection
         still worthless?
+      </li>
+      <li>
+        The instructor sends <code>grade=eighteen</code>. Which OWASP category
+        is the result, and why is it not injection?
       </li>
     </ol>
   </section>

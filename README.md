@@ -56,7 +56,7 @@ opening slide of lecture 1.
 - **5** — System & Software Security — operating system and file system
   security, malware, memory safety, host defences, virtualization
 - **6** — Web Security — the web threat model, server-side attacks, sessions
-  and cookies, client-side attacks, TLS and HTTPS
+  and cookies, client-side attacks, TLS and HTTPS, the OWASP Top Ten
 - **7** — Network & Transport Security — network threats, zoning, edge security
   and firewalls, secure access and VPN, VLAN and segmentation
 

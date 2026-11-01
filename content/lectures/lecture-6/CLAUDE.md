@@ -1,9 +1,9 @@
 # Lecture 6 — Web Security
 
-55 `<section>` elements plus the generated title: 44 content slides, 6 TOC
-slides, 5 vertical stacks, 9 hands-on slides, 8 diagrams. Topics (TOC indices):
+61 `<section>` elements plus the generated title: 48 content slides, 7 TOC
+slides, 6 vertical stacks, 11 hands-on slides, 9 diagrams. Topics (TOC indices):
 `0` The Web Threat Model · `1` Server-Side Attacks · `2` Sessions & Cookies ·
-`3` Client-Side Attacks · `4` TLS and HTTPS.
+`3` Client-Side Attacks · `4` TLS and HTTPS · `5` The OWASP Top Ten.
 
 ## Why this order
 
@@ -22,7 +22,8 @@ Each section ends on the question the next one answers:
 | Server-side | the password still goes with every request (HTTP Has No Memory)     |
 | Sessions    | the browser sends the cookie even when another site starts it       |
 | Client-side | every defence assumes nobody reads the cookie on the lab wifi       |
-| TLS         | Check Yourself, then three take-aways and the hand-off to lecture 7 |
+| TLS         | Getting HTTPS Right                                                 |
+| OWASP       | Check Yourself, then three take-aways and the hand-off to lecture 7 |
 
 Within Sessions, **Attacks on Sessions** comes before the grade-service code,
 so that "a new identifier at every login, which is the fixation fix" on
@@ -33,6 +34,37 @@ Terms are defined at first use: _origin_ and the _same-origin policy_ on
 **Two Different Victims** (the policy stops reading, not sending — the setup
 for CSRF), _JWT_ on **Logging Out Is a Server-Side Delete**. CORS was dropped
 from that slide: it was named and never defined, and nothing later needs it.
+
+## OWASP
+
+The OWASP Top Ten enters twice. **A List Everyone Uses** (Threat section, just
+before the Golden Rule, so the Golden Rule still ends the section) says what
+the list is and is not. The last section, **The OWASP Top Ten**, is a review:
+**The Top Ten, Mapped** (`owasp-top10.svg`) lays the 2025 list over stories the
+course has already told, and A10 — the one category nothing earlier covered —
+gets a hands-on pair on the grade service itself (v5 below).
+
+The edition is **Top 10:2025**, checked against `owasp.org/Top10/2025/` on
+1 November 2026. Facts on the slides, from that site:
+
+- "a standard awareness document"; the 2025 edition is the eighth; data for
+  "over 2.8 million applications"; eight categories ranked from data, two
+  promoted by the community survey (A03 supply chain, A09 logging).
+- OWASP is the **Open Worldwide** Application Security Project (renamed from
+  "Open Web" in 2023).
+- Where this deck's topics sit in 2025: **SSRF and CSRF are in A01**
+  (SSRF was folded in for 2025); **XSS is in A05** Injection; certificate
+  validation (CWE-295, i.e. `curl -k`) is in **A07**, not A04; cleartext
+  transmission (CWE-319, Firesheep) is **A04**; client-side enforcement of
+  server-side security (CWE-602, "the browser is not part of your system") is
+  **A06**. The map follows those placements — do not "correct" `curl -k` to A04.
+- The map's _earlier lectures_ column points at real slides: L4 The Four A's,
+  L5 Hardening, L5 the xz backdoor, L3 the toolbox, L1 STRIDE, L4 passwords and
+  second factors, L3 signatures, L5 The Service Can Rewrite Its Own Log. A05 has
+  no earlier entry on purpose: lecture 5's overflow is the same idea but not in
+  OWASP's A05.
+- Broken Access Control is #1 in both 2021 and 2025, so "number one since 2021"
+  (here and in lecture 4) is still true.
 
 ## The organising idea
 
@@ -70,6 +102,7 @@ to its concept:
 | v2      | the same query with `?` placeholders                     | **Prepared Statements** · **The Same Request, Prepared**                                                |
 | v3      | `POST /login` hands out a session cookie; `POST /logout` | **The Grade Service Gets a Session** · **Log In Once, Then Only the Cookie** · **Log Out, Then Replay** |
 | v4      | `ListenAndServeTLS` with a self-signed `localhost` cert  | **The Grade Service, Over HTTPS**                                                                       |
+| v5      | `setGrade` checks the `Atoi` error and `RowsAffected`    | **Two Errors the Grade Service Swallowed** (v4) · **Fail Closed** (v5)                                  |
 
 The drawings use the same program: **CSRF on the Grade Service, Drawn** is the
 instructor's browser posting `id=4001&grade=20` from `evil.example`, and
@@ -292,6 +325,46 @@ server.` is Go's real reply to plain HTTP on a TLS listener. The server log
   slide.
 - `--cacert`, not `-k`: the previous slide calls `-k` a finding.
 
+### v5 and the A10 captures
+
+v5 changes only `setGrade`, and is `gofmt`, `go vet` and `go build` clean
+(Go 1.27.3 on Linux, the same `go.mod`):
+
+```go
+	grade, err := strconv.Atoi(r.FormValue("grade"))
+	if err != nil || grade < 0 || grade > 20 {
+		http.Error(w, "grade must be 0 to 20", http.StatusBadRequest)
+		return
+	}
+	// ... role check unchanged ...
+	res, err := db.Exec("UPDATE grades SET grade = ? WHERE student = ? AND course = 'IS'",
+		grade, id)
+	// ... database error unchanged ...
+	if n, err := res.RowsAffected(); err != nil || n != 1 {
+		http.Error(w, "no such student", http.StatusNotFound)
+		return
+	}
+```
+
+Captured on 1 November 2026 with curl 8.23.0, same procedure as above (fresh
+`grades.db`, a new self-signed cert, `script -qc`). One run per version:
+
+```sh
+curl --cacert cert.pem -c cookies.txt -d name=parham \
+       -d 'password=correct horse battery staple' https://localhost:8080/login
+curl --cacert cert.pem -b cookies.txt -d 'id=4002&grade=eighteen' \
+       https://localhost:8080/grade
+curl --cacert cert.pem -b cookies.txt -d 'id=4020&grade=18' \
+       https://localhost:8080/grade
+```
+
+The login (`hello parham`) is cut from both slides for height; the first
+bullet says the instructor is logged in. Against v4 the server log read
+`grade 4002=0 by parham` and `grade 4020=18 by parham`, and the table held
+`4002|IS|0`; against v5 the table was unchanged. v5 validates before the role
+check, so a student posting `grade=eighteen` gets 400, not 403 — harmless, and
+left that way to keep the diff to two blocks.
+
 ### The older captures
 
 - **Guessing the Session** is a real capture from a small Go server that serves
@@ -325,6 +398,7 @@ with significant spaces inside `<tspan>`s carries `xml:space="preserve"`
 | `tls13`            | The Handshake, Briefly             | TLS 1.3, one round trip, key shares in the clear                 |
 | `capital-one-ssrf` | In the Wild: Capital One, 2019     | WAF relays to the metadata service, role credentials, S3         |
 | `ba-skimmer`       | In the Wild: British Airways, 2018 | edited JavaScript on BA's origin posts a card copy to BAways.com |
+| `owasp-top10`      | The Top Ten, Mapped                | OWASP Top 10:2025, each row with an earlier lecture and a slide  |
 
 - `sql-boundary`, `xss-kinds` and `tls13` **replaced** text: the SQL code
   block, the three-kinds table and the handshake bullet list. Do not add that
@@ -340,7 +414,9 @@ with significant spaces inside `<tspan>`s carries `xml:space="preserve"`
 - Widths: `xss-kinds` and `tls13` at `820`, `samesite` at `860`, `sql-boundary`
   and `csrf` at `840`, `web-threat-model` at `860`, `capital-one-ssrf` and
   `ba-skimmer` at `800`. Each slide was checked at
-  960×700 in headless Chrome.
+  960×700 in headless Chrome. `owasp-top10` (900×476, generated as a table of
+  rows) is at `780` and was **not** checked in a browser — only rendered with
+  `rsvg-convert`; check it, and the two A10 slides, at 960×700.
 
 ## Real-world cases
 
@@ -396,6 +472,10 @@ instructor:
    Safari) rides even an `<img>` (**Stopping CSRF**).
 4. Nothing verified the certificate, so the encrypted channel can end at the
    attacker (**The Same Handshake, Checking Turned Off**).
+5. A10, Mishandling of Exceptional Conditions. Nothing in `eighteen` became
+   code; the parse failed, the error was discarded and `0` was written. The
+   fix is to stop on the error, not to separate data from code (**Fail
+   Closed**).
 
 ## Facts worth not re-deriving
 

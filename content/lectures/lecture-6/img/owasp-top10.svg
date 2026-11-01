@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 476">
+  <title>The OWASP Top 10:2025, and where this course met each risk</title>
+  <style>
+    text { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 18px; fill: #eeeeee; dominant-baseline: middle; }
+    .small { font-size: 16px; fill: #b0b4bc; }
+    .mono { font-family: Menlo, Monaco, "Courier New", monospace; font-size: 17px; font-weight: bold; }
+    .head { font-size: 18px; font-weight: bold; }
+    .row { fill: rgba(255, 255, 255, 0.06); }
+    .rule { stroke: #8d97a8; stroke-width: 1.5; }
+    .yellow { fill: #ffcc00; } .cyan { fill: #00e5ff; } .green { fill: #76ff03; } .red { fill: #ff5252; }
+  </style>
+  <text class="head" x="24" y="26">OWASP Top 10:2025</text>
+  <text class="head cyan" x="470" y="26">earlier lectures</text>
+  <text class="head green" x="690" y="26">this lecture</text>
+  <line class="rule" x1="16" y1="50" x2="884" y2="50" />
+  <rect class="row" x="16" y="58" width="868" height="40" rx="4" />
+  <text class="mono yellow" x="24" y="80.0">A01</text>
+  <text x="80" y="80.0">Broken Access Control</text>
+  <text class="small" x="470" y="80.0" xml:space="preserve">L4  the four A’s</text>
+  <text x="690" y="80.0">Optus, SSRF, CSRF</text>
+  <text class="mono yellow" x="24" y="120.0">A02</text>
+  <text x="80" y="120.0">Security Misconfiguration</text>
+  <text class="small" x="470" y="120.0" xml:space="preserve">L5  hardening</text>
+  <text x="690" y="120.0">Capital One’s WAF</text>
+  <rect class="row" x="16" y="138" width="868" height="40" rx="4" />
+  <text class="mono yellow" x="24" y="160.0">A03</text>
+  <text x="80" y="160.0">Software Supply Chain Failures</text>
+  <text class="small" x="470" y="160.0" xml:space="preserve">L5  the xz backdoor</text>
+  <text x="690" y="160.0">Equifax’s Struts</text>
+  <text class="mono yellow" x="24" y="200.0">A04</text>
+  <text x="80" y="200.0">Cryptographic Failures</text>
+  <text class="small" x="470" y="200.0" xml:space="preserve">L3  the toolbox</text>
+  <text x="690" y="200.0">Firesheep, TLS</text>
+  <rect class="row" x="16" y="218" width="868" height="40" rx="4" />
+  <text class="mono yellow" x="24" y="240.0">A05</text>
+  <text x="80" y="240.0">Injection</text>
+  <text class="small" x="470" y="240.0" xml:space="preserve">—</text>
+  <text x="690" y="240.0">SQL injection, XSS</text>
+  <text class="mono yellow" x="24" y="280.0">A06</text>
+  <text x="80" y="280.0">Insecure Design</text>
+  <text class="small" x="470" y="280.0" xml:space="preserve">L1  STRIDE</text>
+  <text x="690" y="280.0">trusting the browser</text>
+  <rect class="row" x="16" y="298" width="868" height="40" rx="4" />
+  <text class="mono yellow" x="24" y="320.0">A07</text>
+  <text x="80" y="320.0">Authentication Failures</text>
+  <text class="small" x="470" y="320.0" xml:space="preserve">L4  passwords, MFA</text>
+  <text x="690" y="320.0">sessions, curl -k</text>
+  <text class="mono yellow" x="24" y="360.0">A08</text>
+  <text x="80" y="360.0">Software or Data Integrity Failures</text>
+  <text class="small" x="470" y="360.0" xml:space="preserve">L3  signatures</text>
+  <text x="690" y="360.0">British Airways</text>
+  <rect class="row" x="16" y="378" width="868" height="40" rx="4" />
+  <text class="mono yellow" x="24" y="400.0">A09</text>
+  <text x="80" y="400.0">Security Logging and Alerting Failures</text>
+  <text class="small" x="470" y="400.0" xml:space="preserve">L5  a rewritable log</text>
+  <text x="690" y="400.0">TalkTalk, the replay</text>
+  <text class="mono yellow" x="24" y="440.0">A10</text>
+  <text x="80" y="440.0">Mishandling of Exceptional Conditions</text>
+  <text class="small" x="470" y="440.0" xml:space="preserve">—</text>
+  <text x="690" y="440.0" class="red">next slide</text>
+</svg>
