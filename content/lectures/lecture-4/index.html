@@ -842,6 +842,47 @@ $ echo NDAwMTp0dWxpcC1yaXZlci00Mg== | base64 -d
       </li>
     </ul>
   </section>
+  <section class="hands-on">
+    <h2>Is It in a Breach?</h2>
+    <pre><code class="lang-sh">
+$ printf 'hunter2' | shasum -a 1
+f3bbbd66a63d4bf1747940578ec3d0103530e21d  -
+$ curl -s https://api.pwnedpasswords.com/range/F3BBB | wc -l
+1998
+$ curl -s https://api.pwnedpasswords.com/range/F3BBB | grep D66A63D4BF17
+D66A63D4BF1747940578EC3D0103530E21D:65763
+
+$ printf 'correct horse battery staple' | shasum -a 1
+abf7aad6438836dbe526aa231abde2d0eef74d42  -
+$ curl -s https://api.pwnedpasswords.com/range/ABF7A | grep AD6438836DBE
+AD6438836DBE526AA231ABDE2D0EEF74D42:391
+    </code></pre>
+    <ul>
+      <li>
+        <code>hunter2</code> has been seen in breaches
+        <strong class="hl-red">65,763 times</strong>
+      </li>
+      <li>
+        The grade service's own instructor password, long, four words, is there
+        <strong class="hl-red">391 times</strong> — a famous phrase is in every
+        attacker's list. Exercise: reject it at sign-up
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Asking Without Telling, Drawn</h2>
+    <img
+      src="img/pwned-range.svg"
+      alt="Your server hashes hunter2 with SHA-1, sends only the five-character prefix F3BBB to api.pwnedpasswords.com, receives all 1,998 breached suffixes in that range with counts, and finds its own suffix D66A63D4BF17 locally: seen 65,763 times. The API never learns which of the 1,998 was meant"
+      width="860"
+    />
+    <p>
+      The list behind it is
+      <a href="https://haveibeenpwned.com/">Have I Been Pwned</a>, which also
+      tells anyone whether their own e-mail address was in a breach. Check
+      yours.
+    </p>
+  </section>
   <section>
     <h2>Attacks on Passwords</h2>
     <table style="font-size: 0.8em">
