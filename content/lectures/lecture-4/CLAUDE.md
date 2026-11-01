@@ -1,7 +1,7 @@
 # Lecture 4 — Access Control
 
-54 slides including the generated title (47 content, 6 TOC), 5 vertical
-stacks, 9 hands-on slides, 8 diagrams, 7 real-world incident slides. Topics (TOC indices):
+55 slides including the generated title (48 content, 6 TOC), 5 vertical
+stacks, 9 hands-on slides, 9 diagrams, 7 real-world incident slides. Topics (TOC indices):
 `0` The Four A's · `1` Access Control Models · `2` Passwords ·
 `3` Second Factors · `4` Biometrics.
 
@@ -189,20 +189,21 @@ Facts worth not re-deriving:
 
 ## The diagrams
 
-Eight hand-written SVGs in `img/`, drawn for the league background with the
+Nine hand-written SVGs in `img/`, drawn for the league background with the
 `$highlights` colours as literal hex. Render before and after an edit with
 `rsvg-convert -b '#2b2b2b'`; text that overflows a box is not reported.
 
-| Diagram          | Slide                         | Draws                                                     |
-| ---------------- | ----------------------------- | --------------------------------------------------------- |
-| `four-as`        | The Four Steps, Drawn         | one grade request through the four steps, 401 and 403     |
-| `acl-capability` | The Access Matrix             | the matrix; a column is an ACL, a row a capability        |
-| `salt`           | The Salt, Drawn               | unsalted vs salted, the values from the hands-on run      |
-| `salt-flow`      | Storing a Password, Drawn     | sign-up (salt + KDF → table), log-in (read salt, compare) |
-| `pwned-range`    | Asking Without Telling, Drawn | HIBP range query: 5-char prefix out, 1,998 suffixes back  |
-| `far-frr`        | FAR, FRR and the Threshold    | FAR and FRR against the threshold, the EER, two uses      |
-| `twitter-2020`   | Twitter 2020, Drawn           | phone call → relayed VPN login and MFA push → tool        |
-| `adobe-ecb`      | Adobe 2013, Drawn             | one-key 3DES-ECB plus hints vs a salted KDF               |
+| Diagram          | Slide                         | Draws                                                              |
+| ---------------- | ----------------------------- | ------------------------------------------------------------------ |
+| `four-as`        | The Four Steps, Drawn         | one grade request through the four steps, 401 and 403              |
+| `acl-capability` | The Access Matrix             | the matrix; a column is an ACL, a row a capability                 |
+| `salt`           | The Salt, Drawn               | unsalted vs salted, the values from the hands-on run               |
+| `salt-flow`      | Storing a Password, Drawn     | sign-up (salt + KDF → table), log-in (read salt, compare)          |
+| `pepper`         | One More Secret: A Pepper     | HMAC(pepper, KDF(pw, salt)); DB vs secret store, what a dump takes |
+| `pwned-range`    | Asking Without Telling, Drawn | HIBP range query: 5-char prefix out, 1,998 suffixes back           |
+| `far-frr`        | FAR, FRR and the Threshold    | FAR and FRR against the threshold, the EER, two uses               |
+| `twitter-2020`   | Twitter 2020, Drawn           | phone call → relayed VPN login and MFA push → tool                 |
+| `adobe-ecb`      | Adobe 2013, Drawn             | one-key 3DES-ECB plus hints vs a salted KDF                        |
 
 - `acl-capability` **replaced** the access-matrix table, and `far-frr`
   **replaced** the FAR/FRR bullet list. The same cells and the same claims are
@@ -218,6 +219,12 @@ Eight hand-written SVGs in `img/`, drawn for the league background with the
 - **What To Actually Use** opens with a `box` callout — slow _and_ hard (time
   and memory), never a bare MD5/SHA-1/SHA-256 salted or not. That callout
   replaced the old "Never a bare…" bullet; do not add it back.
+- `pepper` is a schematic (`x7Q2…`, `c41a07…` are invented). It draws the
+  **post-hashing** pepper — NIST SP 800-63B's "additional iteration of a keyed
+  hashing … using a secret key", which OWASP also lists. Its slide sits right
+  after **Storing a Password, Drawn**, which is why that slide's caption says
+  the grade service comes "two slides on". The grade service has no pepper and
+  should not get one here.
 - `pwned-range` carries the real values from **Is It in a Breach?**
   (`F3BBB`, `D66A63D4BF17…`, 1,998 lines, 65,763). If that slide is
   re-captured, redraw this one.

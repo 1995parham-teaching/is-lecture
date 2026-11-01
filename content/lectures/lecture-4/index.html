@@ -729,7 +729,37 @@ scrypt, N=2^17 r=8 p=1              198.368 ms/hash            5 guesses/sec
     <p>
       A fresh salt per user, kept beside the hash; the same salt read back at
       log-in. bcrypt and Argon2id pack salt, cost and hash into one string — the
-      next slide stores exactly that.
+      grade service stores exactly that, two slides on.
+    </p>
+  </section>
+  <section>
+    <h2>One More Secret: A Pepper</h2>
+    <img
+      src="img/pepper.svg"
+      alt="The application server computes HMAC(pepper, KDF(password, salt)). The salt and hash live in the database; the pepper, one key, lives in a separate secret store such as an HSM, KMS or vault, never in the database. A SQL-injection dump or a lost backup takes only the database half, and without the pepper no guess can be checked offline"
+      width="740"
+    />
+    <ul style="font-size: 0.85em">
+      <li>
+        A <span class="hl-cyan">salt</span> is per user and public. A
+        <span class="hl-violet">pepper</span> is one key, secret, and kept away
+        from the hashes
+      </li>
+      <li>
+        An extra layer on the salt and the slow KDF, never a replacement. A
+        leaked pepper means every user resets
+      </li>
+    </ul>
+    <p style="font-size: 0.55em; line-height: 1.4">
+      Sources:
+      <a href="https://pages.nist.gov/800-63-4/sp800-63b.html"
+        >NIST SP 800-63B</a
+      >
+      (keyed hash, key in an HSM) ·
+      <a
+        href="https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#peppering"
+        >OWASP Password Storage Cheat Sheet, Peppering</a
+      >
     </p>
   </section>
   <section class="hands-on">
